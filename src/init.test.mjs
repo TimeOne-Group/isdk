@@ -20,17 +20,16 @@
 // }
 
 // eslint-disable-next-line import/no-unresolved
-import test from 'ava';
 // import init from './init';
 import * as utils from './utils.mjs';
 import CONSTANTS from './constants.mjs';
 
 const name = 'foo';
 
-test.beforeEach(() => {
+beforeEach(() => {
   utils.removeValue(name);
 });
 
-test('getPrefixedCookieName - Should return prefixed name', (t) => {
-  t.deepEqual(`${CONSTANTS.default_storage_prefix}_${name}`, utils.getPrefixedCookieName(name));
+test('getPrefixedCookieName - Should return prefixed name', () => {
+  expect(`${CONSTANTS.default_storage_prefix}_${name}`).toEqual(utils.getPrefixedCookieName(name));
 });

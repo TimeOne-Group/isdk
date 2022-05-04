@@ -15,6 +15,12 @@ services:
     volumes:
       - ./docs:/usr/share/nginx/html:ro
 
+  browserstack:
+    image: nginx:1.19
+    ports:
+      - 8082:80
+    volumes:
+      - ./browserstack/site:/usr/share/nginx/html:ro
 
   unit_test:
     image: node:16
@@ -38,5 +44,5 @@ services:
     working_dir: '/app'
     command: 'npm run test:browserstack'
     depends_on:
-      - web
+      - browserstack
 

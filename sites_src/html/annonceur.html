@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Privacy by Design - By TimeOne - Tracker</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <link rel="icon" href="favicon.svg" />
+    <link
+      rel="stylesheet"
+      href="https://cdn.kiprotect.com/klaro/v0.7/klaro.min.css"
+    />
+    <script
+      type="text/javascript"
+      src="https://cdn.kiprotect.com/klaro/v0.7/klaro.js"
+    ></script>
+    <script src="./common.js"></script>
+    <script src="./tag.js"></script>
+    <script src="./init.js"></script>
+    <script async id="___ISDK" data-progids="[109]" src="__SDK_SRC__"></script>
+  </head>
+  <body id="app">
+    <div id="menu">
+      <b>Consent</b>
+      <button type="button" id="cleanCmpCookie" onclick="cleanKlaroCookie();">
+        Reset all storages
+      </button>
+      <b>Actions</b>
+      <button
+        type="button"
+        id="setConversion"
+        onclick="window.TOG_SDK.push(['setConversion']);"
+      >
+        Conversion
+      </button>
+    </div>
+
+    <div id="page">
+      <h1 id="title">Site Annonceur __NAME__</h1>
+      <div class="card">
+        <div>
+          <b> SDK cookie </b>
+          <pre id="debug-cookie" class="state-card"></pre>
+        </div>
+        <div>
+          <b> SDK localstorage </b>
+          <pre id="debug-localstorage" class="state-card"></pre>
+        </div>
+      </div>
+      <div class="card">
+        <div>
+          <b> SDK state </b>
+          <pre id="debug" class="state-card"></pre>
+        </div>
+        <div>
+          <b> SDK trace </b>
+          <pre id="debug-trace" class="state-card"></pre>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

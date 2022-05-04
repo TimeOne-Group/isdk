@@ -222,6 +222,48 @@
     throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
   }
 
+  function _classPrivateFieldGet(receiver, privateMap) {
+    var descriptor = _classExtractFieldDescriptor(receiver, privateMap, "get");
+
+    return _classApplyDescriptorGet(receiver, descriptor);
+  }
+
+  function _classPrivateFieldSet(receiver, privateMap, value) {
+    var descriptor = _classExtractFieldDescriptor(receiver, privateMap, "set");
+
+    _classApplyDescriptorSet(receiver, descriptor, value);
+
+    return value;
+  }
+
+  function _classExtractFieldDescriptor(receiver, privateMap, action) {
+    if (!privateMap.has(receiver)) {
+      throw new TypeError("attempted to " + action + " private field on non-instance");
+    }
+
+    return privateMap.get(receiver);
+  }
+
+  function _classApplyDescriptorGet(receiver, descriptor) {
+    if (descriptor.get) {
+      return descriptor.get.call(receiver);
+    }
+
+    return descriptor.value;
+  }
+
+  function _classApplyDescriptorSet(receiver, descriptor, value) {
+    if (descriptor.set) {
+      descriptor.set.call(receiver, value);
+    } else {
+      if (!descriptor.writable) {
+        throw new TypeError("attempted to set read only private field");
+      }
+
+      descriptor.value = value;
+    }
+  }
+
   function _classPrivateMethodGet(receiver, privateSet, fn) {
     if (!privateSet.has(receiver)) {
       throw new TypeError("attempted to get private field on non-instance");
@@ -234,6 +276,12 @@
     if (privateCollection.has(obj)) {
       throw new TypeError("Cannot initialize the same private elements twice on an object");
     }
+  }
+
+  function _classPrivateFieldInitSpec(obj, privateMap, value) {
+    _checkPrivateRedeclaration(obj, privateMap);
+
+    privateMap.set(obj, value);
   }
 
   function _classPrivateMethodInitSpec(obj, privateSet) {
@@ -865,8 +913,8 @@
 
   var inspectSource$1 = sharedStore$1.inspectSource;
 
-  var WeakMap$3 = global$2.WeakMap;
-  var nativeWeakMap$1 = isCallable(WeakMap$3) && /native code/.test(inspectSource$1(WeakMap$3));
+  var WeakMap$4 = global$2.WeakMap;
+  var nativeWeakMap$1 = isCallable(WeakMap$4) && /native code/.test(inspectSource$1(WeakMap$4));
 
   var createPropertyDescriptor$1 = function createPropertyDescriptor(bitmap, value) {
     return {
@@ -886,7 +934,7 @@
 
   var OBJECT_ALREADY_INITIALIZED = 'Object already initialized';
   var TypeError$7 = global$2.TypeError;
-  var WeakMap$2 = global$2.WeakMap;
+  var WeakMap$3 = global$2.WeakMap;
   var set$1, get$1, has$2;
 
   var enforce$1 = function enforce(it) {
@@ -906,7 +954,7 @@
   };
 
   if (nativeWeakMap$1 || sharedStore$1.state) {
-    var store$3 = sharedStore$1.state || (sharedStore$1.state = new WeakMap$2());
+    var store$3 = sharedStore$1.state || (sharedStore$1.state = new WeakMap$3());
     var wmget$1 = functionUncurryThis(store$3.get);
     var wmhas$1 = functionUncurryThis(store$3.has);
     var wmset$1 = functionUncurryThis(store$3.set);
@@ -3237,7 +3285,7 @@
   };
 
   var hiddenKeys$1 = {};
-  var WeakMap = global$1.WeakMap;
+  var WeakMap$2 = global$1.WeakMap;
   var set, get, has;
 
   var enforce = function enforce(it) {
@@ -3257,7 +3305,7 @@
   };
 
   if (nativeWeakMap) {
-    var store$1 = sharedStore.state || (sharedStore.state = new WeakMap());
+    var store$1 = sharedStore.state || (sharedStore.state = new WeakMap$2());
     var wmget = store$1.get;
     var wmhas = store$1.has;
     var wmset = store$1.set;
@@ -5598,6 +5646,7 @@
 
   var CONSTANTS = {
     sdkName: '__ISDK',
+    sdkScriptId: '__ISDK_ASSETS',
     consent: {
       name: 'consent',
       ttl: 390,
@@ -5670,6 +5719,10 @@
     Storage.delete(name);
   }
 
+  var _progids = /*#__PURE__*/new WeakMap();
+
+  var _setProgids = /*#__PURE__*/new WeakSet();
+
   var _configureSubid = /*#__PURE__*/new WeakSet();
 
   var _setConsent = /*#__PURE__*/new WeakSet();
@@ -5690,7 +5743,16 @@
 
       _classPrivateMethodInitSpec(this, _configureSubid);
 
+      _classPrivateMethodInitSpec(this, _setProgids);
+
+      _classPrivateFieldInitSpec(this, _progids, {
+        writable: true,
+        value: []
+      });
+
       this.env = 'prod';
+
+      _classPrivateMethodGet(this, _setProgids, _setProgids2).call(this);
 
       if (this.consent === CONSTANTS.consent.status.optin) {
         _classPrivateMethodGet(this, _configureSubid, _configureSubid2).call(this);
@@ -5714,36 +5776,21 @@
     }, {
       key: "setOptin",
       value: function setOptin() {
-        var _ref = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {},
-            progid = _ref.progid;
-
-        _classPrivateMethodGet(this, _setConsent, _setConsent2).call(this, CONSTANTS.consent.status.optin, {
-          progid: progid
-        });
+        _classPrivateMethodGet(this, _setConsent, _setConsent2).call(this, CONSTANTS.consent.status.optin);
 
         _classPrivateMethodGet(this, _configureSubid, _configureSubid2).call(this);
       }
     }, {
       key: "setOptout",
       value: function setOptout() {
-        var _ref2 = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {},
-            progid = _ref2.progid;
-
-        _classPrivateMethodGet(this, _setConsent, _setConsent2).call(this, CONSTANTS.consent.status.optout, {
-          progid: progid
-        });
+        _classPrivateMethodGet(this, _setConsent, _setConsent2).call(this, CONSTANTS.consent.status.optout);
 
         _classPrivateMethodGet(this, _handleNoConsent, _handleNoConsent2).call(this);
       }
     }, {
       key: "setUnknown",
       value: function setUnknown() {
-        var _ref3 = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {},
-            progid = _ref3.progid;
-
-        _classPrivateMethodGet(this, _setConsent, _setConsent2).call(this, CONSTANTS.consent.status.unknown, {
-          progid: progid
-        });
+        _classPrivateMethodGet(this, _setConsent, _setConsent2).call(this, CONSTANTS.consent.status.unknown);
 
         _classPrivateMethodGet(this, _handleNoConsent, _handleNoConsent2).call(this);
       }
@@ -5759,10 +5806,10 @@
     }, {
       key: "push",
       value: function push(args) {
-        var _ref4 = args || [],
-            _ref5 = _toArray(_ref4),
-            functionName = _ref5[0],
-            functionArgs = _ref5.slice(1);
+        var _ref = args || [],
+            _ref2 = _toArray(_ref),
+            functionName = _ref2[0],
+            functionArgs = _ref2.slice(1);
 
         if (typeof this[functionName] !== 'function') {
           throw new AppError(Severity.ERROR, "Undefined function ".concat(functionName));
@@ -5774,7 +5821,7 @@
       key: "getTrace",
       value: function getTrace() {
         return {
-          progid: this.progids,
+          progids: _classPrivateFieldGet(this, _progids),
           consent: this.consent,
           subid: this.subid
         };
@@ -5790,6 +5837,20 @@
     return TogSdk;
   }();
 
+  function _setProgids2() {
+    try {
+      var _document$getElementB;
+
+      var progids = (_document$getElementB = document.getElementById(CONSTANTS.sdkScriptId)) === null || _document$getElementB === void 0 ? void 0 : _document$getElementB.getAttribute('data-progids');
+
+      if (progids) {
+        _classPrivateFieldSet(this, _progids, JSON.parse(progids));
+      }
+    } catch (e) {
+      console.error(e);
+    }
+  }
+
   function _configureSubid2() {
     var subid = this.constructor.getSubidFromQueryParams();
 
@@ -5799,10 +5860,7 @@
   }
 
   function _setConsent2(consent) {
-    var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
     setValue(consent, CONSTANTS.consent.name);
-    var progid = options.progid;
-    this.progid = progid;
   }
 
   function _handleNoConsent2() {

@@ -1,11 +1,15 @@
 # Privacy By Design
 
-[![GitHub Super-Linter](https://github.com/TimeOne-Group/pbd-sdk/workflows/Lint%20Code%20Base/badge.svg)](https://github.com/marketplace/actions/super-linter)
-[![GitHub Super-Linter](https://github.com/TimeOne-Group/pbd-sdk/workflows/Test%20Code%20Base/badge.svg)](https://github.com/marketplace/actions/super-linter)
+[![GitHub Super-Linter](https://github.com/TimeOne-Group/isdk/workflows/Lint%20Code%20Base/badge.svg)](https://github.com/marketplace/actions/super-linter)
+[![GitHub Super-Linter](https://github.com/TimeOne-Group/isdk/workflows/Test%20Code%20Base/badge.svg)](https://github.com/marketplace/actions/super-linter)
 
 ## Demo
 
-https://timeone-group.github.io/pbd-sdk/
+https://timeone-group.github.io/isdk/
+
+## CDN
+
+https://cdn.jsdelivr.net/gh/TimeOne-Group/isdk@1/dist/isdk.min.js
 
 ## Test
 
