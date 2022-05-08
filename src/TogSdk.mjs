@@ -5,8 +5,12 @@ import * as helpers from './utils.mjs';
 import CONSTANTS from './constants.mjs';
 
 export default class TogSdk {
+  #progids = [];
+
   constructor() {
     this.env = 'prod';
+
+    this.#setProgids();
 
     if (this.consent === CONSTANTS.consent.status.optin) {
       this.#configureSubid();
@@ -23,6 +27,18 @@ export default class TogSdk {
     return helpers.getValue(CONSTANTS.subid.name);
   }
 
+  #setProgids() {
+    try {
+      const progids = document.getElementById(CONSTANTS.sdkScriptId)?.getAttribute('data-progids');
+
+      if (progids) {
+        this.#progids = JSON.parse(progids);
+      }
+    } catch (e) {
+      console.error(e);
+    }
+  }
+
   #configureSubid() {
     const subid = this.constructor.getSubidFromQueryParams();
 
@@ -31,29 +47,26 @@ export default class TogSdk {
     }
   }
 
-  #setConsent(consent, options = {}) {
+  #setConsent(consent) {
     helpers.setValue(consent, CONSTANTS.consent.name);
-
-    const { progid } = options;
-    this.progid = progid;
   }
 
   #handleNoConsent() {
     helpers.removeValue(CONSTANTS.subid.name);
   }
 
-  setOptin({ progid } = {}) {
-    this.#setConsent(CONSTANTS.consent.status.optin, { progid });
+  setOptin() {
+    this.#setConsent(CONSTANTS.consent.status.optin);
     this.#configureSubid();
   }
 
-  setOptout({ progid } = {}) {
-    this.#setConsent(CONSTANTS.consent.status.optout, { progid });
+  setOptout() {
+    this.#setConsent(CONSTANTS.consent.status.optout);
     this.#handleNoConsent();
   }
 
-  setUnknown({ progid } = {}) {
-    this.#setConsent(CONSTANTS.consent.status.unknown, { progid });
+  setUnknown() {
+    this.#setConsent(CONSTANTS.consent.status.unknown);
     this.#handleNoConsent();
   }
 
@@ -81,7 +94,7 @@ export default class TogSdk {
 
   getTrace() {
     return {
-      progid: this.progids,
+      progids: this.#progids,
       consent: this.consent,
       subid: this.subid,
     };

@@ -17,7 +17,8 @@ beforeEach(() => {
   utils.removeValue(CONSTANTS.consent.name);
 });
 
-const progid = 109;
+const progids = [109];
+
 const noConsentValues = [CONSTANTS.consent.status.unknown, CONSTANTS.consent.status.optout];
 const eventsName = ['setUnknown', 'setOptin', 'setOptout'];
 const noConsentMethods = [
@@ -266,15 +267,13 @@ noConsentMethods.forEach(({ methodName, consentName }) => {
     const instance = new TogSdk();
 
     expect(instance.consent).toEqual(CONSTANTS.consent.status.optin);
-    expect(instance.progid).toBeFalsy();
     expect(instance.subid).toEqual(subid);
     expect(Cookie.get(utils.getPrefixedCookieName(CONSTANTS.subid.name))).toEqual(subid);
     expect(utils.Storage.find(CONSTANTS.subid.name)?.value).toEqual(subid);
 
-    instance[methodName]({ progid: 109 });
+    instance[methodName]();
 
     expect(instance.consent).toEqual(consentName);
-    expect(instance.progid).toEqual(progid);
     expect(Cookie.get(utils.getPrefixedCookieName(CONSTANTS.consent.name))).toEqual(consentName);
     expect(utils.Storage.find(CONSTANTS.consent.name)?.value).toEqual(consentName);
 
@@ -293,14 +292,11 @@ test('method setOptin - Should set consent to optin in cookie and localstorage a
   const instance = new TogSdk();
 
   expect(instance.consent).toEqual(CONSTANTS.consent.status.unknown);
-  expect(instance.progid).toBeFalsy();
   expect(instance.subid).toBeFalsy();
   expect(Cookie.get(utils.getPrefixedCookieName(CONSTANTS.subid.name))).toBeFalsy();
   expect(utils.Storage.find(CONSTANTS.subid.name)?.value).toBeFalsy();
 
-  instance.setOptin({ progid });
-
-  expect(instance.progid).toEqual(progid);
+  instance.setOptin();
   expect(instance.consent).toEqual(CONSTANTS.consent.status.optin);
   expect(Cookie.get(utils.getPrefixedCookieName(CONSTANTS.consent.name))).toEqual(CONSTANTS.consent.status.optin);
   expect(utils.Storage.find(CONSTANTS.consent.name)?.value).toEqual(CONSTANTS.consent.status.optin);
@@ -314,32 +310,37 @@ test('method setOptin - Should set consent to optin in cookie and localstorage a
 test('method getTrace - Should store a trace in localstorage when consent change', () => {
   const subid = '123456789';
 
+  document.getElementById = jest.fn(() => ({
+    getAttribute: () => JSON.stringify(progids),
+  }));
+
   TogSdk.getSubidFromQueryParams = sandbox.stub().returns(subid);
 
   const instance = new TogSdk();
 
   expect(instance.consent).toEqual(CONSTANTS.consent.status.unknown);
   expect(instance.getTrace()).toEqual({
+    progids,
     consent: CONSTANTS.consent.status.unknown,
     subid: null,
   });
-  expect(instance.progid).toBeFalsy();
   expect(instance.subid).toBeFalsy();
 
-  instance.setOptin({ progid });
+  instance.setOptin();
 
   expect(instance.consent).toEqual(CONSTANTS.consent.status.optin);
   expect(instance.subid).toEqual(subid);
   expect(instance.getTrace()).toEqual({
+    progids,
     consent: CONSTANTS.consent.status.optin,
     subid,
   });
 
-  instance.setOptout({ progid });
+  instance.setOptout();
 
   expect(instance.consent).toEqual(CONSTANTS.consent.status.optout);
-  expect(instance.subid).toBeFalsy();
   expect(instance.getTrace()).toEqual({
+    progids,
     consent: CONSTANTS.consent.status.optout,
     subid: null,
   });

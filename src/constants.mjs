@@ -1,5 +1,6 @@
 export default {
   sdkName: '__ISDK',
+  sdkScriptId: '__ISDK_ASSETS',
   consent: {
     name: 'consent',
     ttl: 390, // 13 mois
