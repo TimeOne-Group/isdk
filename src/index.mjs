@@ -1,6 +1,6 @@
 import './polyfill.mjs';
 
 import init from './init.mjs';
-import TogSdk from './TogSdk.mjs';
+import Sdk from './Sdk.mjs';
 
-init(TogSdk);
+init(Sdk);

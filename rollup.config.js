@@ -1,34 +1,41 @@
-// import fs from 'fs';
-// import path from 'path';
-
 import nodeResolve from '@rollup/plugin-node-resolve';
 import commonjs from '@rollup/plugin-commonjs';
 import { terser } from 'rollup-plugin-terser';
 import { babel } from '@rollup/plugin-babel';
+import replace from '@rollup/plugin-replace';
 import babelLoaderExcludeNodeModulesExcept from 'babel-loader-exclude-node-modules-except';
 import htmlTemplate from 'rollup-plugin-generate-html-template';
 import copy from 'rollup-plugin-cpy';
 import postcss from 'rollup-plugin-postcss';
+import dotenv from 'dotenv';
 
 import pkg from './package.json';
 import CONSTANTS from './src/constants.mjs';
+
+dotenv.config({ path: `.env.${process.env.NODE_ENV}` });
+
+console.log({ NODE_ENV: process.env.NODE_ENV, API_CONVERSION_URLS: process.env.API_CONVERSION_URLS });
 
 const banner = {
   banner() {
     return `/*! ${pkg.name} ${pkg.version} https://github.com/${pkg.homepage} @license ${pkg.license} */`;
   },
 };
-
 const defaultPlugins = [
   nodeResolve(),
   commonjs(),
+  replace({
+    preventAssignment: true,
+    values: {
+      'process.env.API_CONVERSION_URLS': `"${process.env.API_CONVERSION_URLS}"`,
+    },
+  }),
   postcss({
     plugins: [],
   }),
   babel({
     babelHelpers: 'bundled',
     exclude: babelLoaderExcludeNodeModulesExcept([
-      '@timeone-group/error-logger-js',
       '@timeone-group/storage-js',
       'jssha',
       'js-cookie',
@@ -55,21 +62,24 @@ const dist = [
     ],
     plugins: defaultPlugins,
   },
+  {
+    input: 'sites_src/js/index.debug.mjs',
+    output: [
+      {
+        format: 'iife',
+        file: 'debug/isdk.debug.js',
+      },
+      {
+        format: 'iife',
+        file: 'debug/isdk.debug.min.js',
+        plugins: [terser()],
+      },
+    ],
+    plugins: defaultPlugins,
+  },
 ];
 
 const sites = [
-  {
-    root: 'docs',
-    sdk: 'sites_src/js/index.testsite.mjs',
-    init: 'sites_src/js/init.testsite.mjs',
-    minify: false,
-    templates: ['annonceur.html', 'index.html'],
-    filesToCopy: [],
-    templateVar: {
-      __NAME__: 'demo',
-      __SDK_SRC__: './sdk.js', // Change to CDN after first tag https://cdn.jsdelivr.net/gh/TimeOne-Group/isdk@1/docs/sdk.js
-    },
-  },
   {
     root: 'browserstack/site',
     sdk: 'sites_src/js/index.browserstack.mjs',
@@ -85,11 +95,10 @@ const sites = [
   const templatePlugin = templates.map((template) =>
     htmlTemplate({
       template: `sites_src/html/${template}`,
-      target: `${root}/${template}`,
+      target: `${root}/index.html`,
       attrs: [`id="${CONSTANTS.sdkScriptId}"`, 'data-progids="[109]"', 'async'],
       replaceVars: {
         __SDK_SRC__: './sdk.js',
-        // __NAVIGATION_TEMPLATE__: fs.readFileSync(path.resolve('sites_src/html/navigation.html'), 'utf8'), // TEST TEMPLATING WITH VARIABLES OK
         ...templateVar,
       },
     })

@@ -1,10 +1,9 @@
-import { Logger, AppError, Severity } from '@timeone-group/error-logger-js';
-import TogSdk from './TogSdk.mjs';
+import ISDK from './Sdk.mjs';
 import CONSTANTS from './constants.mjs';
 
 const { sdkName } = CONSTANTS;
 
-export default function init(Sdk = TogSdk) {
+export default function init(Sdk = ISDK) {
   try {
     if (typeof window[sdkName] === 'undefined') {
       window[sdkName] = new Sdk();
@@ -15,9 +14,9 @@ export default function init(Sdk = TogSdk) {
     } else if (typeof window[sdkName] === 'object' && window[sdkName] instanceof Sdk) {
       // Nothing
     } else {
-      throw new AppError(Severity.ERROR, 'Unknown type');
+      throw new Error(`${sdkName} error: Unknown type`);
     }
   } catch (e) {
-    Logger.catchError(e, 'TOG - Tracker');
+    console.error(e.message);
   }
 }

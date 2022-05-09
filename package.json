@@ -4,14 +4,13 @@
   "description": "[![GitHub Super-Linter](https://github.com/TimeOne-Group/pbd-sdk/workflows/Lint%20Code%20Base/badge.svg)](https://github.com/marketplace/actions/super-linter)",
   "main": "index.js",
   "scripts": {
-    "build": "rollup -c",
+    "build": "rimraf dist && rollup -c",
     "start": "rollup -c -w",
     "eslint": "eslint ./src/**",
     "test:browserstack": "node browserstack/index.mjs",
-    "test:unit": "jest src",
+    "test:unit": "jest src --runInBand --verbose",
     "test:unit:watch": "npm run test:unit -- --watch",
-    "test": "npm run test:unit && npm run test:browserstack",
-    "predeploy": "npm run build"
+    "test": "npm run test:unit && npm run test:browserstack"
   },
   "repository": {
     "type": "git",
@@ -27,7 +26,11 @@
     "@timeone-group/error-logger-js": "^0.2.3",
     "@timeone-group/storage-js": "^0.3.1",
     "core-js": "^3.9.1",
-    "js-cookie": "^3.0.1"
+    "dotenv": "^16.0.1",
+    "js-cookie": "^3.0.1",
+    "regenerator-runtime": "^0.13.9",
+    "rimraf": "^3.0.2",
+    "whatwg-fetch": "^3.6.2"
   },
   "devDependencies": {
     "@babel/core": "^7.17.9",
@@ -36,6 +39,7 @@
     "@rollup/plugin-babel": "^5.3.0",
     "@rollup/plugin-commonjs": "^17.1.0",
     "@rollup/plugin-node-resolve": "^11.2.0",
+    "@rollup/plugin-replace": "^4.0.0",
     "babel-loader-exclude-node-modules-except": "^1.1.2",
     "browser-env": "^3.3.0",
     "browserstack-local": "^1.4.9",
@@ -47,6 +51,7 @@
     "expect": "^28.0.2",
     "jest": "^28.0.3",
     "jest-environment-jsdom": "^28.0.2",
+    "jest-fetch-mock": "^3.0.3",
     "node-fetch": "^3.2.3",
     "node-sass": "^7.0.1",
     "postcss": "^8.4.13",
@@ -56,11 +61,13 @@
     "rollup-plugin-generate-html-template": "^1.7.0",
     "rollup-plugin-postcss": "^4.0.2",
     "rollup-plugin-terser": "^7.0.2",
-    "selenium-webdriver": "^4.1.1",
-    "sinon": "^13.0.2"
+    "selenium-webdriver": "^4.1.1"
   },
   "browserslist": "last 2 versions, > 0.5%, ie >= 11",
   "jest": {
+    "setupFilesAfterEnv": [
+      "<rootDir>/src/setupTests.mjs"
+    ],
     "testMatch": [
       "<rootDir>/src/**/*.test.mjs"
     ],

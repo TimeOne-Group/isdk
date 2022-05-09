@@ -3,6 +3,8 @@ services:
   build:
       image: node:16
       user: node
+      environment:
+        - NODE_ENV=${NODE_ENV}
       volumes:
         - .:/app
       working_dir: '/app'
@@ -11,14 +13,7 @@ services:
   web:
     image: nginx:1.19
     ports:
-      - 8081:80
-    volumes:
-      - ./docs:/usr/share/nginx/html:ro
-
-  browserstack:
-    image: nginx:1.19
-    ports:
-      - 8082:80
+      - 8080:80
     volumes:
       - ./browserstack/site:/usr/share/nginx/html:ro
 
@@ -29,20 +24,14 @@ services:
       - .:/app
     working_dir: '/app'
     command: 'npm run test:unit'
-    depends_on:
-      - web
 
   browserstack_test:
     image: node:16
     user: node
-    environment:
-      BROWSERSTACK_USERNAME: ${BROWSERSTACK_USERNAME}
-      BROWSERSTACK_ACCESS_KEY: ${BROWSERSTACK_ACCESS_KEY}
-      DEV_BROWSERSTACK_TEST: ${DEV_BROWSERSTACK_TEST}
     volumes:
       - .:/app
     working_dir: '/app'
     command: 'npm run test:browserstack'
     depends_on:
-      - browserstack
+      - web
 

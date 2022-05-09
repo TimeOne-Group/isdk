@@ -53,4 +53,11 @@ export function removeValue(id) {
   Storage.delete(name);
 }
 
-export function setConversion() {}
+export function* urlsIterator(urls = []) {
+  let index = 0;
+
+  while (index <= urls.length) {
+    yield urls[index];
+    index += 1;
+  }
+}

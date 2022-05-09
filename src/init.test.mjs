@@ -1,7 +1,7 @@
 // import { Logger, AppError, Severity } from '@timeone-group/error-logger-js';
-// import TogSdk, { SDK_NAME } from './TogSdk.mjs';
+// import Sdk, { SDK_NAME } from './Sdk.mjs';
 
-// export default function init(Sdk = TogSdk) {
+// export default function init(Sdk = Sdk) {
 //   try {
 //     if (typeof window[SDK_NAME] === 'undefined') {
 //       window[SDK_NAME] = new Sdk();

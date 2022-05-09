@@ -2,6 +2,7 @@
 /* eslint-disable import/no-extraneous-dependencies */
 import webdriver from 'selenium-webdriver';
 import browserstack from 'browserstack-local';
+import dotenv from 'dotenv';
 
 import getCapabilities from './capabilities.mjs';
 
@@ -18,6 +19,8 @@ import {
   shouldNotSetSubid,
   shouldSetSdkToUnknownState,
 } from './stories/index.mjs';
+
+dotenv.config({ path: '.env.test' });
 
 const bsLocal = new browserstack.Local();
 const bsLocalOptions = { key: process.env.BROWSERSTACK_ACCESS_KEY };

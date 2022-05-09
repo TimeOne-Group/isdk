@@ -4,19 +4,13 @@ import CONSTANTS from '../../src/constants.mjs';
 
 const { sdkName } = CONSTANTS;
 
-function objectToString(object = {}) {
-  return JSON.stringify(object, Object.getOwnPropertyNames(object), '\t')
-    .replace(/\n/g, '<br>')
-    .replace(/\t/g, '&nbsp;&nbsp;&nbsp;');
-}
-
 const showTraceDebug = () => {
   if (!document.getElementById('debug-trace')) {
     setTimeout(() => showTraceDebug(), 300);
   } else {
     const traceState = window[sdkName]?.getTrace?.();
 
-    document.getElementById('debug-trace').innerHTML = objectToString(traceState);
+    document.getElementById('debug-trace').innerHTML = JSON.stringify(traceState, null, '\t');
   }
 };
 
@@ -29,7 +23,7 @@ const showLocalstorageDebug = () => {
       to_subid: helpers.Storage.find(CONSTANTS.subid.name)?.value,
     };
 
-    document.getElementById('debug-localstorage').innerHTML = objectToString(storageState);
+    document.getElementById('debug-localstorage').innerHTML = JSON.stringify(storageState, null, '\t');
   }
 };
 
@@ -43,7 +37,7 @@ const showCookieDebug = () => {
       to_subid: Cookies.get(helpers.getPrefixedCookieName(CONSTANTS.subid.name)),
     };
 
-    document.getElementById('debug-cookie').innerHTML = objectToString(cookieState);
+    document.getElementById('debug-cookie').innerHTML = JSON.stringify(cookieState, null, '\t');
   }
 };
 
@@ -57,10 +51,10 @@ export const showDebug = (callback) => {
       subid: window[sdkName]?.subid,
     };
 
-    document.getElementById('debug').innerHTML = objectToString(state);
-
-    callback?.();
+    document.getElementById('debug').innerHTML = JSON.stringify(state, null, '\t');
   }
+
+  callback?.();
 };
 
 export const showDebugTestsite = () => {
@@ -70,24 +64,3 @@ export const showDebugTestsite = () => {
     showTraceDebug();
   });
 };
-
-// export function checkDeferedSdk(path) {
-//   function injectSdkAssets() {
-//     function onload() {
-//       showDebugTestsite();
-//       console.log('SDK loaded');
-//     }
-
-//     // eslint-disable-next-line no-underscore-dangle
-//     window.__ISDK_injectSdkAssets(path, onload);
-//   }
-
-//   const queryParams = new URLSearchParams(window.location.search);
-//   const deferSdkAssets = queryParams.get('deferSdkAssets');
-
-//   if (!deferSdkAssets) {
-//     injectSdkAssets();
-//   }
-
-//   window.injectSdkAssets = injectSdkAssets;
-// }

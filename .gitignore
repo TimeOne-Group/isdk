@@ -18,7 +18,7 @@ BrowserStackLocal
 .DS_Store
 .idea
 
-.env.test
+.env.*
 .env.development.local
 .env.test.local
 .env.production.local

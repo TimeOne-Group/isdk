@@ -2,12 +2,25 @@ import '../../src/polyfill.mjs';
 
 import { showDebugTestsite } from './utils.mjs';
 import init from '../../src/init.mjs';
-import TogDebugSdk from './TogSdk.debug.mjs';
+import Sdk from '../../src/Sdk.mjs';
+
+class TogDebugSdk extends Sdk {
+  constructor() {
+    super();
+
+    showDebugTestsite();
+  }
+
+  push(args) {
+    super.push(args);
+    showDebugTestsite();
+  }
+}
 
 console.log(`
 ******************************
 ******************************
-*** TOG_SDK in debug mode ****
+**** ISDK in debug mode ******
 ******************************
 ******************************
 `);

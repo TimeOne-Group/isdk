@@ -12,13 +12,12 @@ export default {
   },
   subid: {
     name: 'subid',
-    queryname: 'to_subid',
-    ttl: 40,
-  },
-  trace: {
-    name: 'trace',
+    queryname: 'toSubid',
     ttl: 40,
   },
   default_storage_prefix: 'to',
   default_ttl: 390,
+  urls: {
+    conversion: process.env.API_CONVERSION_URLS?.split(',') || [],
+  },
 };
