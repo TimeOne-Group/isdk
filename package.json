@@ -4,13 +4,14 @@
   "description": "[![GitHub Super-Linter](https://github.com/TimeOne-Group/pbd-sdk/workflows/Lint%20Code%20Base/badge.svg)](https://github.com/marketplace/actions/super-linter)",
   "main": "index.js",
   "scripts": {
-    "build": "rimraf dist && rollup -c",
+    "build": "rimraf dist && NODE_ENV=production  rollup -c",
     "start": "rollup -c -w",
     "eslint": "eslint ./src/**",
     "test:browserstack": "node browserstack/index.mjs",
     "test:unit": "jest src --runInBand --verbose",
     "test:unit:watch": "npm run test:unit -- --watch",
-    "test": "npm run test:unit && npm run test:browserstack"
+    "test": "npm run test:unit && npm run test:browserstack",
+    "prepare": "husky install"
   },
   "repository": {
     "type": "git",
@@ -29,7 +30,6 @@
     "dotenv": "^16.0.1",
     "js-cookie": "^3.0.1",
     "regenerator-runtime": "^0.13.9",
-    "rimraf": "^3.0.2",
     "whatwg-fetch": "^3.6.2"
   },
   "devDependencies": {
@@ -49,6 +49,7 @@
     "eslint-plugin-import": "^2.25.4",
     "eslint-plugin-prettier": "^4.0.0",
     "expect": "^28.0.2",
+    "husky": "^8.0.1",
     "jest": "^28.0.3",
     "jest-environment-jsdom": "^28.0.2",
     "jest-fetch-mock": "^3.0.3",
@@ -56,6 +57,7 @@
     "node-sass": "^7.0.1",
     "postcss": "^8.4.13",
     "prettier": "^2.6.1",
+    "rimraf": "^3.0.2",
     "rollup": "^2.42.1",
     "rollup-plugin-cpy": "^2.0.1",
     "rollup-plugin-generate-html-template": "^1.7.0",

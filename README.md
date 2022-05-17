@@ -9,7 +9,7 @@ https://timeone-group.github.io/isdk/
 
 ## CDN
 
-https://cdn.jsdelivr.net/gh/TimeOne-Group/isdk@1/dist/isdk.min.js
+https://cdn.jsdelivr.net/gh/TimeOne-Group/isdk@main/dist/isdk.min.js
 
 ## Test
 

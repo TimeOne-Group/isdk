@@ -19,6 +19,7 @@ BrowserStackLocal
 .idea
 
 .env.*
+!.env.production
 .env.development.local
 .env.test.local
 .env.production.local

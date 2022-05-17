@@ -7041,7 +7041,7 @@
     return StorageJS;
   }();
 
-  var _httpsBackService;
+  var _httpsATime1MeV;
 
   var CONSTANTS = {
     sdkName: '__ISDK',
@@ -7064,7 +7064,7 @@
     default_storage_prefix: 'to',
     default_ttl: 390,
     urls: {
-      conversion: ((_httpsBackService = "https://back.service.sandbox.localhost/v2/b,https://back.service.sandbox.localhost/v1/b") === null || _httpsBackService === void 0 ? void 0 : _httpsBackService.split(',')) || []
+      conversion: ((_httpsATime1MeV = "https://a.time1.me/v2/b,https://b.time1.me/v1/b") === null || _httpsATime1MeV === void 0 ? void 0 : _httpsATime1MeV.split(',')) || []
     }
   };
 
