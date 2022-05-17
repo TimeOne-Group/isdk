@@ -322,6 +322,7 @@ describe('The ISDK class test', () => {
 
       expect(instance.consent).toEqual(CONSTANTS.consent.status.unknown);
       expect(instance.getTrace()).toEqual({
+        env: 'test',
         progids,
         consent: CONSTANTS.consent.status.unknown,
         subid: null,
@@ -335,6 +336,7 @@ describe('The ISDK class test', () => {
       expect(instance.consent).toEqual(CONSTANTS.consent.status.optin);
       expect(instance.subid).toEqual(subid);
       expect(instance.getTrace()).toEqual({
+        env: 'test',
         progids,
         consent: CONSTANTS.consent.status.optin,
         subid,
@@ -346,6 +348,7 @@ describe('The ISDK class test', () => {
 
       expect(instance.consent).toEqual(CONSTANTS.consent.status.optout);
       expect(instance.getTrace()).toEqual({
+        env: 'test',
         progids,
         consent: CONSTANTS.consent.status.optout,
         subid: null,
@@ -503,6 +506,7 @@ describe('The ISDK class test', () => {
             });
 
             expect(instance.getTrace()).toEqual({
+              env: 'test',
               consent: CONSTANTS.consent.status.optin,
               errors: [
                 {

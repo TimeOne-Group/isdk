@@ -13,7 +13,7 @@ export default class Sdk {
   #errors = [];
 
   constructor() {
-    // this.env = 'prod';
+    this.env = process.env.NODE_ENV;
 
     this.#setProgids();
 
@@ -211,6 +211,7 @@ export default class Sdk {
 
   getTrace() {
     return {
+      env: this.env,
       progids: this.#progids,
       consent: this.consent,
       subid: this.subid,

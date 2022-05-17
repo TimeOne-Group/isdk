@@ -7108,7 +7108,8 @@
         value: []
       });
 
-      // this.env = 'prod';
+      this.env = "production";
+
       _classPrivateMethodGet(this, _setProgids, _setProgids2).call(this);
 
       if (!this.consent) {
@@ -7350,6 +7351,7 @@
       key: "getTrace",
       value: function getTrace() {
         return {
+          env: this.env,
           progids: _classPrivateFieldGet(this, _progids),
           consent: this.consent,
           subid: this.subid,

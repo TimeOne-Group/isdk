@@ -27,6 +27,7 @@ const defaultPlugins = [
   replace({
     preventAssignment: true,
     values: {
+      'process.env.NODE_ENV': `"${process.env.NODE_ENV}"`,
       'process.env.API_CONVERSION_URLS': `"${process.env.API_CONVERSION_URLS}"`,
     },
   }),
