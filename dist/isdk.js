@@ -6927,7 +6927,7 @@
     return StorageJS;
   }();
 
-  var _httpsATime1MeV;
+  var _httpsBackService;
 
   var CONSTANTS = {
     sdkName: '__ISDK',
@@ -6950,7 +6950,7 @@
     default_storage_prefix: 'to',
     default_ttl: 390,
     urls: {
-      conversion: ((_httpsATime1MeV = "https://a.time1.me/v2/b,https://b.time1.me/v1/b") === null || _httpsATime1MeV === void 0 ? void 0 : _httpsATime1MeV.split(',')) || []
+      conversion: ((_httpsBackService = "https://back.service.sandbox.localhost/v1/b") === null || _httpsBackService === void 0 ? void 0 : _httpsBackService.split(',')) || []
     }
   };
 
@@ -7108,7 +7108,7 @@
         value: []
       });
 
-      this.env = "production";
+      this.env = "sandbox";
 
       _classPrivateMethodGet(this, _setProgids, _setProgids2).call(this);
 

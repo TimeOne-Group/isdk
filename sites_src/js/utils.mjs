@@ -10,7 +10,7 @@ const showTraceDebug = () => {
   } else {
     const traceState = window[sdkName]?.getTrace?.();
 
-    document.getElementById('debug-trace').innerHTML = JSON.stringify(traceState, null, '\t');
+    document.getElementById('debug-trace').textContent = JSON.stringify(traceState, null, '\t');
   }
 };
 
@@ -23,7 +23,7 @@ const showLocalstorageDebug = () => {
       to_subid: helpers.Storage.find(CONSTANTS.subid.name)?.value,
     };
 
-    document.getElementById('debug-localstorage').innerHTML = JSON.stringify(storageState, null, '\t');
+    document.getElementById('debug-localstorage').textContent = JSON.stringify(storageState, null, '\t');
   }
 };
 
@@ -37,7 +37,7 @@ const showCookieDebug = () => {
       to_subid: Cookies.get(helpers.getPrefixedCookieName(CONSTANTS.subid.name)),
     };
 
-    document.getElementById('debug-cookie').innerHTML = JSON.stringify(cookieState, null, '\t');
+    document.getElementById('debug-cookie').textContent = JSON.stringify(cookieState, null, '\t');
   }
 };
 
@@ -51,7 +51,7 @@ export const showDebug = (callback) => {
       subid: window[sdkName]?.subid,
     };
 
-    document.getElementById('debug').innerHTML = JSON.stringify(state, null, '\t');
+    document.getElementById('debug').textContent = JSON.stringify(state, null, '\t');
   }
 
   callback?.();

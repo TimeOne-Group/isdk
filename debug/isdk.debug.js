@@ -7041,7 +7041,7 @@
     return StorageJS;
   }();
 
-  var _httpsATime1MeV;
+  var _httpsBackService;
 
   var CONSTANTS = {
     sdkName: '__ISDK',
@@ -7064,7 +7064,7 @@
     default_storage_prefix: 'to',
     default_ttl: 390,
     urls: {
-      conversion: ((_httpsATime1MeV = "https://a.time1.me/v2/b,https://b.time1.me/v1/b") === null || _httpsATime1MeV === void 0 ? void 0 : _httpsATime1MeV.split(',')) || []
+      conversion: ((_httpsBackService = "https://back.service.sandbox.localhost/v1/b") === null || _httpsBackService === void 0 ? void 0 : _httpsBackService.split(',')) || []
     }
   };
 
@@ -7161,7 +7161,7 @@
       var _window$sdkName, _window$sdkName$getTr;
 
       var traceState = (_window$sdkName = window[sdkName$1]) === null || _window$sdkName === void 0 ? void 0 : (_window$sdkName$getTr = _window$sdkName.getTrace) === null || _window$sdkName$getTr === void 0 ? void 0 : _window$sdkName$getTr.call(_window$sdkName);
-      document.getElementById('debug-trace').innerHTML = JSON.stringify(traceState, null, '\t');
+      document.getElementById('debug-trace').textContent = JSON.stringify(traceState, null, '\t');
     }
   };
 
@@ -7177,7 +7177,7 @@
         to_consent: (_helpers$Storage$find = Storage.find(CONSTANTS.consent.name)) === null || _helpers$Storage$find === void 0 ? void 0 : _helpers$Storage$find.value,
         to_subid: (_helpers$Storage$find2 = Storage.find(CONSTANTS.subid.name)) === null || _helpers$Storage$find2 === void 0 ? void 0 : _helpers$Storage$find2.value
       };
-      document.getElementById('debug-localstorage').innerHTML = JSON.stringify(storageState, null, '\t');
+      document.getElementById('debug-localstorage').textContent = JSON.stringify(storageState, null, '\t');
     }
   };
 
@@ -7192,7 +7192,7 @@
         to_consent: api.get(getPrefixedCookieName(CONSTANTS.consent.name)),
         to_subid: api.get(getPrefixedCookieName(CONSTANTS.subid.name))
       };
-      document.getElementById('debug-cookie').innerHTML = JSON.stringify(cookieState, null, '\t');
+      document.getElementById('debug-cookie').textContent = JSON.stringify(cookieState, null, '\t');
     }
   };
 
@@ -7209,7 +7209,7 @@
         consent: (_window$sdkName3 = window[sdkName$1]) === null || _window$sdkName3 === void 0 ? void 0 : _window$sdkName3.consent,
         subid: (_window$sdkName4 = window[sdkName$1]) === null || _window$sdkName4 === void 0 ? void 0 : _window$sdkName4.subid
       };
-      document.getElementById('debug').innerHTML = JSON.stringify(state, null, '\t');
+      document.getElementById('debug').textContent = JSON.stringify(state, null, '\t');
     }
 
     callback === null || callback === void 0 ? void 0 : callback();
@@ -7294,7 +7294,7 @@
         value: []
       });
 
-      this.env = "production";
+      this.env = "sandbox";
 
       _classPrivateMethodGet(this, _setProgids, _setProgids2).call(this);
 
