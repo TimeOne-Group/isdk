@@ -1,12 +1,12 @@
 /* eslint-disable class-methods-use-this */
 
-import * as helpers from './utils.mjs';
+import * as utils from './utils.mjs';
 import CONSTANTS from './constants.mjs';
 
 export default class Sdk {
   #progids = [];
 
-  #conversionUrlIterator = helpers.urlsIterator(CONSTANTS.urls.conversion);
+  #conversionUrlIterator = utils.urlsIterator(CONSTANTS.urls.conversion);
 
   #conversionUrl = this.#conversionUrlIterator.next().value;
 
@@ -29,11 +29,11 @@ export default class Sdk {
   }
 
   get consent() {
-    return helpers.getValue(CONSTANTS.consent.name);
+    return utils.getValue(CONSTANTS.consent.name);
   }
 
   get subid() {
-    return helpers.getValue(CONSTANTS.subid.name);
+    return utils.getValue(CONSTANTS.subid.name);
   }
 
   #setProgids() {
@@ -52,7 +52,7 @@ export default class Sdk {
     const subid = this.constructor.getSubidFromQueryParams();
 
     if (subid) {
-      helpers.setValue(subid, CONSTANTS.subid.name);
+      utils.setValue(subid, CONSTANTS.subid.name);
     }
   }
 
@@ -62,14 +62,16 @@ export default class Sdk {
 
   #log({ type, value }) {
     this.#progids.forEach((progid) => {
-      console.log(`LOG | progid #${progid} - ${type} to ${value}`);
+      if (process.env.NODE_ENV === 'sandbox') {
+        console.log(`LOG | progid #${progid} - ${type} to ${value}`);
+      }
     });
   }
 
   #setConsent(consent) {
     const shouldLog = consent !== this.consent;
 
-    helpers.setValue(consent, CONSTANTS.consent.name);
+    utils.setValue(consent, CONSTANTS.consent.name);
 
     if (shouldLog) {
       this.#log({ type: 'consent', value: consent });
@@ -77,7 +79,7 @@ export default class Sdk {
   }
 
   #handleNoConsent() {
-    helpers.removeValue(CONSTANTS.subid.name);
+    utils.removeValue(CONSTANTS.subid.name);
   }
 
   setOptin() {
@@ -156,8 +158,6 @@ export default class Sdk {
   }
 
   async setSale(data) {
-    // window.__IDSK.push(['setSale', {progid:109, comid:1111, iu:123, uniqid:1198, price:10, additionalData: TODO, currency: TODO}])
-
     try {
       await this.#setConversion({ data, method: 'setSale' });
     } catch (error) {
@@ -166,8 +166,6 @@ export default class Sdk {
   }
 
   async setLead(data) {
-    // window.__IDSK.push(['setLead', {progid:109, comid:1111, iu:123, uniqid:1198, additionalData: TODO}])
-
     try {
       await this.#setConversion({ data, method: 'setLead' });
     } catch (error) {
@@ -176,8 +174,6 @@ export default class Sdk {
   }
 
   async setDbClick(data) {
-    // window.__IDSK.push(['setDbClick', { progid: 109, comid: 1111, iu: 123 }]);
-
     try {
       await this.#setConversion({ data, method: 'setDbClick' });
     } catch (error) {
@@ -186,8 +182,6 @@ export default class Sdk {
   }
 
   async setClick(data) {
-    // window.__IDSK.push(['setClick', {progid:109, comid:1111, iu:123}])
-
     try {
       await this.#setConversion({ data, method: 'setClick' });
     } catch (error) {

@@ -1,3 +1,4 @@
 dist/*
 debug/*
-sites_src/js/tag.js
+browserstack/site/*
+browserstack_src/js/tag.js

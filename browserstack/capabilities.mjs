@@ -44,6 +44,7 @@ const android = [
   },
 ];
 
+const browserToIgnore = ['ie'];
 const browserVersions = ['latest', 'latest-1', 'latest-2'];
 
 const desktopOsVersion = {
@@ -65,16 +66,18 @@ function getBrowsers(capabilities, osName) {
 function builBrowserCapabilities({ allCapabilities, name, osList }) {
   const generatedBrowserCapabilities = osList?.flatMap((os) =>
     desktopOsVersion[os]?.flatMap((os_version) =>
-      getBrowsers(allCapabilities, os).flatMap((browser) =>
-        browserVersions.map((browser_version) => ({
-          browser,
-          browser_version,
-          os,
-          os_version,
-          build,
-          name,
-        }))
-      )
+      getBrowsers(allCapabilities, os)
+        .filter((browser) => !browserToIgnore.includes(browser))
+        .flatMap((browser) =>
+          browserVersions.map((browser_version) => ({
+            browser,
+            browser_version,
+            os,
+            os_version,
+            build,
+            name,
+          }))
+        )
     )
   );
 
@@ -118,22 +121,6 @@ export default async function getCapabilities(name) {
       //   os_version: 12, // 14
       //   browserName: 'iphone',
       //   realMobile: 'true',
-      //   build: 'Development',
-      //   name: 'DEV - Building browserstack tests',
-      // },
-      // {
-      //   browser: 'ie',
-      //   browser_version: '10',
-      //   os: 'Windows',
-      //   os_version: '7',
-      //   build: 'Development',
-      //   name: 'DEV - Building browserstack tests',
-      // },
-      // {
-      //   browser: 'ie',
-      //   browser_version: '11',
-      //   os: 'Windows',
-      //   os_version: '10',
       //   build: 'Development',
       //   name: 'DEV - Building browserstack tests',
       // },

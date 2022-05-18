@@ -1,9 +1,7 @@
-// ECRIRE LE CODE DU TAG QUE L'ON DONNERA AU CLIENT:
-
-  function onUserAction(data) {
-      window.__ISDK = window.__ISDK || [];
-      window.__ISDK.push(data);
-    }
+function onUserAction(data) {
+  window.__ISDK = window.__ISDK || [];
+  window.__ISDK.push(data);
+}
 
 window.__SDKsetUnknown = function () {
   onUserAction(['setUnknown']);

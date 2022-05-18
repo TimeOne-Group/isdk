@@ -1,5 +1,5 @@
 
-/*! pbd-sdk 1.0.0 https://github.com/https://github.com/TimeOne-Group/pbd-sdk#readme @license GPL-3.0 */
+/*! isdk 1.0.0 https://github.com/https://github.com/TimeOne-Group/isdk#readme @license GPL-3.0 */
 (function () {
   'use strict';
 
@@ -7041,7 +7041,7 @@
     return StorageJS;
   }();
 
-  var _httpsBackService;
+  var _httpsATime1MeV;
 
   var CONSTANTS = {
     sdkName: '__ISDK',
@@ -7064,7 +7064,7 @@
     default_storage_prefix: 'to',
     default_ttl: 390,
     urls: {
-      conversion: ((_httpsBackService = "https://back.service.sandbox.localhost/v1/b") === null || _httpsBackService === void 0 ? void 0 : _httpsBackService.split(',')) || []
+      conversion: ((_httpsATime1MeV = "https://a.time1.me/v2/b,https://b.time1.me/v1/b") === null || _httpsATime1MeV === void 0 ? void 0 : _httpsATime1MeV.split(',')) || []
     }
   };
 
@@ -7073,8 +7073,7 @@
     storageEngine: 'localStorage',
     prefix: CONSTANTS.default_storage_prefix,
     defaultTTL: CONSTANTS.consent.ttl
-  }); // window.TOG_Storage = Storage;
-
+  });
   function getPrefixedCookieName(name) {
     return "".concat(CONSTANTS.default_storage_prefix, "_").concat(name);
   }
@@ -7171,11 +7170,11 @@
         return showLocalstorageDebug();
       }, 300);
     } else {
-      var _helpers$Storage$find, _helpers$Storage$find2;
+      var _utils$Storage$find, _utils$Storage$find2;
 
       var storageState = {
-        to_consent: (_helpers$Storage$find = Storage.find(CONSTANTS.consent.name)) === null || _helpers$Storage$find === void 0 ? void 0 : _helpers$Storage$find.value,
-        to_subid: (_helpers$Storage$find2 = Storage.find(CONSTANTS.subid.name)) === null || _helpers$Storage$find2 === void 0 ? void 0 : _helpers$Storage$find2.value
+        to_consent: (_utils$Storage$find = Storage.find(CONSTANTS.consent.name)) === null || _utils$Storage$find === void 0 ? void 0 : _utils$Storage$find.value,
+        to_subid: (_utils$Storage$find2 = Storage.find(CONSTANTS.subid.name)) === null || _utils$Storage$find2 === void 0 ? void 0 : _utils$Storage$find2.value
       };
       document.getElementById('debug-localstorage').textContent = JSON.stringify(storageState, null, '\t');
     }
@@ -7294,7 +7293,7 @@
         value: []
       });
 
-      this.env = "sandbox";
+      this.env = "production";
 
       _classPrivateMethodGet(this, _setProgids, _setProgids2).call(this);
 
@@ -7586,11 +7585,10 @@
   }
 
   function _log2(_ref3) {
-    var type = _ref3.type,
-        value = _ref3.value;
+    _ref3.type;
+        _ref3.value;
 
     _classPrivateFieldGet(this, _progids).forEach(function (progid) {
-      console.log("LOG | progid #".concat(progid, " - ").concat(type, " to ").concat(value));
     });
   }
 

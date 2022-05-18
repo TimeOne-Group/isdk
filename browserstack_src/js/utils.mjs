@@ -1,5 +1,5 @@
 import Cookies from 'js-cookie';
-import * as helpers from '../../src/utils.mjs';
+import * as utils from '../../src/utils.mjs';
 import CONSTANTS from '../../src/constants.mjs';
 
 const { sdkName } = CONSTANTS;
@@ -19,8 +19,8 @@ const showLocalstorageDebug = () => {
     setTimeout(() => showLocalstorageDebug(), 300);
   } else {
     const storageState = {
-      to_consent: helpers.Storage.find(CONSTANTS.consent.name)?.value,
-      to_subid: helpers.Storage.find(CONSTANTS.subid.name)?.value,
+      to_consent: utils.Storage.find(CONSTANTS.consent.name)?.value,
+      to_subid: utils.Storage.find(CONSTANTS.subid.name)?.value,
     };
 
     document.getElementById('debug-localstorage').textContent = JSON.stringify(storageState, null, '\t');
@@ -33,8 +33,8 @@ const showCookieDebug = () => {
   } else {
     const cookieState = {
       cmp_cookie: Cookies.get('klaro'),
-      to_consent: Cookies.get(helpers.getPrefixedCookieName(CONSTANTS.consent.name)),
-      to_subid: Cookies.get(helpers.getPrefixedCookieName(CONSTANTS.subid.name)),
+      to_consent: Cookies.get(utils.getPrefixedCookieName(CONSTANTS.consent.name)),
+      to_subid: Cookies.get(utils.getPrefixedCookieName(CONSTANTS.subid.name)),
     };
 
     document.getElementById('debug-cookie').textContent = JSON.stringify(cookieState, null, '\t');

@@ -1,35 +1,66 @@
-// import { Logger, AppError, Severity } from '@timeone-group/error-logger-js';
-// import Sdk, { SDK_NAME } from './Sdk.mjs';
+import init from './init.mjs';
+import Sdk from './Sdk.mjs';
 
-// export default function init(Sdk = Sdk) {
-//   try {
-//     if (typeof window[SDK_NAME] === 'undefined') {
-//       window[SDK_NAME] = new Sdk();
-//     } else if (typeof window[SDK_NAME] === 'object' && Array.isArray(window[SDK_NAME])) {
-//       const sdkTmp = Sdk();
-//       window[SDK_NAME].forEach((args) => sdkTmp.push(args));
-//       window[SDK_NAME] = sdkTmp;
-//     } else if (typeof window[SDK_NAME] === 'object' && window[SDK_NAME] instanceof Sdk) {
-//       // Nothing
-//     } else {
-//       throw new AppError(Severity.ERROR, 'Unknown type');
-//     }
-//   } catch (e) {
-//     Logger.catchError(e, 'TOG - Tracker');
-//   }
-// }
-
-// eslint-disable-next-line import/no-unresolved
-// import init from './init';
-import * as utils from './utils.mjs';
 import CONSTANTS from './constants.mjs';
 
-const name = 'foo';
+const { sdkName } = CONSTANTS;
 
-beforeEach(() => {
-  utils.removeValue(name);
-});
+describe('The init function', () => {
+  test(`Should set global var window.${sdkName} when not defined`, () => {
+    expect(window[sdkName]).not.toBeDefined();
 
-test('getPrefixedCookieName - Should return prefixed name', () => {
-  expect(`${CONSTANTS.default_storage_prefix}_${name}`).toEqual(utils.getPrefixedCookieName(name));
+    init();
+
+    expect(window[sdkName]).toBeInstanceOf(Sdk);
+  });
+
+  test(`Should print an error if window.${sdkName} already defined but not instance of Sdk or Array`, () => {
+    const badValue = 'broken';
+    window[sdkName] = badValue;
+
+    console.error = jest.fn();
+    init();
+
+    expect(console.error).toHaveBeenCalledTimes(1);
+    expect(window[sdkName]).toEqual(badValue);
+  });
+
+  test(`Should replace global var window.${sdkName} when instance of Array`, () => {
+    window[sdkName] = [];
+    expect(window[sdkName]).toBeInstanceOf(Array);
+
+    init();
+
+    expect(window[sdkName]).not.toBeInstanceOf(Array);
+    expect(window[sdkName]).toBeInstanceOf(Sdk);
+  });
+
+  test(`Should replace global var window.${sdkName} when instance of Array and replay all action`, () => {
+    window[sdkName] = [['setOptin']];
+    expect(window[sdkName]).toBeInstanceOf(Array);
+
+    init();
+
+    expect(window[sdkName]).not.toBeInstanceOf(Array);
+    expect(window[sdkName]).toBeInstanceOf(Sdk);
+    expect(window[sdkName].consent).toEqual(CONSTANTS.consent.status.optin);
+  });
+
+  test(`Should do nothing when global var window.${sdkName} already Sdk instance`, () => {
+    const instance = new Sdk();
+    const instance2 = new Sdk();
+
+    window[sdkName] = instance;
+    window[sdkName].push([['setOptin']]);
+
+    expect(window[sdkName]).toBeInstanceOf(Sdk);
+    expect(window[sdkName].consent).toEqual(CONSTANTS.consent.status.optin);
+
+    init();
+
+    expect(window[sdkName]).toBeInstanceOf(Sdk);
+    expect(window[sdkName] === instance).toBeTruthy();
+    expect(window[sdkName] === instance2).toBeFalsy();
+    expect(window[sdkName].consent).toEqual(CONSTANTS.consent.status.optin);
+  });
 });

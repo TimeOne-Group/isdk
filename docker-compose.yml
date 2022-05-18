@@ -13,11 +13,11 @@ services:
   web:
     image: nginx:1.19
     ports:
-      - 8080:80
+      - 8089:80
     volumes:
       - ./browserstack/site:/usr/share/nginx/html:ro
 
-  unit_test:
+  test:
     image: node:16
     user: node
     volumes:
@@ -28,6 +28,9 @@ services:
   browserstack_test:
     image: node:16
     user: node
+    environment:
+        - BROWSERSTACK_USERNAME=${BROWSERSTACK_USERNAME}
+        - BROWSERSTACK_ACCESS_KEY=${BROWSERSTACK_ACCESS_KEY}
     volumes:
       - .:/app
     working_dir: '/app'

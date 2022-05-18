@@ -9,8 +9,6 @@ export const Storage = new StorageJS({
   defaultTTL: CONSTANTS.consent.ttl,
 });
 
-// window.TOG_Storage = Storage;
-
 export function getPrefixedCookieName(name) {
   return `${CONSTANTS.default_storage_prefix}_${name}`;
 }

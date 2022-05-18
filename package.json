@@ -1,14 +1,14 @@
 {
-  "name": "pbd-sdk",
+  "name": "isdk",
   "version": "1.0.0",
-  "description": "[![GitHub Super-Linter](https://github.com/TimeOne-Group/pbd-sdk/workflows/Lint%20Code%20Base/badge.svg)](https://github.com/marketplace/actions/super-linter)",
+  "description": "",
   "main": "index.js",
   "scripts": {
     "start": "rollup -c -w",
     "build": "npm run clean && rollup -c",
     "build:prod": "npm run clean && NODE_ENV=production rollup -c",
     "clean": "rimraf dist debug",
-    "eslint": "eslint ./src/**",
+    "lint": "eslint ./src/**",
     "test:browserstack": "node browserstack/index.mjs",
     "test:unit": "jest src --runInBand --verbose",
     "test:unit:watch": "npm run test:unit -- --watch",
@@ -17,14 +17,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/TimeOne-Group/pbd-sdk.git"
+    "url": "git+https://github.com/TimeOne-Group/isdk.git"
   },
   "author": "TimeOne <fabien.barbaud@timeonegroup.com>",
   "license": "GPL-3.0",
   "bugs": {
-    "url": "https://github.com/TimeOne-Group/pbd-sdk/issues"
+    "url": "https://github.com/TimeOne-Group/isdk/issues"
   },
-  "homepage": "https://github.com/TimeOne-Group/pbd-sdk#readme",
+  "homepage": "https://github.com/TimeOne-Group/isdk#readme",
   "dependencies": {
     "@timeone-group/error-logger-js": "^0.2.3",
     "@timeone-group/storage-js": "^0.3.1",

@@ -12,9 +12,10 @@ import dotenv from 'dotenv';
 import pkg from './package.json';
 import CONSTANTS from './src/constants.mjs';
 
-dotenv.config({ path: `.env.${process.env.NODE_ENV}` });
+const NODE_ENV = process.env.NODE_ENV || 'production';
+dotenv.config({ path: `.env.${NODE_ENV}` });
 
-console.log({ NODE_ENV: process.env.NODE_ENV, API_CONVERSION_URLS: process.env.API_CONVERSION_URLS });
+console.log({ NODE_ENV, API_CONVERSION_URLS: process.env.API_CONVERSION_URLS });
 
 const banner = {
   banner() {
@@ -27,7 +28,7 @@ const defaultPlugins = [
   replace({
     preventAssignment: true,
     values: {
-      'process.env.NODE_ENV': `"${process.env.NODE_ENV}"`,
+      'process.env.NODE_ENV': `"${NODE_ENV}"`,
       'process.env.API_CONVERSION_URLS': `"${process.env.API_CONVERSION_URLS}"`,
     },
   }),
@@ -64,7 +65,7 @@ const dist = [
     plugins: defaultPlugins,
   },
   {
-    input: 'sites_src/js/index.debug.mjs',
+    input: 'browserstack_src/js/index.debug.mjs',
     output: [
       {
         format: 'iife',
@@ -83,8 +84,8 @@ const dist = [
 const sites = [
   {
     root: 'browserstack/site',
-    sdk: 'sites_src/js/index.browserstack.mjs',
-    init: 'sites_src/js/init.browserstack.mjs',
+    sdk: 'browserstack_src/js/index.browserstack.mjs',
+    init: 'browserstack_src/js/init.browserstack.mjs',
     minify: true,
     templates: ['browserstack.html'],
     templateVar: {
@@ -95,7 +96,7 @@ const sites = [
   const plugins = minify ? [...defaultPlugins, terser()] : defaultPlugins;
   const templatePlugin = templates.map((template) =>
     htmlTemplate({
-      template: `sites_src/html/${template}`,
+      template: `browserstack_src/html/${template}`,
       target: `${root}/index.html`,
       attrs: [`id="${CONSTANTS.sdkScriptId}"`, 'data-progids="[109]"', 'async'],
       replaceVars: {
@@ -104,7 +105,7 @@ const sites = [
       },
     })
   );
-  const defaultFiles = ['sites_src/js/tag.js', 'sites_src/html/favicon.svg'];
+  const defaultFiles = ['browserstack_src/js/tag.js', 'browserstack_src/html/favicon.svg'];
   const files = filesToCopy ? [...filesToCopy, ...defaultFiles] : defaultFiles;
   const copyPlugin = copy({
     files,
@@ -136,7 +137,7 @@ const sites = [
       plugins: [...plugins, copyPlugin],
     },
     {
-      input: 'sites_src/js/common.js',
+      input: 'browserstack_src/js/common.js',
       output: [
         {
           format: 'iife',

@@ -3,9 +3,9 @@ name: Lint Code Base
 
 on:
   push:
-    branches: [main]
+    branches: [main, develop]
   pull_request:
-    branches: [main]
+    branches: [main, develop]
 
 jobs:
   lint:
@@ -18,4 +18,4 @@ jobs:
           node-version: 16
           cache: "npm"
       - run: npm ci
-      - run: npm run eslint
+      - run: npm run lint
