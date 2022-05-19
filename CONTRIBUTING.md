@@ -38,7 +38,7 @@ Setting up `DEV_BROWSERSTACK_TEST` to `true` allow to run browserstack tests on 
 - Windows 10 - Chrome latest
 
 ```sh
-$ docker-compose run browserstack_test
+$ docker-compose --env-file ./.env.test run browserstack_test
 ```
 
 ### Linting

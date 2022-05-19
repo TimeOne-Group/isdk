@@ -44,7 +44,7 @@ const android = [
   },
 ];
 
-const browserToIgnore = ['ie'];
+const browserToIgnore = ['ie', 'opera'];
 const browserVersions = ['latest', 'latest-1', 'latest-2'];
 
 const desktopOsVersion = {
