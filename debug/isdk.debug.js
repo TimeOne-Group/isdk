@@ -7041,7 +7041,7 @@
     return StorageJS;
   }();
 
-  var _httpsATime1MeV;
+  var _httpsBTime1MeV;
 
   var CONSTANTS = {
     sdkName: '__ISDK',
@@ -7064,7 +7064,7 @@
     default_storage_prefix: 'to',
     default_ttl: 390,
     urls: {
-      conversion: ((_httpsATime1MeV = "https://a.time1.me/v2/b,https://b.time1.me/v1/b") === null || _httpsATime1MeV === void 0 ? void 0 : _httpsATime1MeV.split(',')) || []
+      conversion: ((_httpsBTime1MeV = "https://b.time1.me/v1/b") === null || _httpsBTime1MeV === void 0 ? void 0 : _httpsBTime1MeV.split(',')) || []
     }
   };
 
@@ -7754,6 +7754,7 @@
         throw new Error("".concat(sdkName, " error: Unknown type"));
       }
     } catch (e) {
+      // eslint-disable-next-line no-console
       console.error(e.message);
     }
   }

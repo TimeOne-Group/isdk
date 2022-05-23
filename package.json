@@ -26,7 +26,6 @@
   },
   "homepage": "https://github.com/TimeOne-Group/isdk#readme",
   "dependencies": {
-    "@timeone-group/error-logger-js": "^0.2.3",
     "@timeone-group/storage-js": "^0.3.1",
     "core-js": "^3.9.1",
     "dotenv": "^16.0.1",

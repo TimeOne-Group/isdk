@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 import init from './init.mjs';
 import Sdk from './Sdk.mjs';
 

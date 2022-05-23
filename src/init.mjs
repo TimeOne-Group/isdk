@@ -17,6 +17,7 @@ export default function init(Sdk = ISDK) {
       throw new Error(`${sdkName} error: Unknown type`);
     }
   } catch (e) {
+    // eslint-disable-next-line no-console
     console.error(e.message);
   }
 }

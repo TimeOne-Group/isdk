@@ -63,6 +63,7 @@ export default class Sdk {
   #log({ type, value }) {
     this.#progids.forEach((progid) => {
       if (process.env.NODE_ENV === 'sandbox') {
+        // eslint-disable-next-line no-console
         console.log(`LOG | progid #${progid} - ${type} to ${value}`);
       }
     });
