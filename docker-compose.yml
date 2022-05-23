@@ -1,0 +1,40 @@
+version: "3"
+services:
+  build:
+      image: node:16
+      user: node
+      environment:
+        - NODE_ENV=${NODE_ENV}
+      volumes:
+        - .:/app
+      working_dir: '/app'
+      command: 'npm start'
+
+  web:
+    image: nginx:1.19
+    ports:
+      - 8089:80
+    volumes:
+      - ./browserstack/site:/usr/share/nginx/html:ro
+
+  test:
+    image: node:16
+    user: node
+    volumes:
+      - .:/app
+    working_dir: '/app'
+    command: 'npm run test:unit'
+
+  browserstack_test:
+    image: node:16
+    user: node
+    environment:
+        - BROWSERSTACK_USERNAME=${BROWSERSTACK_USERNAME}
+        - BROWSERSTACK_ACCESS_KEY=${BROWSERSTACK_ACCESS_KEY}
+    volumes:
+      - .:/app
+    working_dir: '/app'
+    command: 'npm run test:browserstack'
+    depends_on:
+      - web
+

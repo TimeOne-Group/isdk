@@ -1,0 +1,18 @@
+---
+name: Build test sites in gitlab
+
+on:
+  push:
+    branches: [develop]
+
+jobs:
+  gitlab-ci-trigger:
+    name: Gitlab-ci trigger
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - run: curl -X POST -F token=${GITLAB_TEST_SITES_TRIGGER_TOKEN} -F ref=${GITLAB_TEST_SITES_TRIGGER_REF} $GITLAB_TEST_SITES_TRIGGER_URL
+        env:
+          GITLAB_TEST_SITES_TRIGGER_TOKEN: ${{ secrets.GITLAB_TEST_SITES_TRIGGER_TOKEN }}
+          GITLAB_TEST_SITES_TRIGGER_URL: ${{ secrets.GITLAB_TEST_SITES_TRIGGER_URL }}
+          GITLAB_TEST_SITES_TRIGGER_REF: ${{ secrets.GITLAB_TEST_SITES_TRIGGER_REF }}

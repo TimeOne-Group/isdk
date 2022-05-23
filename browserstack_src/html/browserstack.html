@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Privacy by Design - By TimeOne - Tracker</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <link rel="icon" href="favicon.svg" />
+    <link
+      rel="stylesheet"
+      href="https://cdn.kiprotect.com/klaro/v0.7/klaro.min.css"
+    />
+    <script
+      type="text/javascript"
+      src="https://cdn.kiprotect.com/klaro/v0.7/klaro.js"
+    ></script>
+    <script src="./common.js"></script>
+    <script src="./tag.js"></script>
+    <script src="./init.js"></script>
+    <script async id="___ISDK" data-progids="[109]" src="__SDK_SRC__"></script>
+  </head>
+  <body id="app">
+    <h1>Site Annonceur __HOME_URL__</h1>
+    <div>
+    <div>
+      <b> Consent </b>
+      <button type="button" id="SDKsetUnknown" onclick="SDKsetUnknown();">
+        setUnknown
+      </button>
+      <button type="button" id="SDKsetOptin" onclick="SDKsetOptin();">
+        setOptin
+      </button>
+      <button type="button" id="SDKsetOptout" onclick="SDKsetOptout();">
+        setOptout
+      </button>
+    </div>
+    <div>
+      <b>Actions</b>
+      <button
+        type="button"
+        id="setConversion"
+        onclick="window.TOG_SDK.push(['setConversion']);"
+      >
+        Conversion
+      </button>
+    </div>
+    <br />
+    <div>
+      <b> SDK state </b>
+      <pre
+        id="debug"
+        style="
+          color: white;
+          background-color: black;
+          padding: 1rem;
+          width: fit-content;
+        "
+      ></pre>
+    </div>
+  </body>
+</html>
