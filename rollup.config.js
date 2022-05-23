@@ -4,6 +4,7 @@ import { terser } from 'rollup-plugin-terser';
 import { babel } from '@rollup/plugin-babel';
 import replace from '@rollup/plugin-replace';
 import babelLoaderExcludeNodeModulesExcept from 'babel-loader-exclude-node-modules-except';
+import bundleSize from 'rollup-plugin-bundle-size';
 import htmlTemplate from 'rollup-plugin-generate-html-template';
 import copy from 'rollup-plugin-cpy';
 import postcss from 'rollup-plugin-postcss';
@@ -46,6 +47,7 @@ const defaultPlugins = [
     ]),
   }),
   banner,
+  bundleSize(),
 ];
 
 const dist = [

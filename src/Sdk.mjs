@@ -16,13 +16,14 @@ export default class Sdk {
     this.env = process.env.NODE_ENV;
 
     this.#setProgids();
+    this.#configureProgramData(CONSTANTS.cashback);
 
     if (!this.consent) {
       this.#setConsent(CONSTANTS.consent.status.unknown);
     }
 
     if (this.consent === CONSTANTS.consent.status.optin) {
-      this.#configureSubid();
+      this.#configureProgramData(CONSTANTS.subid);
     } else {
       this.#handleNoConsent();
     }
@@ -34,6 +35,10 @@ export default class Sdk {
 
   get subid() {
     return utils.getValue(CONSTANTS.subid.name);
+  }
+
+  get cashbackSubid() {
+    return utils.getValue(CONSTANTS.cashback.name);
   }
 
   #setProgids() {
@@ -48,11 +53,11 @@ export default class Sdk {
     }
   }
 
-  #configureSubid() {
-    const subid = this.constructor.getSubidFromQueryParams();
+  #configureProgramData({ name, queryname }) {
+    const subid = this.constructor.getProgramDataFromQueryParams(queryname);
 
     if (subid) {
-      utils.setValue(subid, CONSTANTS.subid.name);
+      utils.setValue(subid, name);
     }
   }
 
@@ -85,7 +90,7 @@ export default class Sdk {
 
   setOptin() {
     this.#setConsent(CONSTANTS.consent.status.optin);
-    this.#configureSubid();
+    this.#configureProgramData(CONSTANTS.subid);
   }
 
   setOptout() {
@@ -100,7 +105,9 @@ export default class Sdk {
 
   #canConvert() {
     return (
-      this.constructor.getSubidFromQueryParams() || (this.subid && this.consent === CONSTANTS.consent.status.optin)
+      this.cashbackSubid ||
+      this.constructor.getProgramDataFromQueryParams(CONSTANTS.subid.queryname) ||
+      (this.subid && this.consent === CONSTANTS.consent.status.optin)
     );
   }
 
@@ -130,10 +137,22 @@ export default class Sdk {
       throw new Error(`Failed to contact server on ${JSON.stringify(CONSTANTS.urls.conversion)}`);
     }
 
+    const toSubid = {
+      type: 'consent',
+      value: this.subid || this.constructor.getProgramDataFromQueryParams(CONSTANTS.subid.queryname),
+    };
+    const toCashback = {
+      type: 'cashback',
+      value: this.cashbackSubid || this.constructor.getProgramDataFromQueryParams(CONSTANTS.cashback.queryname),
+    };
+    const toSubids = [toSubid, toCashback].filter(({ value }) => !!value);
+
     const payload = {
       ...data,
-      [CONSTANTS.subid.queryname]: this.subid || this.constructor.getSubidFromQueryParams(),
+      toSubids,
     };
+
+    const sanitizedPayload = Object.fromEntries(Object.entries(payload).filter(([, value]) => !!value));
 
     try {
       const response = await fetch(this.#conversionUrl, {
@@ -142,7 +161,7 @@ export default class Sdk {
           accept: 'application/json',
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(payload),
+        body: JSON.stringify(sanitizedPayload),
       });
 
       if (!response.ok) {
@@ -210,14 +229,15 @@ export default class Sdk {
       progids: this.#progids,
       consent: this.consent,
       subid: this.subid,
+      cashbackSubid: this.cashbackSubid,
       errors: this.#getErrors(),
       conversionUrls: CONSTANTS.urls.conversion,
     };
   }
 
-  static getSubidFromQueryParams() {
+  static getProgramDataFromQueryParams(name) {
     const queryParams = new URLSearchParams(window.location.search);
 
-    return queryParams.get(CONSTANTS.subid.queryname);
+    return queryParams.get(name);
   }
 }

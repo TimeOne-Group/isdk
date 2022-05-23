@@ -13,9 +13,9 @@ import CONSTANTS from '../../../src/constants.mjs';
 import TEST_CONSTANTS from './constants.mjs';
 
 const testName = 'should_set_sdk_to_unknown_state';
-const url = `${TEST_CONSTANTS.baseUrl}?${CONSTANTS.subid.queryname}=${TEST_CONSTANTS.subid}`;
+const url = `${TEST_CONSTANTS.baseUrl}?${CONSTANTS.subid.queryname}=${TEST_CONSTANTS.subid}&${CONSTANTS.cashback.queryname}=${TEST_CONSTANTS.cashbackSubid}`;
 
-export default async function noConsentDefined(driver) {
+export default async function shouldSetSdkToUnknownState(driver) {
   printTestInConsole(TEST_CONSTANTS.groupTestName, testName);
 
   await driver.get(url);
@@ -24,26 +24,32 @@ export default async function noConsentDefined(driver) {
     const initialConsent = await getSdkState(driver, 'consent');
     const initialprogid = await getSdkState(driver, 'progid');
     const initialSubid = await getSdkState(driver, 'subid');
+    const initialCashbackSubid = await getSdkState(driver, 'cashbackSubid');
 
     expect(initialConsent).toEqual(CONSTANTS.consent.status.unknown);
     expect(initialprogid).toBeFalsy();
     expect(initialSubid).toBeFalsy();
+    expect(initialCashbackSubid).toEqual(TEST_CONSTANTS.cashbackSubid);
 
     await setOptin(driver);
 
     const consent = await getSdkState(driver, 'consent');
     const subid = await getSdkState(driver, 'subid');
+    const cashbackSubid = await getSdkState(driver, 'cashbackSubid');
 
     expect(consent).toEqual(CONSTANTS.consent.status.optin);
     expect(subid).toEqual(TEST_CONSTANTS.subid);
+    expect(cashbackSubid).toEqual(TEST_CONSTANTS.cashbackSubid);
 
     await setUnknown(driver);
 
-    const consentAfterClena = await getSdkState(driver, 'consent');
+    const consentAfterClean = await getSdkState(driver, 'consent');
     const subidAfterClean = await getSdkState(driver, 'subid');
+    const cashbackSubidAfterClean = await getSdkState(driver, 'cashbackSubid');
 
-    expect(consentAfterClena).toEqual(CONSTANTS.consent.status.unknown);
+    expect(consentAfterClean).toEqual(CONSTANTS.consent.status.unknown);
     expect(subidAfterClean).toBeFalsy();
+    expect(cashbackSubidAfterClean).toEqual(TEST_CONSTANTS.cashbackSubid);
 
     await browserstackLogSuccess(
       driver,

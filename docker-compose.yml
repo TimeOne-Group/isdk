@@ -31,6 +31,7 @@ services:
     environment:
         - BROWSERSTACK_USERNAME=${BROWSERSTACK_USERNAME}
         - BROWSERSTACK_ACCESS_KEY=${BROWSERSTACK_ACCESS_KEY}
+        - DEV_BROWSERSTACK_TEST=${DEV_BROWSERSTACK_TEST}
     volumes:
       - .:/app
     working_dir: '/app'

@@ -229,6 +229,10 @@
     return _get.apply(this, arguments);
   }
 
+  function _slicedToArray(arr, i) {
+    return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i) || _unsupportedIterableToArray(arr, i) || _nonIterableRest();
+  }
+
   function _toArray(arr) {
     return _arrayWithHoles(arr) || _iterableToArray(arr) || _unsupportedIterableToArray(arr) || _nonIterableRest();
   }
@@ -247,6 +251,36 @@
 
   function _iterableToArray(iter) {
     if (typeof Symbol !== "undefined" && iter[Symbol.iterator] != null || iter["@@iterator"] != null) return Array.from(iter);
+  }
+
+  function _iterableToArrayLimit(arr, i) {
+    var _i = arr == null ? null : typeof Symbol !== "undefined" && arr[Symbol.iterator] || arr["@@iterator"];
+
+    if (_i == null) return;
+    var _arr = [];
+    var _n = true;
+    var _d = false;
+
+    var _s, _e;
+
+    try {
+      for (_i = _i.call(arr); !(_n = (_s = _i.next()).done); _n = true) {
+        _arr.push(_s.value);
+
+        if (i && _arr.length === i) break;
+      }
+    } catch (err) {
+      _d = true;
+      _e = err;
+    } finally {
+      try {
+        if (!_n && _i["return"] != null) _i["return"]();
+      } finally {
+        if (_d) throw _e;
+      }
+    }
+
+    return _arr;
   }
 
   function _unsupportedIterableToArray(o, minLen) {
@@ -7061,6 +7095,11 @@
       queryname: 'toSubid',
       ttl: 40
     },
+    cashback: {
+      name: 'cashback',
+      queryname: 'toCashback',
+      ttl: 30
+    },
     default_storage_prefix: 'to',
     default_ttl: 390,
     urls: {
@@ -7170,11 +7209,12 @@
         return showLocalstorageDebug();
       }, 300);
     } else {
-      var _utils$Storage$find, _utils$Storage$find2;
+      var _utils$Storage$find, _utils$Storage$find2, _utils$Storage$find3;
 
       var storageState = {
         to_consent: (_utils$Storage$find = Storage.find(CONSTANTS.consent.name)) === null || _utils$Storage$find === void 0 ? void 0 : _utils$Storage$find.value,
-        to_subid: (_utils$Storage$find2 = Storage.find(CONSTANTS.subid.name)) === null || _utils$Storage$find2 === void 0 ? void 0 : _utils$Storage$find2.value
+        to_subid: (_utils$Storage$find2 = Storage.find(CONSTANTS.subid.name)) === null || _utils$Storage$find2 === void 0 ? void 0 : _utils$Storage$find2.value,
+        to_cashback: (_utils$Storage$find3 = Storage.find(CONSTANTS.cashback.name)) === null || _utils$Storage$find3 === void 0 ? void 0 : _utils$Storage$find3.value
       };
       document.getElementById('debug-localstorage').textContent = JSON.stringify(storageState, null, '\t');
     }
@@ -7189,7 +7229,8 @@
       var cookieState = {
         cmp_cookie: api.get('klaro'),
         to_consent: api.get(getPrefixedCookieName(CONSTANTS.consent.name)),
-        to_subid: api.get(getPrefixedCookieName(CONSTANTS.subid.name))
+        to_subid: api.get(getPrefixedCookieName(CONSTANTS.subid.name)),
+        to_cashback: api.get(getPrefixedCookieName(CONSTANTS.cashback.name))
       };
       document.getElementById('debug-cookie').textContent = JSON.stringify(cookieState, null, '\t');
     }
@@ -7201,12 +7242,13 @@
         return showDebug(callback);
       }, 300);
     } else {
-      var _window$sdkName2, _window$sdkName3, _window$sdkName4;
+      var _window$sdkName2, _window$sdkName3, _window$sdkName4, _window$sdkName5;
 
       var state = {
         progid: (_window$sdkName2 = window[sdkName$1]) === null || _window$sdkName2 === void 0 ? void 0 : _window$sdkName2.progid,
         consent: (_window$sdkName3 = window[sdkName$1]) === null || _window$sdkName3 === void 0 ? void 0 : _window$sdkName3.consent,
-        subid: (_window$sdkName4 = window[sdkName$1]) === null || _window$sdkName4 === void 0 ? void 0 : _window$sdkName4.subid
+        subid: (_window$sdkName4 = window[sdkName$1]) === null || _window$sdkName4 === void 0 ? void 0 : _window$sdkName4.subid,
+        cashback: (_window$sdkName5 = window[sdkName$1]) === null || _window$sdkName5 === void 0 ? void 0 : _window$sdkName5.cashback
       };
       document.getElementById('debug').textContent = JSON.stringify(state, null, '\t');
     }
@@ -7231,7 +7273,7 @@
 
   var _setProgids = /*#__PURE__*/new WeakSet();
 
-  var _configureSubid = /*#__PURE__*/new WeakSet();
+  var _configureProgramData = /*#__PURE__*/new WeakSet();
 
   var _setNextConversionUrl = /*#__PURE__*/new WeakSet();
 
@@ -7269,7 +7311,7 @@
 
       _classPrivateMethodInitSpec(this, _setNextConversionUrl);
 
-      _classPrivateMethodInitSpec(this, _configureSubid);
+      _classPrivateMethodInitSpec(this, _configureProgramData);
 
       _classPrivateMethodInitSpec(this, _setProgids);
 
@@ -7297,12 +7339,14 @@
 
       _classPrivateMethodGet(this, _setProgids, _setProgids2).call(this);
 
+      _classPrivateMethodGet(this, _configureProgramData, _configureProgramData2).call(this, CONSTANTS.cashback);
+
       if (!this.consent) {
         _classPrivateMethodGet(this, _setConsent, _setConsent2).call(this, CONSTANTS.consent.status.unknown);
       }
 
       if (this.consent === CONSTANTS.consent.status.optin) {
-        _classPrivateMethodGet(this, _configureSubid, _configureSubid2).call(this);
+        _classPrivateMethodGet(this, _configureProgramData, _configureProgramData2).call(this, CONSTANTS.subid);
       } else {
         _classPrivateMethodGet(this, _handleNoConsent, _handleNoConsent2).call(this);
       }
@@ -7319,11 +7363,16 @@
         return getValue(CONSTANTS.subid.name);
       }
     }, {
+      key: "cashbackSubid",
+      get: function get() {
+        return getValue(CONSTANTS.cashback.name);
+      }
+    }, {
       key: "setOptin",
       value: function setOptin() {
         _classPrivateMethodGet(this, _setConsent, _setConsent2).call(this, CONSTANTS.consent.status.optin);
 
-        _classPrivateMethodGet(this, _configureSubid, _configureSubid2).call(this);
+        _classPrivateMethodGet(this, _configureProgramData, _configureProgramData2).call(this, CONSTANTS.subid);
       }
     }, {
       key: "setOptout",
@@ -7540,15 +7589,16 @@
           progids: _classPrivateFieldGet(this, _progids),
           consent: this.consent,
           subid: this.subid,
+          cashbackSubid: this.cashbackSubid,
           errors: _classPrivateMethodGet(this, _getErrors, _getErrors2).call(this),
           conversionUrls: CONSTANTS.urls.conversion
         };
       }
     }], [{
-      key: "getSubidFromQueryParams",
-      value: function getSubidFromQueryParams() {
+      key: "getProgramDataFromQueryParams",
+      value: function getProgramDataFromQueryParams(name) {
         var queryParams = new URLSearchParams(window.location.search);
-        return queryParams.get(CONSTANTS.subid.queryname);
+        return queryParams.get(name);
       }
     }]);
 
@@ -7572,11 +7622,13 @@
     }
   }
 
-  function _configureSubid2() {
-    var subid = this.constructor.getSubidFromQueryParams();
+  function _configureProgramData2(_ref3) {
+    var name = _ref3.name,
+        queryname = _ref3.queryname;
+    var subid = this.constructor.getProgramDataFromQueryParams(queryname);
 
     if (subid) {
-      setValue(subid, CONSTANTS.subid.name);
+      setValue(subid, name);
     }
   }
 
@@ -7584,9 +7636,9 @@
     _classPrivateFieldSet(this, _conversionUrl, _classPrivateFieldGet(this, _conversionUrlIterator).next().value);
   }
 
-  function _log2(_ref3) {
-    _ref3.type;
-        _ref3.value;
+  function _log2(_ref4) {
+    _ref4.type;
+        _ref4.value;
 
     _classPrivateFieldGet(this, _progids).forEach(function (progid) {
     });
@@ -7609,7 +7661,7 @@
   }
 
   function _canConvert2() {
-    return this.constructor.getSubidFromQueryParams() || this.subid && this.consent === CONSTANTS.consent.status.optin;
+    return this.cashbackSubid || this.constructor.getProgramDataFromQueryParams(CONSTANTS.subid.queryname) || this.subid && this.consent === CONSTANTS.consent.status.optin;
   }
 
   function _setError2(data) {
@@ -7617,10 +7669,10 @@
   }
 
   function _getErrors2() {
-    return _classPrivateFieldGet(this, _errors).map(function (_ref4) {
-      var error = _ref4.error,
-          method = _ref4.method,
-          extra = _ref4.extra;
+    return _classPrivateFieldGet(this, _errors).map(function (_ref5) {
+      var error = _ref5.error,
+          method = _ref5.method,
+          extra = _ref5.extra;
       return {
         message: "While calling \"".concat(method, "\" method: ").concat(error.message),
         extra: extra
@@ -7633,14 +7685,14 @@
   }
 
   function _setConversion3() {
-    _setConversion3 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee5(_ref5) {
-      var _ref5$data, data, _ref5$method, method, progid, comid, iu, payload, response, error;
+    _setConversion3 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee5(_ref6) {
+      var _ref6$data, data, _ref6$method, method, progid, comid, iu, toSubid, toCashback, toSubids, payload, sanitizedPayload, response, error;
 
       return regeneratorRuntime.wrap(function _callee5$(_context5) {
         while (1) {
           switch (_context5.prev = _context5.next) {
             case 0:
-              _ref5$data = _ref5.data, data = _ref5$data === void 0 ? {} : _ref5$data, _ref5$method = _ref5.method, method = _ref5$method === void 0 ? 'setConversion' : _ref5$method;
+              _ref6$data = _ref6.data, data = _ref6$data === void 0 ? {} : _ref6$data, _ref6$method = _ref6.method, method = _ref6$method === void 0 ? 'setConversion' : _ref6$method;
 
               if (_classPrivateMethodGet(this, _canConvert, _canConvert2).call(this)) {
                 _context5.next = 3;
@@ -7668,30 +7720,50 @@
               throw new Error("Failed to contact server on ".concat(JSON.stringify(CONSTANTS.urls.conversion)));
 
             case 8:
-              payload = _objectSpread2(_objectSpread2({}, data), {}, _defineProperty({}, CONSTANTS.subid.queryname, this.subid || this.constructor.getSubidFromQueryParams()));
-              _context5.prev = 9;
-              _context5.next = 12;
+              toSubid = {
+                type: 'consent',
+                value: this.subid || this.constructor.getProgramDataFromQueryParams(CONSTANTS.subid.queryname)
+              };
+              toCashback = {
+                type: 'cashback',
+                value: this.cashbackSubid || this.constructor.getProgramDataFromQueryParams(CONSTANTS.cashback.queryname)
+              };
+              toSubids = [toSubid, toCashback].filter(function (_ref7) {
+                var value = _ref7.value;
+                return !!value;
+              });
+              payload = _objectSpread2(_objectSpread2({}, data), {}, {
+                toSubids: toSubids
+              });
+              sanitizedPayload = Object.fromEntries(Object.entries(payload).filter(function (_ref8) {
+                var _ref9 = _slicedToArray(_ref8, 2),
+                    value = _ref9[1];
+
+                return !!value;
+              }));
+              _context5.prev = 13;
+              _context5.next = 16;
               return fetch(_classPrivateFieldGet(this, _conversionUrl), {
                 method: 'POST',
                 headers: {
                   accept: 'application/json',
                   'Content-Type': 'application/json'
                 },
-                body: JSON.stringify(payload)
+                body: JSON.stringify(sanitizedPayload)
               });
 
-            case 12:
+            case 16:
               response = _context5.sent;
 
               if (response.ok) {
-                _context5.next = 18;
+                _context5.next = 22;
                 break;
               }
 
-              _context5.next = 16;
+              _context5.next = 20;
               return response.json();
 
-            case 16:
+            case 20:
               error = _context5.sent;
 
               _classPrivateMethodGet(this, _setError, _setError2).call(this, {
@@ -7702,13 +7774,13 @@
                 })
               });
 
-            case 18:
-              _context5.next = 26;
+            case 22:
+              _context5.next = 30;
               break;
 
-            case 20:
-              _context5.prev = 20;
-              _context5.t0 = _context5["catch"](9);
+            case 24:
+              _context5.prev = 24;
+              _context5.t0 = _context5["catch"](13);
 
               _classPrivateMethodGet(this, _setError, _setError2).call(this, {
                 error: _context5.t0,
@@ -7720,18 +7792,18 @@
 
               _classPrivateMethodGet(this, _setNextConversionUrl, _setNextConversionUrl2).call(this);
 
-              _context5.next = 26;
+              _context5.next = 30;
               return _classPrivateMethodGet(this, _setConversion, _setConversion2).call(this, {
                 data: data,
                 method: method
               });
 
-            case 26:
+            case 30:
             case "end":
               return _context5.stop();
           }
         }
-      }, _callee5, this, [[9, 20]]);
+      }, _callee5, this, [[13, 24]]);
     }));
     return _setConversion3.apply(this, arguments);
   }
