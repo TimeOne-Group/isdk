@@ -37,7 +37,7 @@ describe('The init function', () => {
   });
 
   test(`Should replace global var window.${sdkName} when instance of Array and replay all action`, () => {
-    window[sdkName] = [['setOptin']];
+    window[sdkName] = [['_setOptin']];
     expect(window[sdkName]).toBeInstanceOf(Array);
 
     init();
@@ -52,7 +52,7 @@ describe('The init function', () => {
     const instance2 = new Sdk();
 
     window[sdkName] = instance;
-    window[sdkName].push([['setOptin']]);
+    window[sdkName].push([['_setOptin']]);
 
     expect(window[sdkName]).toBeInstanceOf(Sdk);
     expect(window[sdkName].consent).toEqual(CONSTANTS.consent.status.optin);

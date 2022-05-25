@@ -10,14 +10,14 @@ import CONSTANTS from './constants.mjs';
 const progids = [109];
 const minimumConvertPayload = { progid: progids[0], comid: 123, iu: 456 };
 const noConsentValues = [CONSTANTS.consent.status.unknown, CONSTANTS.consent.status.optout];
-const eventsName = ['setUnknown', 'setOptin', 'setOptout'];
+const eventsName = ['_setUnknown', '_setOptin', '_setOptout'];
 const conversionUrls = ['https://fake-api/v1/b', 'https://fallback-fake-api/v1/b'];
 
 const noConsentMethods = [
-  { methodName: 'setUnknown', consentName: CONSTANTS.consent.status.unknown },
-  { methodName: 'setOptout', consentName: CONSTANTS.consent.status.optout },
+  { methodName: '_setUnknown', consentName: CONSTANTS.consent.status.unknown },
+  { methodName: '_setOptout', consentName: CONSTANTS.consent.status.optout },
 ];
-const conversionMethods = ['setSale', 'setLead', 'setDbClick', 'setClick'];
+const conversionMethods = ['_setSale', '_setLead', '_setDbClick', '_setClick'];
 
 beforeEach(() => {
   Sdk.getProgramDataFromQueryParams = jest.fn();
@@ -327,7 +327,7 @@ describe('The ISDK class test', () => {
       });
     });
 
-    test('method setOptin - Should set consent to optin in cookie and localstorage and set subid from cookie and localstorage', () => {
+    test('method _setOptin - Should set consent to optin in cookie and localstorage and set subid from cookie and localstorage', () => {
       const subid = 'subid_123456';
 
       Sdk.getProgramDataFromQueryParams = jest.fn((name) => (name === CONSTANTS.subid.queryname ? subid : null));
@@ -340,7 +340,7 @@ describe('The ISDK class test', () => {
       expect(Cookie.get(utils.getPrefixedCookieName(CONSTANTS.subid.name))).toBeFalsy();
       expect(utils.Storage.find(CONSTANTS.subid.name)?.value).toBeFalsy();
 
-      instance.push(['setOptin']);
+      instance.push(['_setOptin']);
       expect(instance.consent).toEqual(CONSTANTS.consent.status.optin);
       expect(Cookie.get(utils.getPrefixedCookieName(CONSTANTS.consent.name))).toEqual(CONSTANTS.consent.status.optin);
       expect(utils.Storage.find(CONSTANTS.consent.name)?.value).toEqual(CONSTANTS.consent.status.optin);
@@ -371,7 +371,7 @@ describe('The ISDK class test', () => {
       });
       expect(instance.subid).toBeFalsy();
       expect(instance.cashbackSubid).toBeFalsy();
-      instance.push(['setOptin']);
+      instance.push(['_setOptin']);
 
       expect(instance.consent).toEqual(CONSTANTS.consent.status.optin);
       expect(instance.subid).toEqual(subid);
@@ -385,7 +385,7 @@ describe('The ISDK class test', () => {
         conversionUrls,
       });
 
-      instance.push(['setOptout']);
+      instance.push(['_setOptout']);
 
       expect(instance.consent).toEqual(CONSTANTS.consent.status.optout);
       expect(instance.getTrace()).toEqual({
@@ -595,7 +595,7 @@ describe('The ISDK class test', () => {
           Sdk.getProgramDataFromQueryParams = jest.fn((name) => (name === CONSTANTS.subid.queryname ? subid : null));
 
           const instance = new Sdk();
-          instance.push(['setOptin']);
+          instance.push(['_setOptin']);
           instance.push([method, badPayload]);
 
           expect(instance.consent).toEqual(CONSTANTS.consent.status.optin);
@@ -611,7 +611,7 @@ describe('The ISDK class test', () => {
           );
 
           const instance = new Sdk();
-          instance.push(['setOptin']);
+          instance.push(['_setOptin']);
           instance.push([method, badPayload]);
 
           expect(instance.consent).toEqual(CONSTANTS.consent.status.optin);
@@ -632,7 +632,7 @@ describe('The ISDK class test', () => {
           Sdk.getProgramDataFromQueryParams = jest.fn((name) => queryparams[name]);
 
           const instance = new Sdk();
-          instance.push(['setOptin']);
+          instance.push(['_setOptin']);
           instance.push([method, badPayload]);
 
           expect(instance.consent).toEqual(CONSTANTS.consent.status.optin);
@@ -646,7 +646,7 @@ describe('The ISDK class test', () => {
         Sdk.getProgramDataFromQueryParams = jest.fn((name) => (name === CONSTANTS.subid.queryname ? subid : null));
 
         const instance = new Sdk();
-        instance.push(['setOptin']);
+        instance.push(['_setOptin']);
         instance.push([method, minimumConvertPayload]);
 
         expect(instance.consent).toEqual(CONSTANTS.consent.status.optin);
@@ -671,7 +671,7 @@ describe('The ISDK class test', () => {
 
         const instance = new Sdk();
 
-        instance.push(['setOptin']);
+        instance.push(['_setOptin']);
         instance.push([method, minimumConvertPayload]);
 
         expect(instance.consent).toEqual(CONSTANTS.consent.status.optin);
@@ -726,7 +726,7 @@ describe('The ISDK class test', () => {
       test(`method ${method} - Should not do a conversion when consent is optin but subid and cashback are not defined`, () => {
         const instance = new Sdk();
 
-        instance.push(['setOptin']);
+        instance.push(['_setOptin']);
         instance.push([method, minimumConvertPayload]);
 
         expect(instance.consent).toEqual(CONSTANTS.consent.status.optin);

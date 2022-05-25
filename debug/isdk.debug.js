@@ -7075,7 +7075,7 @@
     return StorageJS;
   }();
 
-  var _httpsBTime1MeV;
+  var _httpsBackService;
 
   var CONSTANTS = {
     sdkName: '__ISDK',
@@ -7103,7 +7103,7 @@
     default_storage_prefix: 'to',
     default_ttl: 390,
     urls: {
-      conversion: ((_httpsBTime1MeV = "https://b.time1.me/v1/b") === null || _httpsBTime1MeV === void 0 ? void 0 : _httpsBTime1MeV.split(',')) || []
+      conversion: ((_httpsBackService = "https://back.service.sandbox.localhost/v1/b") === null || _httpsBackService === void 0 ? void 0 : _httpsBackService.split(',')) || []
     }
   };
 
@@ -7335,7 +7335,7 @@
         value: []
       });
 
-      this.env = "production";
+      this.env = "sandbox";
 
       _classPrivateMethodGet(this, _setProgids, _setProgids2).call(this);
 
@@ -7368,30 +7368,30 @@
         return getValue(CONSTANTS.cashback.name);
       }
     }, {
-      key: "setOptin",
-      value: function setOptin() {
+      key: "_setOptin",
+      value: function _setOptin() {
         _classPrivateMethodGet(this, _setConsent, _setConsent2).call(this, CONSTANTS.consent.status.optin);
 
         _classPrivateMethodGet(this, _configureProgramData, _configureProgramData2).call(this, CONSTANTS.subid);
       }
     }, {
-      key: "setOptout",
-      value: function setOptout() {
+      key: "_setOptout",
+      value: function _setOptout() {
         _classPrivateMethodGet(this, _setConsent, _setConsent2).call(this, CONSTANTS.consent.status.optout);
 
         _classPrivateMethodGet(this, _handleNoConsent, _handleNoConsent2).call(this);
       }
     }, {
-      key: "setUnknown",
-      value: function setUnknown() {
+      key: "_setUnknown",
+      value: function _setUnknown() {
         _classPrivateMethodGet(this, _setConsent, _setConsent2).call(this, CONSTANTS.consent.status.unknown);
 
         _classPrivateMethodGet(this, _handleNoConsent, _handleNoConsent2).call(this);
       }
     }, {
-      key: "setSale",
+      key: "_setSale",
       value: function () {
-        var _setSale = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee(data) {
+        var _setSale2 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee(data) {
           return regeneratorRuntime.wrap(function _callee$(_context) {
             while (1) {
               switch (_context.prev = _context.next) {
@@ -7400,7 +7400,7 @@
                   _context.next = 3;
                   return _classPrivateMethodGet(this, _setConversion, _setConversion2).call(this, {
                     data: data,
-                    method: 'setSale'
+                    method: '_setSale'
                   });
 
                 case 3:
@@ -7413,7 +7413,7 @@
 
                   _classPrivateMethodGet(this, _setError, _setError2).call(this, {
                     error: _context.t0,
-                    method: 'setSale',
+                    method: '_setSale',
                     extra: data
                   });
 
@@ -7425,16 +7425,16 @@
           }, _callee, this, [[0, 5]]);
         }));
 
-        function setSale(_x) {
-          return _setSale.apply(this, arguments);
+        function _setSale(_x) {
+          return _setSale2.apply(this, arguments);
         }
 
-        return setSale;
+        return _setSale;
       }()
     }, {
-      key: "setLead",
+      key: "_setLead",
       value: function () {
-        var _setLead = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee2(data) {
+        var _setLead2 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee2(data) {
           return regeneratorRuntime.wrap(function _callee2$(_context2) {
             while (1) {
               switch (_context2.prev = _context2.next) {
@@ -7443,7 +7443,7 @@
                   _context2.next = 3;
                   return _classPrivateMethodGet(this, _setConversion, _setConversion2).call(this, {
                     data: data,
-                    method: 'setLead'
+                    method: '_setLead'
                   });
 
                 case 3:
@@ -7456,7 +7456,7 @@
 
                   _classPrivateMethodGet(this, _setError, _setError2).call(this, {
                     error: _context2.t0,
-                    method: 'setLead',
+                    method: '_setLead',
                     extra: data
                   });
 
@@ -7468,16 +7468,16 @@
           }, _callee2, this, [[0, 5]]);
         }));
 
-        function setLead(_x2) {
-          return _setLead.apply(this, arguments);
+        function _setLead(_x2) {
+          return _setLead2.apply(this, arguments);
         }
 
-        return setLead;
+        return _setLead;
       }()
     }, {
-      key: "setDbClick",
+      key: "_setDbClick",
       value: function () {
-        var _setDbClick = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee3(data) {
+        var _setDbClick2 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee3(data) {
           return regeneratorRuntime.wrap(function _callee3$(_context3) {
             while (1) {
               switch (_context3.prev = _context3.next) {
@@ -7486,7 +7486,7 @@
                   _context3.next = 3;
                   return _classPrivateMethodGet(this, _setConversion, _setConversion2).call(this, {
                     data: data,
-                    method: 'setDbClick'
+                    method: '_setDbClick'
                   });
 
                 case 3:
@@ -7499,7 +7499,7 @@
 
                   _classPrivateMethodGet(this, _setError, _setError2).call(this, {
                     error: _context3.t0,
-                    method: 'setDbClick',
+                    method: '_setDbClick',
                     extra: data
                   });
 
@@ -7511,16 +7511,16 @@
           }, _callee3, this, [[0, 5]]);
         }));
 
-        function setDbClick(_x3) {
-          return _setDbClick.apply(this, arguments);
+        function _setDbClick(_x3) {
+          return _setDbClick2.apply(this, arguments);
         }
 
-        return setDbClick;
+        return _setDbClick;
       }()
     }, {
-      key: "setClick",
+      key: "_setClick",
       value: function () {
-        var _setClick = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee4(data) {
+        var _setClick2 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee4(data) {
           return regeneratorRuntime.wrap(function _callee4$(_context4) {
             while (1) {
               switch (_context4.prev = _context4.next) {
@@ -7529,7 +7529,7 @@
                   _context4.next = 3;
                   return _classPrivateMethodGet(this, _setConversion, _setConversion2).call(this, {
                     data: data,
-                    method: 'setClick'
+                    method: '_setClick'
                   });
 
                 case 3:
@@ -7542,7 +7542,7 @@
 
                   _classPrivateMethodGet(this, _setError, _setError2).call(this, {
                     error: _context4.t0,
-                    method: 'setClick',
+                    method: '_setClick',
                     extra: data
                   });
 
@@ -7554,11 +7554,11 @@
           }, _callee4, this, [[0, 5]]);
         }));
 
-        function setClick(_x4) {
-          return _setClick.apply(this, arguments);
+        function _setClick(_x4) {
+          return _setClick2.apply(this, arguments);
         }
 
-        return setClick;
+        return _setClick;
       }()
     }, {
       key: "push",
@@ -7637,10 +7637,14 @@
   }
 
   function _log2(_ref4) {
-    _ref4.type;
-        _ref4.value;
+    var type = _ref4.type,
+        value = _ref4.value;
 
     _classPrivateFieldGet(this, _progids).forEach(function (progid) {
+      {
+        // eslint-disable-next-line no-console
+        console.log("LOG | progid #".concat(progid, " - ").concat(type, " to ").concat(value));
+      }
     });
   }
 

@@ -1,3 +1,4 @@
+/* eslint-disable no-underscore-dangle */
 /* eslint-disable class-methods-use-this */
 
 import * as utils from './utils.mjs';
@@ -88,17 +89,17 @@ export default class Sdk {
     utils.removeValue(CONSTANTS.subid.name);
   }
 
-  setOptin() {
+  _setOptin() {
     this.#setConsent(CONSTANTS.consent.status.optin);
     this.#configureProgramData(CONSTANTS.subid);
   }
 
-  setOptout() {
+  _setOptout() {
     this.#setConsent(CONSTANTS.consent.status.optout);
     this.#handleNoConsent();
   }
 
-  setUnknown() {
+  _setUnknown() {
     this.#setConsent(CONSTANTS.consent.status.unknown);
     this.#handleNoConsent();
   }
@@ -177,35 +178,35 @@ export default class Sdk {
     }
   }
 
-  async setSale(data) {
+  async _setSale(data) {
     try {
-      await this.#setConversion({ data, method: 'setSale' });
+      await this.#setConversion({ data, method: '_setSale' });
     } catch (error) {
-      this.#setError({ error, method: 'setSale', extra: data });
+      this.#setError({ error, method: '_setSale', extra: data });
     }
   }
 
-  async setLead(data) {
+  async _setLead(data) {
     try {
-      await this.#setConversion({ data, method: 'setLead' });
+      await this.#setConversion({ data, method: '_setLead' });
     } catch (error) {
-      this.#setError({ error, method: 'setLead', extra: data });
+      this.#setError({ error, method: '_setLead', extra: data });
     }
   }
 
-  async setDbClick(data) {
+  async _setDbClick(data) {
     try {
-      await this.#setConversion({ data, method: 'setDbClick' });
+      await this.#setConversion({ data, method: '_setDbClick' });
     } catch (error) {
-      this.#setError({ error, method: 'setDbClick', extra: data });
+      this.#setError({ error, method: '_setDbClick', extra: data });
     }
   }
 
-  async setClick(data) {
+  async _setClick(data) {
     try {
-      await this.#setConversion({ data, method: 'setClick' });
+      await this.#setConversion({ data, method: '_setClick' });
     } catch (error) {
-      this.#setError({ error, method: 'setClick', extra: data });
+      this.#setError({ error, method: '_setClick', extra: data });
     }
   }
 
