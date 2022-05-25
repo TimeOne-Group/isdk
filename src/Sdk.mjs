@@ -1,5 +1,6 @@
 /* eslint-disable no-underscore-dangle */
 /* eslint-disable class-methods-use-this */
+import { v4 as uuidV4 } from 'uuid';
 
 import * as utils from './utils.mjs';
 import CONSTANTS from './constants.mjs';
@@ -7,13 +8,11 @@ import CONSTANTS from './constants.mjs';
 export default class Sdk {
   #progids = [];
 
-  #conversionUrlIterator = utils.urlsIterator(CONSTANTS.urls.conversion);
+  #conversionUrlIterator = utils.getApiIterator(CONSTANTS.urls.conversion);
 
-  #statsConsentUrlIterator = utils.urlsIterator(CONSTANTS.urls.statsConsent);
+  #statsConsentUrlIterator = utils.getApiIterator(CONSTANTS.urls.statsConsent);
 
-  #conversionUrl = this.#conversionUrlIterator.next().value;
-
-  #statsConsentUrl = this.#statsConsentUrlIterator.next().value;
+  #proofConsentUrlIterator = utils.getApiIterator(CONSTANTS.urls.proofConsent);
 
   #errors = [];
 
@@ -44,6 +43,10 @@ export default class Sdk {
     );
   }
 
+  get eventConsentId() {
+    return utils.getValue(CONSTANTS.event_consent_id.name);
+  }
+
   get cashbackSubid() {
     return (
       utils.getValue(CONSTANTS.cashback.name) ||
@@ -71,12 +74,36 @@ export default class Sdk {
     }
   }
 
-  #setNextConversionUrl() {
-    this.#conversionUrl = this.#conversionUrlIterator.next().value;
-  }
+  async #callApi({ urlIterator, body = {}, caller }) {
+    if (!urlIterator?.url) {
+      this.#setError({ error: { message: `Failed to contact server on ${urlIterator?.urls}` }, caller });
 
-  #setNextStatsConsentUrl() {
-    this.#statsConsentUrl = this.#statsConsentUrlIterator.next().value;
+      return;
+    }
+
+    try {
+      const response = await fetch(urlIterator?.url, {
+        method: 'POST',
+        headers: {
+          accept: 'application/json',
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(body),
+      });
+
+      if (!response.ok) {
+        const error = await response.json();
+
+        this.#setError({
+          error: { message: ` code ${response?.status} - ${error?.message}` },
+          caller,
+          extra: { body, url: this.#conversionUrlIterator.url },
+        });
+      }
+    } catch (error) {
+      urlIterator.next();
+      this.#callApi({ urlIterator, body, caller });
+    }
   }
 
   #logStatsConsent(consent) {
@@ -85,59 +112,53 @@ export default class Sdk {
       this.constructor.getProgramDataFromQueryParams(CONSTANTS.cashback.queryname),
     ].filter(Boolean);
 
-    this.#log({
-      url: this.#statsConsentUrl,
-      setNextUrl: this.#setNextStatsConsentUrl,
-      body: {
-        status: consent,
-        toSubids,
-      },
+    this.#progids.forEach((progid) => {
+      this.#callApi({
+        urlIterator: this.#statsConsentUrlIterator,
+        body: {
+          progid,
+          status: consent,
+          toSubids,
+        },
+        caller: '#logStatsConsent',
+      });
     });
   }
 
-  #log({ url, setNextUrl, body }) {
-    console.log({ url });
-    if (!url) {
-      this.#setError({ error: { message: `Failed to contact server on ${url}` }, method: '#log' });
+  #setPOC() {
+    const eventConsentId = uuidV4();
+    utils.setValue(eventConsentId, CONSTANTS.event_consent_id.name);
 
-      return;
-    }
+    const body = {
+      event_consent_id: eventConsentId,
+      url: `${window.location.hostname}${window.location.pathname}`,
+    };
 
-    this.#progids.forEach((progid) => {
-      fetch(url, {
-        method: 'POST',
-        body: JSON.stringify({
-          progid,
-          ...body,
-        }),
-      })
-        .then(async (res) => {
-          if (!res.ok) {
-            const error = await res.json();
-            this.#setError({ error: { message: `${res?.status} - ${error?.message}` }, method: '#log' });
-          }
-        })
-        .catch(() => {
-          console.log('ctach 1');
-          setNextUrl();
-          console.log('ctach 2');
-          this.#log({ url, setNextUrl, body });
-        });
+    this.#callApi({
+      urlIterator: this.#proofConsentUrlIterator,
+      body,
+      caller: '#setPOC',
     });
   }
 
   #setConsent(consent) {
     const shouldLog = consent !== this.consent;
+    const shouldSetupPOC = !this.eventConsentId && this.subid && consent === CONSTANTS.consent.status.optin;
 
     utils.setValue(consent, CONSTANTS.consent.name);
 
     if (shouldLog) {
       this.#logStatsConsent(consent);
     }
+
+    if (shouldSetupPOC) {
+      this.#setPOC();
+    }
   }
 
   #handleNoConsent() {
     utils.removeValue(CONSTANTS.subid.name);
+    utils.removeValue(CONSTANTS.event_consent_id.name);
   }
 
   _setOptin() {
@@ -168,13 +189,13 @@ export default class Sdk {
   }
 
   #getErrors() {
-    return this.#errors.map(({ error, method, extra }) => ({
-      message: `While calling "${method}" method: ${error.message}`,
+    return this.#errors.map(({ error, caller, extra }) => ({
+      message: `While calling the method "${caller}": ${error.message}`,
       extra,
     }));
   }
 
-  async #setConversion({ data = {}, method = 'setConversion' }) {
+  async #setConversion({ data = {}, caller = 'setConversion' }) {
     if (!this.#canConvert()) {
       throw new Error(`Make a conversion is not allowed. Check consent or ${CONSTANTS.subid.queryname}`);
     }
@@ -185,79 +206,64 @@ export default class Sdk {
       throw new Error(`Missing progid or comid or iu. Those data are mandatory to make a conversion`);
     }
 
-    if (!this.#conversionUrl) {
-      throw new Error(`Failed to contact server on ${JSON.stringify(CONSTANTS.urls.conversion)}`);
+    if (!this.#conversionUrlIterator?.url) {
+      throw new Error(`Failed to contact server on ${JSON.stringify(this.#conversionUrlIterator?.urls)}`);
     }
 
     const toSubid = {
       type: 'consent',
       value: this.subid,
     };
+
     const toCashback = {
       type: 'cashback',
       value: this.cashbackSubid,
     };
     const toSubids = [toSubid, toCashback].filter(({ value }) => !!value);
-
     const payload = {
       ...data,
+      event_consent_id: this.eventConsentId,
       toSubids,
     };
 
-    const sanitizedPayload = Object.fromEntries(Object.entries(payload).filter(([, value]) => !!value));
+    const body = Object.fromEntries(Object.entries(payload).filter(([, value]) => !!value));
 
-    try {
-      const response = await fetch(this.#conversionUrl, {
-        method: 'POST',
-        headers: {
-          accept: 'application/json',
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(sanitizedPayload),
-      });
-
-      if (!response.ok) {
-        const error = await response.json();
-
-        this.#setError({ error, method, extra: { ...data, url: this.#conversionUrl } });
-      }
-    } catch (error) {
-      this.#setError({ error, method, extra: { ...data, url: this.#conversionUrl } });
-      this.#setNextConversionUrl();
-
-      await this.#setConversion({ data, method });
-    }
+    await this.#callApi({
+      urlIterator: this.#conversionUrlIterator,
+      body,
+      caller,
+    });
   }
 
   async _setSale(data) {
     try {
-      await this.#setConversion({ data, method: '_setSale' });
+      await this.#setConversion({ data, caller: '_setSale' });
     } catch (error) {
-      this.#setError({ error, method: '_setSale', extra: data });
+      this.#setError({ error, caller: '_setSale', extra: data });
     }
   }
 
   async _setLead(data) {
     try {
-      await this.#setConversion({ data, method: '_setLead' });
+      await this.#setConversion({ data, caller: '_setLead' });
     } catch (error) {
-      this.#setError({ error, method: '_setLead', extra: data });
+      this.#setError({ error, caller: '_setLead', extra: data });
     }
   }
 
   async _setDbClick(data) {
     try {
-      await this.#setConversion({ data, method: '_setDbClick' });
+      await this.#setConversion({ data, caller: '_setDbClick' });
     } catch (error) {
-      this.#setError({ error, method: '_setDbClick', extra: data });
+      this.#setError({ error, caller: '_setDbClick', extra: data });
     }
   }
 
   async _setClick(data) {
     try {
-      await this.#setConversion({ data, method: '_setClick' });
+      await this.#setConversion({ data, caller: '_setClick' });
     } catch (error) {
-      this.#setError({ error, method: '_setClick', extra: data });
+      this.#setError({ error, caller: '_setClick', extra: data });
     }
   }
 
@@ -281,6 +287,7 @@ export default class Sdk {
       progids: this.#progids,
       consent: this.consent,
       subid: this.subid,
+      event_consent_id: this.eventConsentId,
       cashbackSubid: this.cashbackSubid,
       errors: this.#getErrors(),
       conversionUrls: CONSTANTS.urls.conversion,

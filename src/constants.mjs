@@ -10,6 +10,10 @@ export default {
       optout: 'optout',
     },
   },
+  event_consent_id: {
+    name: 'event_consent_id',
+    ttl: 390,
+  },
   subid: {
     name: 'subid',
     queryname: 'toSubid',
@@ -25,5 +29,6 @@ export default {
   urls: {
     conversion: process.env.API_CONVERSION_URLS?.split(',') || [],
     statsConsent: process.env.API_STATS_CONSENT_URLS?.split(',') || [],
+    proofConsent: process.env.API_PROOF_CONSENT_URLS?.split(',') || [],
   },
 };
