@@ -1,6 +1,6 @@
 {
   "name": "isdk",
-  "version": "1.0.0",
+  "version": "0.0.1",
   "description": "",
   "main": "index.js",
   "scripts": {
@@ -13,6 +13,8 @@
     "test:unit": "jest src --runInBand --verbose",
     "test:unit:watch": "npm run test:unit -- --watch",
     "test": "npm run test:unit && npm run test:browserstack",
+    "release": "standard-version -m 'chore(release): %s 🚀'",
+    "hotfix": "standard-version -m 'chore(hotfix): %s 🔧' --release-as patch",
     "prepare": "husky install"
   },
   "repository": {
@@ -31,6 +33,7 @@
     "dotenv": "^16.0.1",
     "js-cookie": "^3.0.1",
     "regenerator-runtime": "^0.13.9",
+    "standard-version": "^9.5.0",
     "whatwg-fetch": "^3.6.2"
   },
   "devDependencies": {

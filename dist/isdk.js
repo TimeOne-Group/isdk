@@ -6961,7 +6961,7 @@
     return StorageJS;
   }();
 
-  var _httpsBackService;
+  var _httpsBTime1MeV;
 
   var CONSTANTS = {
     sdkName: '__ISDK',
@@ -6989,7 +6989,7 @@
     default_storage_prefix: 'to',
     default_ttl: 390,
     urls: {
-      conversion: ((_httpsBackService = "https://back.service.sandbox.localhost/v1/b") === null || _httpsBackService === void 0 ? void 0 : _httpsBackService.split(',')) || []
+      conversion: ((_httpsBTime1MeV = "https://b.time1.me/v1/b") === null || _httpsBTime1MeV === void 0 ? void 0 : _httpsBTime1MeV.split(',')) || []
     }
   };
 
@@ -7146,7 +7146,7 @@
         value: []
       });
 
-      this.env = "sandbox";
+      this.env = "production";
 
       _classPrivateMethodGet(this, _setProgids, _setProgids2).call(this);
 
@@ -7448,14 +7448,10 @@
   }
 
   function _log2(_ref4) {
-    var type = _ref4.type,
-        value = _ref4.value;
+    _ref4.type;
+        _ref4.value;
 
     _classPrivateFieldGet(this, _progids).forEach(function (progid) {
-      {
-        // eslint-disable-next-line no-console
-        console.log("LOG | progid #".concat(progid, " - ").concat(type, " to ").concat(value));
-      }
     });
   }
 
