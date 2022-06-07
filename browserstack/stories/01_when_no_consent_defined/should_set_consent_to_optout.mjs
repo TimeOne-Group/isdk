@@ -13,7 +13,7 @@ import TEST_CONSTANTS from './constants.mjs';
 
 const testName = 'should_set_consent_to_optout';
 
-export default async function noConsentDefined(driver) {
+export default async function shouldSetConsentToOptout(driver) {
   printTestInConsole(TEST_CONSTANTS.groupTestName, testName);
 
   await driver.get(TEST_CONSTANTS.baseUrl);

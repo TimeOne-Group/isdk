@@ -13,7 +13,7 @@ import TEST_CONSTANTS from './constants.mjs';
 
 const testName = 'should_set_subid_from_queryparams_first';
 
-export default async function noConsentDefined(driver) {
+export default async function shouldSetSubidFromQueryparamsFirst(driver) {
   printTestInConsole(TEST_CONSTANTS.groupTestName, testName);
 
   await driver.get(`${TEST_CONSTANTS.baseUrl}?${CONSTANTS.subid.queryname}=${TEST_CONSTANTS.subid}`);

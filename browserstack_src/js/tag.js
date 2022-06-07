@@ -4,13 +4,13 @@ function onUserAction(data) {
 }
 
 window.__SDKsetUnknown = function () {
-  onUserAction(['setUnknown']);
+  onUserAction(['_setUnknown']);
 };
 
 window.__SDKsetOptin = function () {
-  onUserAction(['setOptin']);
+  onUserAction(['_setOptin']);
 };
 
 window.__SDKsetOptout = function () {
-  onUserAction(['setOptout']);
+  onUserAction(['_setOptout']);
 };
