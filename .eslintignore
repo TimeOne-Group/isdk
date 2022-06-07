@@ -1,0 +1,4 @@
+dist/*
+debug/*
+browserstack/site/*
+browserstack_src/js/tag.js
