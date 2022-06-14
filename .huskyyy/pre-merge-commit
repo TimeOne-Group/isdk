@@ -10,6 +10,7 @@ build() {
 
 checkDiff() {
     echo "Check modification..."
+    git status
     if [[ `git status --porcelain` ]]
     then
         echo "--------------------------------------------------------------------------------------------------"
