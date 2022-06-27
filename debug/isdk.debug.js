@@ -1,5 +1,5 @@
 
-/*! isdk 1.0.0 https://github.com/https://github.com/TimeOne-Group/isdk#readme @license GPL-3.0 */
+/*! isdk 1.0.1 https://github.com/https://github.com/TimeOne-Group/isdk#readme @license GPL-3.0 */
 (function () {
   'use strict';
 
@@ -7075,7 +7075,7 @@
     return StorageJS;
   }();
 
-  var _httpsBTime1MeV;
+  var _httpsBackService, _httpsTrackingSer;
 
   var CONSTANTS = {
     sdkName: '__ISDK',
@@ -7103,7 +7103,8 @@
     default_storage_prefix: 'to',
     default_ttl: 390,
     urls: {
-      conversion: ((_httpsBTime1MeV = "https://b.time1.me/v1/b") === null || _httpsBTime1MeV === void 0 ? void 0 : _httpsBTime1MeV.split(',')) || []
+      conversion: ((_httpsBackService = "https://back.service.sandbox.localhost/v1/b") === null || _httpsBackService === void 0 ? void 0 : _httpsBackService.split(',')) || [],
+      statsConsent: ((_httpsTrackingSer = "https://tracking.service.sandbox.localhost/v1/log/consent") === null || _httpsTrackingSer === void 0 ? void 0 : _httpsTrackingSer.split(',')) || []
     }
   };
 
@@ -7267,7 +7268,11 @@
 
   var _conversionUrlIterator = /*#__PURE__*/new WeakMap();
 
+  var _statsConsentUrlIterator = /*#__PURE__*/new WeakMap();
+
   var _conversionUrl = /*#__PURE__*/new WeakMap();
+
+  var _statsConsentUrl = /*#__PURE__*/new WeakMap();
 
   var _errors = /*#__PURE__*/new WeakMap();
 
@@ -7276,6 +7281,10 @@
   var _configureProgramData = /*#__PURE__*/new WeakSet();
 
   var _setNextConversionUrl = /*#__PURE__*/new WeakSet();
+
+  var _setNextStatsConsentUrl = /*#__PURE__*/new WeakSet();
+
+  var _logConsent = /*#__PURE__*/new WeakSet();
 
   var _log = /*#__PURE__*/new WeakSet();
 
@@ -7309,6 +7318,10 @@
 
       _classPrivateMethodInitSpec(this, _log);
 
+      _classPrivateMethodInitSpec(this, _logConsent);
+
+      _classPrivateMethodInitSpec(this, _setNextStatsConsentUrl);
+
       _classPrivateMethodInitSpec(this, _setNextConversionUrl);
 
       _classPrivateMethodInitSpec(this, _configureProgramData);
@@ -7325,9 +7338,19 @@
         value: urlsIterator(CONSTANTS.urls.conversion)
       });
 
+      _classPrivateFieldInitSpec(this, _statsConsentUrlIterator, {
+        writable: true,
+        value: urlsIterator(CONSTANTS.urls.statsConsent)
+      });
+
       _classPrivateFieldInitSpec(this, _conversionUrl, {
         writable: true,
         value: _classPrivateFieldGet(this, _conversionUrlIterator).next().value
+      });
+
+      _classPrivateFieldInitSpec(this, _statsConsentUrl, {
+        writable: true,
+        value: _classPrivateFieldGet(this, _statsConsentUrlIterator).next().value
       });
 
       _classPrivateFieldInitSpec(this, _errors, {
@@ -7335,7 +7358,7 @@
         value: []
       });
 
-      this.env = "production";
+      this.env = "sandbox";
 
       _classPrivateMethodGet(this, _setProgids, _setProgids2).call(this);
 
@@ -7360,12 +7383,12 @@
     }, {
       key: "subid",
       get: function get() {
-        return getValue(CONSTANTS.subid.name);
+        return getValue(CONSTANTS.subid.name) || this.constructor.getProgramDataFromQueryParams(CONSTANTS.subid.queryname);
       }
     }, {
       key: "cashbackSubid",
       get: function get() {
-        return getValue(CONSTANTS.cashback.name);
+        return getValue(CONSTANTS.cashback.name) || this.constructor.getProgramDataFromQueryParams(CONSTANTS.cashback.queryname);
       }
     }, {
       key: "_setOptin",
@@ -7636,23 +7659,105 @@
     _classPrivateFieldSet(this, _conversionUrl, _classPrivateFieldGet(this, _conversionUrlIterator).next().value);
   }
 
+  function _setNextStatsConsentUrl2() {
+    _classPrivateFieldSet(this, _statsConsentUrl, _classPrivateFieldGet(this, _statsConsentUrlIterator).next().value);
+  }
+
+  function _logConsent2(body) {
+    _classPrivateMethodGet(this, _log, _log2).call(this, {
+      url: _classPrivateFieldGet(this, _statsConsentUrl),
+      setNextUrl: _classPrivateMethodGet(this, _setNextStatsConsentUrl, _setNextStatsConsentUrl2),
+      body: body
+    });
+  }
+
   function _log2(_ref4) {
-    _ref4.type;
-        _ref4.value;
+    var _this = this;
+
+    var url = _ref4.url,
+        setNextUrl = _ref4.setNextUrl,
+        body = _ref4.body;
+    console.log({
+      url: url
+    });
+
+    if (!url) {
+      _classPrivateMethodGet(this, _setError, _setError2).call(this, {
+        error: {
+          message: "Failed to contact server on ".concat(url)
+        },
+        method: '#log'
+      });
+
+      return;
+    }
 
     _classPrivateFieldGet(this, _progids).forEach(function (progid) {
+      fetch(url, {
+        method: 'POST',
+        body: JSON.stringify(_objectSpread2({
+          progid: progid
+        }, body))
+      }).then( /*#__PURE__*/function () {
+        var _ref5 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee5(res) {
+          var error;
+          return regeneratorRuntime.wrap(function _callee5$(_context5) {
+            while (1) {
+              switch (_context5.prev = _context5.next) {
+                case 0:
+                  if (res.ok) {
+                    _context5.next = 5;
+                    break;
+                  }
+
+                  _context5.next = 3;
+                  return res.json();
+
+                case 3:
+                  error = _context5.sent;
+
+                  _classPrivateMethodGet(_this, _setError, _setError2).call(_this, {
+                    error: {
+                      message: "".concat(res === null || res === void 0 ? void 0 : res.status, " - ").concat(error === null || error === void 0 ? void 0 : error.message)
+                    },
+                    method: '#log'
+                  });
+
+                case 5:
+                case "end":
+                  return _context5.stop();
+              }
+            }
+          }, _callee5);
+        }));
+
+        return function (_x5) {
+          return _ref5.apply(this, arguments);
+        };
+      }()).catch(function () {
+        console.log('ctach 1');
+        setNextUrl();
+        console.log('ctach 2');
+
+        _classPrivateMethodGet(_this, _log, _log2).call(_this, {
+          url: url,
+          setNextUrl: setNextUrl,
+          body: body
+        });
+      });
     });
   }
 
   function _setConsent2(consent) {
     var shouldLog = consent !== this.consent;
+    var consentStatsPayload = {
+      status: consent,
+      toSubids: [this.subid, this.cashbackSubid].filter(Boolean)
+    };
     setValue(consent, CONSTANTS.consent.name);
 
     if (shouldLog) {
-      _classPrivateMethodGet(this, _log, _log2).call(this, {
-        type: 'consent',
-        value: consent
-      });
+      _classPrivateMethodGet(this, _logConsent, _logConsent2).call(this, consentStatsPayload);
     }
   }
 
@@ -7669,10 +7774,10 @@
   }
 
   function _getErrors2() {
-    return _classPrivateFieldGet(this, _errors).map(function (_ref5) {
-      var error = _ref5.error,
-          method = _ref5.method,
-          extra = _ref5.extra;
+    return _classPrivateFieldGet(this, _errors).map(function (_ref6) {
+      var error = _ref6.error,
+          method = _ref6.method,
+          extra = _ref6.extra;
       return {
         message: "While calling \"".concat(method, "\" method: ").concat(error.message),
         extra: extra
@@ -7680,22 +7785,22 @@
     });
   }
 
-  function _setConversion2(_x5) {
+  function _setConversion2(_x6) {
     return _setConversion3.apply(this, arguments);
   }
 
   function _setConversion3() {
-    _setConversion3 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee5(_ref6) {
-      var _ref6$data, data, _ref6$method, method, progid, comid, iu, toSubid, toCashback, toSubids, payload, sanitizedPayload, response, error;
+    _setConversion3 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee6(_ref7) {
+      var _ref7$data, data, _ref7$method, method, progid, comid, iu, toSubid, toCashback, toSubids, payload, sanitizedPayload, response, error;
 
-      return regeneratorRuntime.wrap(function _callee5$(_context5) {
+      return regeneratorRuntime.wrap(function _callee6$(_context6) {
         while (1) {
-          switch (_context5.prev = _context5.next) {
+          switch (_context6.prev = _context6.next) {
             case 0:
-              _ref6$data = _ref6.data, data = _ref6$data === void 0 ? {} : _ref6$data, _ref6$method = _ref6.method, method = _ref6$method === void 0 ? 'setConversion' : _ref6$method;
+              _ref7$data = _ref7.data, data = _ref7$data === void 0 ? {} : _ref7$data, _ref7$method = _ref7.method, method = _ref7$method === void 0 ? 'setConversion' : _ref7$method;
 
               if (_classPrivateMethodGet(this, _canConvert, _canConvert2).call(this)) {
-                _context5.next = 3;
+                _context6.next = 3;
                 break;
               }
 
@@ -7705,7 +7810,7 @@
               progid = data.progid, comid = data.comid, iu = data.iu;
 
               if (!(!progid || !comid || !iu)) {
-                _context5.next = 6;
+                _context6.next = 6;
                 break;
               }
 
@@ -7713,7 +7818,7 @@
 
             case 6:
               if (_classPrivateFieldGet(this, _conversionUrl)) {
-                _context5.next = 8;
+                _context6.next = 8;
                 break;
               }
 
@@ -7722,27 +7827,27 @@
             case 8:
               toSubid = {
                 type: 'consent',
-                value: this.subid || this.constructor.getProgramDataFromQueryParams(CONSTANTS.subid.queryname)
+                value: this.subid
               };
               toCashback = {
                 type: 'cashback',
-                value: this.cashbackSubid || this.constructor.getProgramDataFromQueryParams(CONSTANTS.cashback.queryname)
+                value: this.cashbackSubid
               };
-              toSubids = [toSubid, toCashback].filter(function (_ref7) {
-                var value = _ref7.value;
+              toSubids = [toSubid, toCashback].filter(function (_ref8) {
+                var value = _ref8.value;
                 return !!value;
               });
               payload = _objectSpread2(_objectSpread2({}, data), {}, {
                 toSubids: toSubids
               });
-              sanitizedPayload = Object.fromEntries(Object.entries(payload).filter(function (_ref8) {
-                var _ref9 = _slicedToArray(_ref8, 2),
-                    value = _ref9[1];
+              sanitizedPayload = Object.fromEntries(Object.entries(payload).filter(function (_ref9) {
+                var _ref10 = _slicedToArray(_ref9, 2),
+                    value = _ref10[1];
 
                 return !!value;
               }));
-              _context5.prev = 13;
-              _context5.next = 16;
+              _context6.prev = 13;
+              _context6.next = 16;
               return fetch(_classPrivateFieldGet(this, _conversionUrl), {
                 method: 'POST',
                 headers: {
@@ -7753,18 +7858,18 @@
               });
 
             case 16:
-              response = _context5.sent;
+              response = _context6.sent;
 
               if (response.ok) {
-                _context5.next = 22;
+                _context6.next = 22;
                 break;
               }
 
-              _context5.next = 20;
+              _context6.next = 20;
               return response.json();
 
             case 20:
-              error = _context5.sent;
+              error = _context6.sent;
 
               _classPrivateMethodGet(this, _setError, _setError2).call(this, {
                 error: error,
@@ -7775,15 +7880,15 @@
               });
 
             case 22:
-              _context5.next = 30;
+              _context6.next = 30;
               break;
 
             case 24:
-              _context5.prev = 24;
-              _context5.t0 = _context5["catch"](13);
+              _context6.prev = 24;
+              _context6.t0 = _context6["catch"](13);
 
               _classPrivateMethodGet(this, _setError, _setError2).call(this, {
-                error: _context5.t0,
+                error: _context6.t0,
                 method: method,
                 extra: _objectSpread2(_objectSpread2({}, data), {}, {
                   url: _classPrivateFieldGet(this, _conversionUrl)
@@ -7792,7 +7897,7 @@
 
               _classPrivateMethodGet(this, _setNextConversionUrl, _setNextConversionUrl2).call(this);
 
-              _context5.next = 30;
+              _context6.next = 30;
               return _classPrivateMethodGet(this, _setConversion, _setConversion2).call(this, {
                 data: data,
                 method: method
@@ -7800,10 +7905,10 @@
 
             case 30:
             case "end":
-              return _context5.stop();
+              return _context6.stop();
           }
         }
-      }, _callee5, this, [[13, 24]]);
+      }, _callee6, this, [[13, 24]]);
     }));
     return _setConversion3.apply(this, arguments);
   }

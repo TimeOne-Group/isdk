@@ -9,7 +9,11 @@ export default class Sdk {
 
   #conversionUrlIterator = utils.urlsIterator(CONSTANTS.urls.conversion);
 
+  #statsConsentUrlIterator = utils.urlsIterator(CONSTANTS.urls.statsConsent);
+
   #conversionUrl = this.#conversionUrlIterator.next().value;
+
+  #statsConsentUrl = this.#statsConsentUrlIterator.next().value;
 
   #errors = [];
 
@@ -35,11 +39,16 @@ export default class Sdk {
   }
 
   get subid() {
-    return utils.getValue(CONSTANTS.subid.name);
+    return (
+      utils.getValue(CONSTANTS.subid.name) || this.constructor.getProgramDataFromQueryParams(CONSTANTS.subid.queryname)
+    );
   }
 
   get cashbackSubid() {
-    return utils.getValue(CONSTANTS.cashback.name);
+    return (
+      utils.getValue(CONSTANTS.cashback.name) ||
+      this.constructor.getProgramDataFromQueryParams(CONSTANTS.cashback.queryname)
+    );
   }
 
   #setProgids() {
@@ -66,12 +75,54 @@ export default class Sdk {
     this.#conversionUrl = this.#conversionUrlIterator.next().value;
   }
 
-  #log({ type, value }) {
+  #setNextStatsConsentUrl() {
+    this.#statsConsentUrl = this.#statsConsentUrlIterator.next().value;
+  }
+
+  #logStatsConsent(consent) {
+    const toSubids = [
+      this.constructor.getProgramDataFromQueryParams(CONSTANTS.subid.queryname),
+      this.constructor.getProgramDataFromQueryParams(CONSTANTS.cashback.queryname),
+    ].filter(Boolean);
+
+    this.#log({
+      url: this.#statsConsentUrl,
+      setNextUrl: this.#setNextStatsConsentUrl,
+      body: {
+        status: consent,
+        toSubids,
+      },
+    });
+  }
+
+  #log({ url, setNextUrl, body }) {
+    console.log({ url });
+    if (!url) {
+      this.#setError({ error: { message: `Failed to contact server on ${url}` }, method: '#log' });
+
+      return;
+    }
+
     this.#progids.forEach((progid) => {
-      if (process.env.NODE_ENV === 'sandbox') {
-        // eslint-disable-next-line no-console
-        console.log(`LOG | progid #${progid} - ${type} to ${value}`);
-      }
+      fetch(url, {
+        method: 'POST',
+        body: JSON.stringify({
+          progid,
+          ...body,
+        }),
+      })
+        .then(async (res) => {
+          if (!res.ok) {
+            const error = await res.json();
+            this.#setError({ error: { message: `${res?.status} - ${error?.message}` }, method: '#log' });
+          }
+        })
+        .catch(() => {
+          console.log('ctach 1');
+          setNextUrl();
+          console.log('ctach 2');
+          this.#log({ url, setNextUrl, body });
+        });
     });
   }
 
@@ -81,7 +132,7 @@ export default class Sdk {
     utils.setValue(consent, CONSTANTS.consent.name);
 
     if (shouldLog) {
-      this.#log({ type: 'consent', value: consent });
+      this.#logStatsConsent(consent);
     }
   }
 
@@ -140,11 +191,11 @@ export default class Sdk {
 
     const toSubid = {
       type: 'consent',
-      value: this.subid || this.constructor.getProgramDataFromQueryParams(CONSTANTS.subid.queryname),
+      value: this.subid,
     };
     const toCashback = {
       type: 'cashback',
-      value: this.cashbackSubid || this.constructor.getProgramDataFromQueryParams(CONSTANTS.cashback.queryname),
+      value: this.cashbackSubid,
     };
     const toSubids = [toSubid, toCashback].filter(({ value }) => !!value);
 

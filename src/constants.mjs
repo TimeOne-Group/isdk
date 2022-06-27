@@ -24,5 +24,6 @@ export default {
   default_ttl: 390,
   urls: {
     conversion: process.env.API_CONVERSION_URLS?.split(',') || [],
+    statsConsent: process.env.API_STATS_CONSENT_URLS?.split(',') || [],
   },
 };
