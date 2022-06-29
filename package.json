@@ -8,7 +8,7 @@
     "build": "npm run clean && rollup -c",
     "build:prod": "npm run clean && NODE_ENV=production rollup -c",
     "clean": "rimraf dist debug",
-    "lint": "eslint ./src/**",
+    "lint": "eslint ./src/{**,__tests__/**}",
     "test:browserstack": "node browserstack/index.mjs",
     "test:unit": "jest src --runInBand --verbose",
     "test:unit:watch": "npm run test:unit -- --watch",

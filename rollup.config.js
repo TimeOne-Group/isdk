@@ -19,7 +19,7 @@ dotenv.config({ path: `.env.${NODE_ENV}` });
 console.log({
   NODE_ENV,
   API_CONVERSION_URLS: process.env.API_CONVERSION_URLS,
-  API_STATS_CONSENT_URLS: process.env.API_STATS_CONSENT_URLS,
+  API_STATS_URLS: process.env.API_STATS_URLS,
   API_PROOF_CONSENT_URLS: process.env.API_PROOF_CONSENT_URLS,
 });
 
@@ -36,7 +36,7 @@ const defaultPlugins = [
     values: {
       'process.env.NODE_ENV': `"${NODE_ENV}"`,
       'process.env.API_CONVERSION_URLS': `"${process.env.API_CONVERSION_URLS}"`,
-      'process.env.API_STATS_CONSENT_URLS': `"${process.env.API_STATS_CONSENT_URLS}"`,
+      'process.env.API_STATS_URLS': `"${process.env.API_STATS_URLS}"`,
       'process.env.API_PROOF_CONSENT_URLS': `"${process.env.API_PROOF_CONSENT_URLS}"`,
     },
   }),

@@ -10,7 +10,7 @@ export default class Sdk {
 
   #conversionUrlIterator = utils.getApiIterator(CONSTANTS.urls.conversion);
 
-  #statsConsentUrlIterator = utils.getApiIterator(CONSTANTS.urls.statsConsent);
+  #statsUrlIterator = utils.getApiIterator(CONSTANTS.urls.stats);
 
   #proofConsentUrlIterator = utils.getApiIterator(CONSTANTS.urls.proofConsent);
 
@@ -39,19 +39,19 @@ export default class Sdk {
 
   get subid() {
     return (
-      utils.getValue(CONSTANTS.subid.name) || this.constructor.getProgramDataFromQueryParams(CONSTANTS.subid.queryname)
+      this.constructor.getProgramDataFromQueryParams(CONSTANTS.subid.queryname) || utils.getValue(CONSTANTS.subid.name)
+    );
+  }
+
+  get cashbackSubid() {
+    return (
+      this.constructor.getProgramDataFromQueryParams(CONSTANTS.cashback.queryname) ||
+      utils.getValue(CONSTANTS.cashback.name)
     );
   }
 
   get eventConsentId() {
     return utils.getValue(CONSTANTS.event_consent_id.name);
-  }
-
-  get cashbackSubid() {
-    return (
-      utils.getValue(CONSTANTS.cashback.name) ||
-      this.constructor.getProgramDataFromQueryParams(CONSTANTS.cashback.queryname)
-    );
   }
 
   #setProgids() {
@@ -106,21 +106,19 @@ export default class Sdk {
     }
   }
 
-  #logStatsConsent(consent) {
-    const toSubids = [
-      this.constructor.getProgramDataFromQueryParams(CONSTANTS.subid.queryname),
-      this.constructor.getProgramDataFromQueryParams(CONSTANTS.cashback.queryname),
-    ].filter(Boolean);
+  #logStats({ consent, type }) {
+    const toSubids = [this.subid, this.cashbackSubid].filter(Boolean);
 
     this.#progids.forEach((progid) => {
       this.#callApi({
-        urlIterator: this.#statsConsentUrlIterator,
+        urlIterator: this.#statsUrlIterator,
         body: {
+          type,
           progid,
           status: consent,
           toSubids,
         },
-        caller: '#logStatsConsent',
+        caller: '#logStats',
       });
     });
   }
@@ -148,7 +146,7 @@ export default class Sdk {
     utils.setValue(consent, CONSTANTS.consent.name);
 
     if (shouldLog) {
-      this.#logStatsConsent(consent);
+      this.#logStats({ consent, type: CONSTANTS.stats.type.visit });
     }
 
     if (shouldSetupPOC) {

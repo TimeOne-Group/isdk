@@ -29,16 +29,16 @@ $  docker-compose run test npm run test:unit:watch
 ### Run Browserstack Tests
 
 ```sh
-$ cp .env .env.test
+$ cp .env .env.browserstack
 ```
 
-In the `.env.test` the variables `BROWSERSTACK_USERNAME` and `BROWSERSTACK_ACCESS_KEY` can be filled with a browserstack account on https://automate.browserstack.com/dashboard/v2 by clicking on `ACCESS KEY`.
+In the `.env.browserstack` the variables `BROWSERSTACK_USERNAME` and `BROWSERSTACK_ACCESS_KEY` can be filled with a browserstack account on https://automate.browserstack.com/dashboard/v2 by clicking on `ACCESS KEY`.
 Setting up `DEV_BROWSERSTACK_TEST` to `true` allow to run browserstack tests on only one environment:
 
 - Windows 10 - Chrome latest
 
 ```sh
-$ docker-compose --env-file ./.env.test run browserstack_test
+$ docker-compose --env-file ./.env.browserstack run browserstack_test
 ```
 
 ### Linting

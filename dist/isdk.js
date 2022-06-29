@@ -7035,7 +7035,7 @@
     return StorageJS;
   }();
 
-  var _httpsBackService, _httpsTrackingSer, _httpsTrackingSer2;
+  var _httpsBTime1MeV, _httpsCTime1MeV, _httpsCTime1MeV2;
 
   var CONSTANTS = {
     sdkName: '__ISDK',
@@ -7064,12 +7064,18 @@
       queryname: 'toCashback',
       ttl: 30
     },
+    stats: {
+      type: {
+        visit: 'visit',
+        conversion: 'conversion'
+      }
+    },
     default_storage_prefix: 'to',
     default_ttl: 390,
     urls: {
-      conversion: ((_httpsBackService = "https://back.service.sandbox.localhost/v1/b") === null || _httpsBackService === void 0 ? void 0 : _httpsBackService.split(',')) || [],
-      statsConsent: ((_httpsTrackingSer = "https://tracking.service.sandbox.localhost/v1/log/consent,") === null || _httpsTrackingSer === void 0 ? void 0 : _httpsTrackingSer.split(',')) || [],
-      proofConsent: ((_httpsTrackingSer2 = "https://tracking.service.sandbox.localhost/v1/log/consent/proof") === null || _httpsTrackingSer2 === void 0 ? void 0 : _httpsTrackingSer2.split(',')) || []
+      conversion: ((_httpsBTime1MeV = "https://b.time1.me/v1/b") === null || _httpsBTime1MeV === void 0 ? void 0 : _httpsBTime1MeV.split(',')) || [],
+      stats: ((_httpsCTime1MeV = "https://c.time1.me/v1/log/consent") === null || _httpsCTime1MeV === void 0 ? void 0 : _httpsCTime1MeV.split(',')) || [],
+      proofConsent: ((_httpsCTime1MeV2 = "https://c.time1.me/v1/log/consent/proof") === null || _httpsCTime1MeV2 === void 0 ? void 0 : _httpsCTime1MeV2.split(',')) || []
     }
   };
 
@@ -7173,7 +7179,7 @@
 
   var _conversionUrlIterator = /*#__PURE__*/new WeakMap();
 
-  var _statsConsentUrlIterator = /*#__PURE__*/new WeakMap();
+  var _statsUrlIterator = /*#__PURE__*/new WeakMap();
 
   var _proofConsentUrlIterator = /*#__PURE__*/new WeakMap();
 
@@ -7185,7 +7191,7 @@
 
   var _callApi = /*#__PURE__*/new WeakSet();
 
-  var _logStatsConsent = /*#__PURE__*/new WeakSet();
+  var _logStats = /*#__PURE__*/new WeakSet();
 
   var _setPOC = /*#__PURE__*/new WeakSet();
 
@@ -7219,7 +7225,7 @@
 
       _classPrivateMethodInitSpec(this, _setPOC);
 
-      _classPrivateMethodInitSpec(this, _logStatsConsent);
+      _classPrivateMethodInitSpec(this, _logStats);
 
       _classPrivateMethodInitSpec(this, _callApi);
 
@@ -7237,9 +7243,9 @@
         value: getApiIterator(CONSTANTS.urls.conversion)
       });
 
-      _classPrivateFieldInitSpec(this, _statsConsentUrlIterator, {
+      _classPrivateFieldInitSpec(this, _statsUrlIterator, {
         writable: true,
-        value: getApiIterator(CONSTANTS.urls.statsConsent)
+        value: getApiIterator(CONSTANTS.urls.stats)
       });
 
       _classPrivateFieldInitSpec(this, _proofConsentUrlIterator, {
@@ -7252,7 +7258,7 @@
         value: []
       });
 
-      this.env = "sandbox";
+      this.env = "production";
 
       _classPrivateMethodGet(this, _setProgids, _setProgids2).call(this);
 
@@ -7277,17 +7283,17 @@
     }, {
       key: "subid",
       get: function get() {
-        return getValue(CONSTANTS.subid.name) || this.constructor.getProgramDataFromQueryParams(CONSTANTS.subid.queryname);
+        return this.constructor.getProgramDataFromQueryParams(CONSTANTS.subid.queryname) || getValue(CONSTANTS.subid.name);
+      }
+    }, {
+      key: "cashbackSubid",
+      get: function get() {
+        return this.constructor.getProgramDataFromQueryParams(CONSTANTS.cashback.queryname) || getValue(CONSTANTS.cashback.name);
       }
     }, {
       key: "eventConsentId",
       get: function get() {
         return getValue(CONSTANTS.event_consent_id.name);
-      }
-    }, {
-      key: "cashbackSubid",
-      get: function get() {
-        return getValue(CONSTANTS.cashback.name) || this.constructor.getProgramDataFromQueryParams(CONSTANTS.cashback.queryname);
       }
     }, {
       key: "_setOptin",
@@ -7645,20 +7651,23 @@
     return _callApi3.apply(this, arguments);
   }
 
-  function _logStatsConsent2(consent) {
+  function _logStats2(_ref5) {
     var _this = this;
 
-    var toSubids = [this.constructor.getProgramDataFromQueryParams(CONSTANTS.subid.queryname), this.constructor.getProgramDataFromQueryParams(CONSTANTS.cashback.queryname)].filter(Boolean);
+    var consent = _ref5.consent,
+        type = _ref5.type;
+    var toSubids = [this.subid, this.cashbackSubid].filter(Boolean);
 
     _classPrivateFieldGet(this, _progids).forEach(function (progid) {
       _classPrivateMethodGet(_this, _callApi, _callApi2).call(_this, {
-        urlIterator: _classPrivateFieldGet(_this, _statsConsentUrlIterator),
+        urlIterator: _classPrivateFieldGet(_this, _statsUrlIterator),
         body: {
+          type: type,
           progid: progid,
           status: consent,
           toSubids: toSubids
         },
-        caller: '#logStatsConsent'
+        caller: '#logStats'
       });
     });
   }
@@ -7680,14 +7689,17 @@
 
   function _setConsent2(consent) {
     var shouldLog = consent !== this.consent;
-    var shouldSetupPOC = consent === CONSTANTS.consent.status.optin;
+    var shouldSetupPOC = !this.eventConsentId && this.subid && consent === CONSTANTS.consent.status.optin;
     setValue(consent, CONSTANTS.consent.name);
 
     if (shouldLog) {
-      _classPrivateMethodGet(this, _logStatsConsent, _logStatsConsent2).call(this, consent);
+      _classPrivateMethodGet(this, _logStats, _logStats2).call(this, {
+        consent: consent,
+        type: CONSTANTS.stats.type.visit
+      });
     }
 
-    if (shouldLog && shouldSetupPOC) {
+    if (shouldSetupPOC) {
       _classPrivateMethodGet(this, _setPOC, _setPOC2).call(this);
     }
   }
@@ -7706,10 +7718,10 @@
   }
 
   function _getErrors2() {
-    return _classPrivateFieldGet(this, _errors).map(function (_ref5) {
-      var error = _ref5.error,
-          caller = _ref5.caller,
-          extra = _ref5.extra;
+    return _classPrivateFieldGet(this, _errors).map(function (_ref6) {
+      var error = _ref6.error,
+          caller = _ref6.caller,
+          extra = _ref6.extra;
       return {
         message: "While calling the method \"".concat(caller, "\": ").concat(error.message),
         extra: extra
@@ -7722,16 +7734,16 @@
   }
 
   function _setConversion3() {
-    _setConversion3 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee6(_ref6) {
+    _setConversion3 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee6(_ref7) {
       var _classPrivateFieldGet2;
 
-      var _ref6$data, data, _ref6$caller, caller, progid, comid, iu, _classPrivateFieldGet3, toSubid, toCashback, toSubids, payload, body;
+      var _ref7$data, data, _ref7$caller, caller, progid, comid, iu, _classPrivateFieldGet3, toSubid, toCashback, toSubids, payload, body;
 
       return regeneratorRuntime.wrap(function _callee6$(_context6) {
         while (1) {
           switch (_context6.prev = _context6.next) {
             case 0:
-              _ref6$data = _ref6.data, data = _ref6$data === void 0 ? {} : _ref6$data, _ref6$caller = _ref6.caller, caller = _ref6$caller === void 0 ? 'setConversion' : _ref6$caller;
+              _ref7$data = _ref7.data, data = _ref7$data === void 0 ? {} : _ref7$data, _ref7$caller = _ref7.caller, caller = _ref7$caller === void 0 ? 'setConversion' : _ref7$caller;
 
               if (_classPrivateMethodGet(this, _canConvert, _canConvert2).call(this)) {
                 _context6.next = 3;
@@ -7767,17 +7779,17 @@
                 type: 'cashback',
                 value: this.cashbackSubid
               };
-              toSubids = [toSubid, toCashback].filter(function (_ref7) {
-                var value = _ref7.value;
+              toSubids = [toSubid, toCashback].filter(function (_ref8) {
+                var value = _ref8.value;
                 return !!value;
               });
               payload = _objectSpread2(_objectSpread2({}, data), {}, {
                 event_consent_id: this.eventConsentId,
                 toSubids: toSubids
               });
-              body = Object.fromEntries(Object.entries(payload).filter(function (_ref8) {
-                var _ref9 = _slicedToArray(_ref8, 2),
-                    value = _ref9[1];
+              body = Object.fromEntries(Object.entries(payload).filter(function (_ref9) {
+                var _ref10 = _slicedToArray(_ref9, 2),
+                    value = _ref10[1];
 
                 return !!value;
               }));
