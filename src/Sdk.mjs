@@ -106,20 +106,18 @@ export default class Sdk {
     }
   }
 
-  #logStats({ consent, type }) {
+  #logStats({ consent, type, progid }) {
     const toSubids = [this.subid, this.cashbackSubid].filter(Boolean);
 
-    this.#progids.forEach((progid) => {
-      this.#callApi({
-        urlIterator: this.#statsUrlIterator,
-        body: {
-          type,
-          progid,
-          status: consent,
-          toSubids,
-        },
-        caller: '#logStats',
-      });
+    this.#callApi({
+      urlIterator: this.#statsUrlIterator,
+      body: {
+        type,
+        progid,
+        status: consent,
+        toSubids,
+      },
+      caller: '#logStats',
     });
   }
 
@@ -146,7 +144,9 @@ export default class Sdk {
     utils.setValue(consent, CONSTANTS.consent.name);
 
     if (shouldLog) {
-      this.#logStats({ consent, type: CONSTANTS.stats.type.visit });
+      this.#progids.forEach((progid) => {
+        this.#logStats({ consent, progid, type: CONSTANTS.stats.type.visit });
+      });
     }
 
     if (shouldSetupPOC) {
@@ -263,6 +263,14 @@ export default class Sdk {
     } catch (error) {
       this.#setError({ error, caller: '_setClick', extra: data });
     }
+  }
+
+  addConversion(progid) {
+    if (!progid) {
+      throw new Error(`Missing progid. This data is mandatory to add a conversion`);
+    }
+
+    this.#logStats({ consent: this.consent, progid, type: CONSTANTS.stats.type.conversion });
   }
 
   push(args) {

@@ -7075,7 +7075,7 @@
     return StorageJS;
   }();
 
-  var _httpsBTime1MeV, _httpsCTime1MeV, _httpsCTime1MeV2;
+  var _httpsBackService, _httpsTrackingSer, _httpsTrackingSer2;
 
   var CONSTANTS = {
     sdkName: '__ISDK',
@@ -7113,9 +7113,9 @@
     default_storage_prefix: 'to',
     default_ttl: 390,
     urls: {
-      conversion: ((_httpsBTime1MeV = "https://b.time1.me/v1/b") === null || _httpsBTime1MeV === void 0 ? void 0 : _httpsBTime1MeV.split(',')) || [],
-      stats: ((_httpsCTime1MeV = "https://c.time1.me/v1/log/consent") === null || _httpsCTime1MeV === void 0 ? void 0 : _httpsCTime1MeV.split(',')) || [],
-      proofConsent: ((_httpsCTime1MeV2 = "https://c.time1.me/v1/log/consent/proof") === null || _httpsCTime1MeV2 === void 0 ? void 0 : _httpsCTime1MeV2.split(',')) || []
+      conversion: ((_httpsBackService = "https://back.service.sandbox.localhost/v1/b") === null || _httpsBackService === void 0 ? void 0 : _httpsBackService.split(',')) || [],
+      stats: ((_httpsTrackingSer = "https://tracking.service.sandbox.localhost/v1/log/consent,") === null || _httpsTrackingSer === void 0 ? void 0 : _httpsTrackingSer.split(',')) || [],
+      proofConsent: ((_httpsTrackingSer2 = "https://tracking.service.sandbox.localhost/v1/log/consent/proof") === null || _httpsTrackingSer2 === void 0 ? void 0 : _httpsTrackingSer2.split(',')) || []
     }
   };
 
@@ -7450,7 +7450,7 @@
         value: []
       });
 
-      this.env = "production";
+      this.env = "sandbox";
 
       _classPrivateMethodGet(this, _setProgids, _setProgids2).call(this);
 
@@ -7681,6 +7681,19 @@
         return _setClick;
       }()
     }, {
+      key: "addConversion",
+      value: function addConversion(progid) {
+        if (!progid) {
+          throw new Error("Missing progid. This data is mandatory to add a conversion");
+        }
+
+        _classPrivateMethodGet(this, _logStats, _logStats2).call(this, {
+          consent: this.consent,
+          progid: progid,
+          type: CONSTANTS.stats.type.conversion
+        });
+      }
+    }, {
       key: "push",
       value: function push(args) {
         var _ref = args || [],
@@ -7844,23 +7857,20 @@
   }
 
   function _logStats2(_ref5) {
-    var _this = this;
-
     var consent = _ref5.consent,
-        type = _ref5.type;
+        type = _ref5.type,
+        progid = _ref5.progid;
     var toSubids = [this.subid, this.cashbackSubid].filter(Boolean);
 
-    _classPrivateFieldGet(this, _progids).forEach(function (progid) {
-      _classPrivateMethodGet(_this, _callApi, _callApi2).call(_this, {
-        urlIterator: _classPrivateFieldGet(_this, _statsUrlIterator),
-        body: {
-          type: type,
-          progid: progid,
-          status: consent,
-          toSubids: toSubids
-        },
-        caller: '#logStats'
-      });
+    _classPrivateMethodGet(this, _callApi, _callApi2).call(this, {
+      urlIterator: _classPrivateFieldGet(this, _statsUrlIterator),
+      body: {
+        type: type,
+        progid: progid,
+        status: consent,
+        toSubids: toSubids
+      },
+      caller: '#logStats'
     });
   }
 
@@ -7880,14 +7890,19 @@
   }
 
   function _setConsent2(consent) {
+    var _this = this;
+
     var shouldLog = consent !== this.consent;
     var shouldSetupPOC = !this.eventConsentId && this.subid && consent === CONSTANTS.consent.status.optin;
     setValue(consent, CONSTANTS.consent.name);
 
     if (shouldLog) {
-      _classPrivateMethodGet(this, _logStats, _logStats2).call(this, {
-        consent: consent,
-        type: CONSTANTS.stats.type.visit
+      _classPrivateFieldGet(this, _progids).forEach(function (progid) {
+        _classPrivateMethodGet(_this, _logStats, _logStats2).call(_this, {
+          consent: consent,
+          progid: progid,
+          type: CONSTANTS.stats.type.visit
+        });
       });
     }
 
