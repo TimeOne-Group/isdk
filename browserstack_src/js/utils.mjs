@@ -4,6 +4,21 @@ import CONSTANTS from '../../src/constants.mjs';
 
 const { sdkName } = CONSTANTS;
 
+const showJwtDebug = (name, id) => {
+  if (!document.getElementById(id)) {
+    setTimeout(() => showJwtDebug(name, id), 300);
+  } else {
+    // eslint-disable-next-line no-underscore-dangle
+    const token = window[sdkName]?.[name];
+    if (token) {
+      // eslint-disable-next-line no-underscore-dangle
+      const jwt = window.__jwtDecode(`eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.${token}`);
+
+      document.getElementById(id).textContent = JSON.stringify(jwt, null, '\t');
+    }
+  }
+};
+
 const showTraceDebug = () => {
   if (!document.getElementById('debug-trace')) {
     setTimeout(() => showTraceDebug(), 300);
@@ -68,5 +83,7 @@ export const showDebugTestsite = () => {
     showCookieDebug();
     showLocalstorageDebug();
     showTraceDebug();
+    showJwtDebug?.('subid', 'debug-subid-jwt');
+    showJwtDebug?.('cashbackSubid', 'debug-cashback-jwt');
   });
 };

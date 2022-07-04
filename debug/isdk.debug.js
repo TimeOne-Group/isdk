@@ -7217,15 +7217,35 @@
 
   var sdkName$1 = CONSTANTS.sdkName;
 
+  var showJwtDebug = function showJwtDebug(name, id) {
+    if (!document.getElementById(id)) {
+      setTimeout(function () {
+        return showJwtDebug(name, id);
+      }, 300);
+    } else {
+      var _window$sdkName;
+
+      // eslint-disable-next-line no-underscore-dangle
+      var token = (_window$sdkName = window[sdkName$1]) === null || _window$sdkName === void 0 ? void 0 : _window$sdkName[name];
+
+      if (token) {
+        // eslint-disable-next-line no-underscore-dangle
+        var jwt = window.__jwtDecode("eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.".concat(token));
+
+        document.getElementById(id).textContent = JSON.stringify(jwt, null, '\t');
+      }
+    }
+  };
+
   var showTraceDebug = function showTraceDebug() {
     if (!document.getElementById('debug-trace')) {
       setTimeout(function () {
         return showTraceDebug();
       }, 300);
     } else {
-      var _window$sdkName, _window$sdkName$getTr;
+      var _window$sdkName2, _window$sdkName2$getT;
 
-      var traceState = (_window$sdkName = window[sdkName$1]) === null || _window$sdkName === void 0 ? void 0 : (_window$sdkName$getTr = _window$sdkName.getTrace) === null || _window$sdkName$getTr === void 0 ? void 0 : _window$sdkName$getTr.call(_window$sdkName);
+      var traceState = (_window$sdkName2 = window[sdkName$1]) === null || _window$sdkName2 === void 0 ? void 0 : (_window$sdkName2$getT = _window$sdkName2.getTrace) === null || _window$sdkName2$getT === void 0 ? void 0 : _window$sdkName2$getT.call(_window$sdkName2);
       document.getElementById('debug-trace').textContent = JSON.stringify(traceState, null, '\t');
     }
   };
@@ -7271,14 +7291,14 @@
         return showDebug(callback);
       }, 300);
     } else {
-      var _window$sdkName2, _window$sdkName3, _window$sdkName4, _window$sdkName5, _window$sdkName6;
+      var _window$sdkName3, _window$sdkName4, _window$sdkName5, _window$sdkName6, _window$sdkName7;
 
       var state = {
-        progid: (_window$sdkName2 = window[sdkName$1]) === null || _window$sdkName2 === void 0 ? void 0 : _window$sdkName2.progid,
-        consent: (_window$sdkName3 = window[sdkName$1]) === null || _window$sdkName3 === void 0 ? void 0 : _window$sdkName3.consent,
-        subid: (_window$sdkName4 = window[sdkName$1]) === null || _window$sdkName4 === void 0 ? void 0 : _window$sdkName4.subid,
-        cashback: (_window$sdkName5 = window[sdkName$1]) === null || _window$sdkName5 === void 0 ? void 0 : _window$sdkName5.cashback,
-        to_event_consent_id: (_window$sdkName6 = window[sdkName$1]) === null || _window$sdkName6 === void 0 ? void 0 : _window$sdkName6.eventConsentId
+        progid: (_window$sdkName3 = window[sdkName$1]) === null || _window$sdkName3 === void 0 ? void 0 : _window$sdkName3.progid,
+        consent: (_window$sdkName4 = window[sdkName$1]) === null || _window$sdkName4 === void 0 ? void 0 : _window$sdkName4.consent,
+        subid: (_window$sdkName5 = window[sdkName$1]) === null || _window$sdkName5 === void 0 ? void 0 : _window$sdkName5.subid,
+        cashback: (_window$sdkName6 = window[sdkName$1]) === null || _window$sdkName6 === void 0 ? void 0 : _window$sdkName6.cashback,
+        to_event_consent_id: (_window$sdkName7 = window[sdkName$1]) === null || _window$sdkName7 === void 0 ? void 0 : _window$sdkName7.eventConsentId
       };
       document.getElementById('debug').textContent = JSON.stringify(state, null, '\t');
     }
@@ -7290,6 +7310,8 @@
       showCookieDebug();
       showLocalstorageDebug();
       showTraceDebug();
+      showJwtDebug === null || showJwtDebug === void 0 ? void 0 : showJwtDebug('subid', 'debug-subid-jwt');
+      showJwtDebug === null || showJwtDebug === void 0 ? void 0 : showJwtDebug('cashbackSubid', 'debug-cashback-jwt');
     });
   };
 
