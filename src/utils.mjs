@@ -59,3 +59,18 @@ export function* urlsIterator(urls = []) {
     index += 1;
   }
 }
+
+export function getApiIterator(urls) {
+  const iterator = urlsIterator(urls);
+  let currentUrl = iterator.next().value;
+
+  return {
+    next: () => {
+      currentUrl = iterator.next().value;
+    },
+    get url() {
+      return currentUrl;
+    },
+    urls,
+  };
+}

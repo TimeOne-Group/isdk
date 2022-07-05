@@ -8,7 +8,7 @@
     "build": "npm run clean && rollup -c",
     "build:prod": "npm run clean && NODE_ENV=production rollup -c",
     "clean": "rimraf dist debug",
-    "lint": "eslint ./src/**",
+    "lint": "eslint ./src/{**,__tests__/**}",
     "test:browserstack": "node browserstack/index.mjs",
     "test:unit": "jest src --runInBand --verbose",
     "test:unit:watch": "npm run test:unit -- --watch",
@@ -30,10 +30,10 @@
   "dependencies": {
     "@timeone-group/storage-js": "^0.3.1",
     "core-js": "^3.9.1",
-    "dotenv": "^16.0.1",
     "js-cookie": "^3.0.1",
     "regenerator-runtime": "^0.13.9",
     "standard-version": "^9.5.0",
+    "uuid": "^8.3.2",
     "whatwg-fetch": "^3.6.2"
   },
   "devDependencies": {
@@ -47,6 +47,7 @@
     "babel-loader-exclude-node-modules-except": "^1.1.2",
     "browser-env": "^3.3.0",
     "browserstack-local": "^1.4.9",
+    "dotenv": "^16.0.1",
     "eslint": "^8.12.0",
     "eslint-config-airbnb-base": "^15.0.0",
     "eslint-config-prettier": "^8.5.0",

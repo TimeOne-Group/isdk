@@ -13,7 +13,7 @@ import {
 import CONSTANTS from '../../../src/constants.mjs';
 import TEST_CONSTANTS from './constants.mjs';
 
-const testName = 'should_not_set_subid';
+const testName = 'should_set_subid_but_not_write_in_storage';
 const url = `${TEST_CONSTANTS.baseUrl}?${CONSTANTS.subid.queryname}=${TEST_CONSTANTS.subid}`;
 
 export default async function shouldNotSetSubid(driver) {
@@ -28,7 +28,7 @@ export default async function shouldNotSetSubid(driver) {
 
     expect(initialConsent).toEqual(CONSTANTS.consent.status.unknown);
     expect(initialprogid).toBeFalsy();
-    expect(initialSubid).toBeFalsy();
+    expect(initialSubid).toEqual(TEST_CONSTANTS.subid);
 
     await setOptin(driver);
 
@@ -44,7 +44,7 @@ export default async function shouldNotSetSubid(driver) {
     const subidAfterCleanCmp = await getSdkState(driver, 'subid');
 
     expect(unknownConsent).toEqual(CONSTANTS.consent.status.unknown);
-    expect(subidAfterCleanCmp).toBeFalsy();
+    expect(subidAfterCleanCmp).toEqual(TEST_CONSTANTS.subid);
 
     await setOptout(driver);
 
@@ -52,13 +52,13 @@ export default async function shouldNotSetSubid(driver) {
     const subidFromAfterSetOptout = await getSdkState(driver, 'subid');
 
     expect(optoutConsent).toEqual(CONSTANTS.consent.status.optout);
-    expect(subidFromAfterSetOptout).toBeFalsy();
+    expect(subidFromAfterSetOptout).toEqual(TEST_CONSTANTS.subid);
 
     await driver.get(url);
 
     const subidFromReloadAfterOptout = await getSdkState(driver, 'subid');
 
-    expect(subidFromReloadAfterOptout).toBeFalsy();
+    expect(subidFromReloadAfterOptout).toEqual(TEST_CONSTANTS.subid);
     await browserstackLogSuccess(
       driver,
       `${TEST_CONSTANTS.groupTestName} | ${testName} - Check subid value to be equal to ${TEST_CONSTANTS.subid}`

@@ -1,7 +1,7 @@
 import Cookie from 'js-cookie';
 
-import * as utils from './utils.mjs';
-import CONSTANTS from './constants.mjs';
+import * as utils from '../utils.mjs';
+import CONSTANTS from '../constants.mjs';
 
 const name = 'foo';
 

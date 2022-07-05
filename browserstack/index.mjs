@@ -60,6 +60,7 @@ async function runTestWithCaps(capabilities) {
     whenNoConsentDefined.shouldSetConsentToOptin,
     whenNoConsentDefined.shouldSetConsentToOptout,
     whenNoConsentDefined.shouldSetSubidIfConsentIsOptin,
+    whenNoConsentDefined.shouldSetSubidIfConsentIsOptoutOrUnknownAndSubidInQueryparams,
     whenNoConsentDefined.shouldNotSetSubidIfConsentIsOptoutOrUnknown,
     whenNoConsentDefined.shouldSetSdkCashbackSubid,
 
@@ -67,7 +68,7 @@ async function runTestWithCaps(capabilities) {
     whenOptinDefined.shouldSetSubidFromStorage,
     whenOptinDefined.shouldSetSdkCashbackSubid,
 
-    whenOptoutDefined.shouldNotSetSubid,
+    whenOptoutDefined.shouldSetSubidButNotWriteInStorage,
     whenOptoutDefined.shouldSetSdkCashbackSubid,
 
     whenCmpCookieExpire.shouldSetSdkToUnknownState,

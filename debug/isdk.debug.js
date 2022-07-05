@@ -1,5 +1,5 @@
 
-/*! isdk 1.0.0 https://github.com/https://github.com/TimeOne-Group/isdk#readme @license GPL-3.0 */
+/*! isdk 1.0.1 https://github.com/https://github.com/TimeOne-Group/isdk#readme @license GPL-3.0 */
 (function () {
   'use strict';
 
@@ -7075,7 +7075,7 @@
     return StorageJS;
   }();
 
-  var _httpsBTime1MeV;
+  var _httpsBTime1MeV, _httpsCTime1MeV, _httpsCTime1MeV2;
 
   var CONSTANTS = {
     sdkName: '__ISDK',
@@ -7090,6 +7090,10 @@
         optout: 'optout'
       }
     },
+    event_consent_id: {
+      name: 'event_consent_id',
+      ttl: 390
+    },
     subid: {
       name: 'subid',
       queryname: 'toSubid',
@@ -7100,10 +7104,18 @@
       queryname: 'toCashback',
       ttl: 30
     },
+    stats: {
+      type: {
+        visit: 'visit',
+        conversion: 'conversion'
+      }
+    },
     default_storage_prefix: 'to',
     default_ttl: 390,
     urls: {
-      conversion: ((_httpsBTime1MeV = "https://b.time1.me/v1/b") === null || _httpsBTime1MeV === void 0 ? void 0 : _httpsBTime1MeV.split(',')) || []
+      conversion: ((_httpsBTime1MeV = "https://b.time1.me/v1/b") === null || _httpsBTime1MeV === void 0 ? void 0 : _httpsBTime1MeV.split(',')) || [],
+      stats: ((_httpsCTime1MeV = "https://c.time1.me/v1/log/consent") === null || _httpsCTime1MeV === void 0 ? void 0 : _httpsCTime1MeV.split(',')) || [],
+      proofConsent: ((_httpsCTime1MeV2 = "https://c.time1.me/v1/log/consent/proof") === null || _httpsCTime1MeV2 === void 0 ? void 0 : _httpsCTime1MeV2.split(',')) || []
     }
   };
 
@@ -7187,6 +7199,21 @@
       }
     }, _marked);
   }
+  function getApiIterator(urls) {
+    var iterator = urlsIterator(urls);
+    var currentUrl = iterator.next().value;
+    return {
+      next: function next() {
+        currentUrl = iterator.next().value;
+      },
+
+      get url() {
+        return currentUrl;
+      },
+
+      urls: urls
+    };
+  }
 
   var sdkName$1 = CONSTANTS.sdkName;
 
@@ -7209,12 +7236,13 @@
         return showLocalstorageDebug();
       }, 300);
     } else {
-      var _utils$Storage$find, _utils$Storage$find2, _utils$Storage$find3;
+      var _utils$Storage$find, _utils$Storage$find2, _utils$Storage$find3, _utils$Storage$find4;
 
       var storageState = {
         to_consent: (_utils$Storage$find = Storage.find(CONSTANTS.consent.name)) === null || _utils$Storage$find === void 0 ? void 0 : _utils$Storage$find.value,
         to_subid: (_utils$Storage$find2 = Storage.find(CONSTANTS.subid.name)) === null || _utils$Storage$find2 === void 0 ? void 0 : _utils$Storage$find2.value,
-        to_cashback: (_utils$Storage$find3 = Storage.find(CONSTANTS.cashback.name)) === null || _utils$Storage$find3 === void 0 ? void 0 : _utils$Storage$find3.value
+        to_cashback: (_utils$Storage$find3 = Storage.find(CONSTANTS.cashback.name)) === null || _utils$Storage$find3 === void 0 ? void 0 : _utils$Storage$find3.value,
+        to_event_consent_id: (_utils$Storage$find4 = Storage.find(CONSTANTS.event_consent_id.name)) === null || _utils$Storage$find4 === void 0 ? void 0 : _utils$Storage$find4.value
       };
       document.getElementById('debug-localstorage').textContent = JSON.stringify(storageState, null, '\t');
     }
@@ -7230,7 +7258,8 @@
         cmp_cookie: api.get('klaro'),
         to_consent: api.get(getPrefixedCookieName(CONSTANTS.consent.name)),
         to_subid: api.get(getPrefixedCookieName(CONSTANTS.subid.name)),
-        to_cashback: api.get(getPrefixedCookieName(CONSTANTS.cashback.name))
+        to_cashback: api.get(getPrefixedCookieName(CONSTANTS.cashback.name)),
+        to_event_consent_id: api.get(getPrefixedCookieName(CONSTANTS.event_consent_id.name))
       };
       document.getElementById('debug-cookie').textContent = JSON.stringify(cookieState, null, '\t');
     }
@@ -7242,13 +7271,14 @@
         return showDebug(callback);
       }, 300);
     } else {
-      var _window$sdkName2, _window$sdkName3, _window$sdkName4, _window$sdkName5;
+      var _window$sdkName2, _window$sdkName3, _window$sdkName4, _window$sdkName5, _window$sdkName6;
 
       var state = {
         progid: (_window$sdkName2 = window[sdkName$1]) === null || _window$sdkName2 === void 0 ? void 0 : _window$sdkName2.progid,
         consent: (_window$sdkName3 = window[sdkName$1]) === null || _window$sdkName3 === void 0 ? void 0 : _window$sdkName3.consent,
         subid: (_window$sdkName4 = window[sdkName$1]) === null || _window$sdkName4 === void 0 ? void 0 : _window$sdkName4.subid,
-        cashback: (_window$sdkName5 = window[sdkName$1]) === null || _window$sdkName5 === void 0 ? void 0 : _window$sdkName5.cashback
+        cashback: (_window$sdkName5 = window[sdkName$1]) === null || _window$sdkName5 === void 0 ? void 0 : _window$sdkName5.cashback,
+        to_event_consent_id: (_window$sdkName6 = window[sdkName$1]) === null || _window$sdkName6 === void 0 ? void 0 : _window$sdkName6.eventConsentId
       };
       document.getElementById('debug').textContent = JSON.stringify(state, null, '\t');
     }
@@ -7263,11 +7293,87 @@
     });
   };
 
+  // Unique ID creation requires a high quality random # generator. In the browser we therefore
+  // require the crypto API and do not support built-in fallback to lower quality random number
+  // generators (like Math.random()).
+  var getRandomValues;
+  var rnds8 = new Uint8Array(16);
+  function rng() {
+    // lazy load so that environments that need to polyfill have a chance to do so
+    if (!getRandomValues) {
+      // getRandomValues needs to be invoked in a context where "this" is a Crypto implementation. Also,
+      // find the complete implementation of crypto (msCrypto) on IE11.
+      getRandomValues = typeof crypto !== 'undefined' && crypto.getRandomValues && crypto.getRandomValues.bind(crypto) || typeof msCrypto !== 'undefined' && typeof msCrypto.getRandomValues === 'function' && msCrypto.getRandomValues.bind(msCrypto);
+
+      if (!getRandomValues) {
+        throw new Error('crypto.getRandomValues() not supported. See https://github.com/uuidjs/uuid#getrandomvalues-not-supported');
+      }
+    }
+
+    return getRandomValues(rnds8);
+  }
+
+  var REGEX = /^(?:[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}|00000000-0000-0000-0000-000000000000)$/i;
+
+  function validate(uuid) {
+    return typeof uuid === 'string' && REGEX.test(uuid);
+  }
+
+  /**
+   * Convert array of 16 byte values to UUID string format of the form:
+   * XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX
+   */
+
+  var byteToHex = [];
+
+  for (var i = 0; i < 256; ++i) {
+    byteToHex.push((i + 0x100).toString(16).substr(1));
+  }
+
+  function stringify(arr) {
+    var offset = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 0; // Note: Be careful editing this code!  It's been tuned for performance
+    // and works in ways you may not expect. See https://github.com/uuidjs/uuid/pull/434
+
+    var uuid = (byteToHex[arr[offset + 0]] + byteToHex[arr[offset + 1]] + byteToHex[arr[offset + 2]] + byteToHex[arr[offset + 3]] + '-' + byteToHex[arr[offset + 4]] + byteToHex[arr[offset + 5]] + '-' + byteToHex[arr[offset + 6]] + byteToHex[arr[offset + 7]] + '-' + byteToHex[arr[offset + 8]] + byteToHex[arr[offset + 9]] + '-' + byteToHex[arr[offset + 10]] + byteToHex[arr[offset + 11]] + byteToHex[arr[offset + 12]] + byteToHex[arr[offset + 13]] + byteToHex[arr[offset + 14]] + byteToHex[arr[offset + 15]]).toLowerCase(); // Consistency check for valid UUID.  If this throws, it's likely due to one
+    // of the following:
+    // - One or more input array values don't map to a hex octet (leading to
+    // "undefined" in the uuid)
+    // - Invalid input values for the RFC `version` or `variant` fields
+
+    if (!validate(uuid)) {
+      throw TypeError('Stringified UUID is invalid');
+    }
+
+    return uuid;
+  }
+
+  function v4(options, buf, offset) {
+    options = options || {};
+    var rnds = options.random || (options.rng || rng)(); // Per 4.4, set bits for version and `clock_seq_hi_and_reserved`
+
+    rnds[6] = rnds[6] & 0x0f | 0x40;
+    rnds[8] = rnds[8] & 0x3f | 0x80; // Copy bytes to buffer, if provided
+
+    if (buf) {
+      offset = offset || 0;
+
+      for (var i = 0; i < 16; ++i) {
+        buf[offset + i] = rnds[i];
+      }
+
+      return buf;
+    }
+
+    return stringify(rnds);
+  }
+
   var _progids = /*#__PURE__*/new WeakMap();
 
   var _conversionUrlIterator = /*#__PURE__*/new WeakMap();
 
-  var _conversionUrl = /*#__PURE__*/new WeakMap();
+  var _statsUrlIterator = /*#__PURE__*/new WeakMap();
+
+  var _proofConsentUrlIterator = /*#__PURE__*/new WeakMap();
 
   var _errors = /*#__PURE__*/new WeakMap();
 
@@ -7275,9 +7381,11 @@
 
   var _configureProgramData = /*#__PURE__*/new WeakSet();
 
-  var _setNextConversionUrl = /*#__PURE__*/new WeakSet();
+  var _callApi = /*#__PURE__*/new WeakSet();
 
-  var _log = /*#__PURE__*/new WeakSet();
+  var _logStats = /*#__PURE__*/new WeakSet();
+
+  var _setPOC = /*#__PURE__*/new WeakSet();
 
   var _setConsent = /*#__PURE__*/new WeakSet();
 
@@ -7307,9 +7415,11 @@
 
       _classPrivateMethodInitSpec(this, _setConsent);
 
-      _classPrivateMethodInitSpec(this, _log);
+      _classPrivateMethodInitSpec(this, _setPOC);
 
-      _classPrivateMethodInitSpec(this, _setNextConversionUrl);
+      _classPrivateMethodInitSpec(this, _logStats);
+
+      _classPrivateMethodInitSpec(this, _callApi);
 
       _classPrivateMethodInitSpec(this, _configureProgramData);
 
@@ -7322,12 +7432,17 @@
 
       _classPrivateFieldInitSpec(this, _conversionUrlIterator, {
         writable: true,
-        value: urlsIterator(CONSTANTS.urls.conversion)
+        value: getApiIterator(CONSTANTS.urls.conversion)
       });
 
-      _classPrivateFieldInitSpec(this, _conversionUrl, {
+      _classPrivateFieldInitSpec(this, _statsUrlIterator, {
         writable: true,
-        value: _classPrivateFieldGet(this, _conversionUrlIterator).next().value
+        value: getApiIterator(CONSTANTS.urls.stats)
+      });
+
+      _classPrivateFieldInitSpec(this, _proofConsentUrlIterator, {
+        writable: true,
+        value: getApiIterator(CONSTANTS.urls.proofConsent)
       });
 
       _classPrivateFieldInitSpec(this, _errors, {
@@ -7360,12 +7475,17 @@
     }, {
       key: "subid",
       get: function get() {
-        return getValue(CONSTANTS.subid.name);
+        return this.constructor.getProgramDataFromQueryParams(CONSTANTS.subid.queryname) || getValue(CONSTANTS.subid.name);
       }
     }, {
       key: "cashbackSubid",
       get: function get() {
-        return getValue(CONSTANTS.cashback.name);
+        return this.constructor.getProgramDataFromQueryParams(CONSTANTS.cashback.queryname) || getValue(CONSTANTS.cashback.name);
+      }
+    }, {
+      key: "eventConsentId",
+      get: function get() {
+        return getValue(CONSTANTS.event_consent_id.name);
       }
     }, {
       key: "_setOptin",
@@ -7400,7 +7520,7 @@
                   _context.next = 3;
                   return _classPrivateMethodGet(this, _setConversion, _setConversion2).call(this, {
                     data: data,
-                    method: '_setSale'
+                    caller: '_setSale'
                   });
 
                 case 3:
@@ -7413,7 +7533,7 @@
 
                   _classPrivateMethodGet(this, _setError, _setError2).call(this, {
                     error: _context.t0,
-                    method: '_setSale',
+                    caller: '_setSale',
                     extra: data
                   });
 
@@ -7443,7 +7563,7 @@
                   _context2.next = 3;
                   return _classPrivateMethodGet(this, _setConversion, _setConversion2).call(this, {
                     data: data,
-                    method: '_setLead'
+                    caller: '_setLead'
                   });
 
                 case 3:
@@ -7456,7 +7576,7 @@
 
                   _classPrivateMethodGet(this, _setError, _setError2).call(this, {
                     error: _context2.t0,
-                    method: '_setLead',
+                    caller: '_setLead',
                     extra: data
                   });
 
@@ -7486,7 +7606,7 @@
                   _context3.next = 3;
                   return _classPrivateMethodGet(this, _setConversion, _setConversion2).call(this, {
                     data: data,
-                    method: '_setDbClick'
+                    caller: '_setDbClick'
                   });
 
                 case 3:
@@ -7499,7 +7619,7 @@
 
                   _classPrivateMethodGet(this, _setError, _setError2).call(this, {
                     error: _context3.t0,
-                    method: '_setDbClick',
+                    caller: '_setDbClick',
                     extra: data
                   });
 
@@ -7529,7 +7649,7 @@
                   _context4.next = 3;
                   return _classPrivateMethodGet(this, _setConversion, _setConversion2).call(this, {
                     data: data,
-                    method: '_setClick'
+                    caller: '_setClick'
                   });
 
                 case 3:
@@ -7542,7 +7662,7 @@
 
                   _classPrivateMethodGet(this, _setError, _setError2).call(this, {
                     error: _context4.t0,
-                    method: '_setClick',
+                    caller: '_setClick',
                     extra: data
                   });
 
@@ -7589,6 +7709,7 @@
           progids: _classPrivateFieldGet(this, _progids),
           consent: this.consent,
           subid: this.subid,
+          event_consent_id: this.eventConsentId,
           cashbackSubid: this.cashbackSubid,
           errors: _classPrivateMethodGet(this, _getErrors, _getErrors2).call(this),
           conversionUrls: CONSTANTS.urls.conversion
@@ -7632,32 +7753,152 @@
     }
   }
 
-  function _setNextConversionUrl2() {
-    _classPrivateFieldSet(this, _conversionUrl, _classPrivateFieldGet(this, _conversionUrlIterator).next().value);
+  function _callApi2(_x5) {
+    return _callApi3.apply(this, arguments);
   }
 
-  function _log2(_ref4) {
-    _ref4.type;
-        _ref4.value;
+  function _callApi3() {
+    _callApi3 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee5(_ref4) {
+      var urlIterator, _ref4$body, body, caller, response, error;
+
+      return regeneratorRuntime.wrap(function _callee5$(_context5) {
+        while (1) {
+          switch (_context5.prev = _context5.next) {
+            case 0:
+              urlIterator = _ref4.urlIterator, _ref4$body = _ref4.body, body = _ref4$body === void 0 ? {} : _ref4$body, caller = _ref4.caller;
+
+              if (urlIterator !== null && urlIterator !== void 0 && urlIterator.url) {
+                _context5.next = 4;
+                break;
+              }
+
+              _classPrivateMethodGet(this, _setError, _setError2).call(this, {
+                error: {
+                  message: "Failed to contact server on ".concat(urlIterator === null || urlIterator === void 0 ? void 0 : urlIterator.urls)
+                },
+                caller: caller
+              });
+
+              return _context5.abrupt("return");
+
+            case 4:
+              _context5.prev = 4;
+              _context5.next = 7;
+              return fetch(urlIterator === null || urlIterator === void 0 ? void 0 : urlIterator.url, {
+                method: 'POST',
+                headers: {
+                  accept: 'application/json',
+                  'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(body)
+              });
+
+            case 7:
+              response = _context5.sent;
+
+              if (response.ok) {
+                _context5.next = 13;
+                break;
+              }
+
+              _context5.next = 11;
+              return response.json();
+
+            case 11:
+              error = _context5.sent;
+
+              _classPrivateMethodGet(this, _setError, _setError2).call(this, {
+                error: {
+                  message: " code ".concat(response === null || response === void 0 ? void 0 : response.status, " - ").concat(error === null || error === void 0 ? void 0 : error.message)
+                },
+                caller: caller,
+                extra: {
+                  body: body,
+                  url: _classPrivateFieldGet(this, _conversionUrlIterator).url
+                }
+              });
+
+            case 13:
+              _context5.next = 19;
+              break;
+
+            case 15:
+              _context5.prev = 15;
+              _context5.t0 = _context5["catch"](4);
+              urlIterator.next();
+
+              _classPrivateMethodGet(this, _callApi, _callApi2).call(this, {
+                urlIterator: urlIterator,
+                body: body,
+                caller: caller
+              });
+
+            case 19:
+            case "end":
+              return _context5.stop();
+          }
+        }
+      }, _callee5, this, [[4, 15]]);
+    }));
+    return _callApi3.apply(this, arguments);
+  }
+
+  function _logStats2(_ref5) {
+    var _this = this;
+
+    var consent = _ref5.consent,
+        type = _ref5.type;
+    var toSubids = [this.subid, this.cashbackSubid].filter(Boolean);
 
     _classPrivateFieldGet(this, _progids).forEach(function (progid) {
+      _classPrivateMethodGet(_this, _callApi, _callApi2).call(_this, {
+        urlIterator: _classPrivateFieldGet(_this, _statsUrlIterator),
+        body: {
+          type: type,
+          progid: progid,
+          status: consent,
+          toSubids: toSubids
+        },
+        caller: '#logStats'
+      });
+    });
+  }
+
+  function _setPOC2() {
+    var eventConsentId = v4();
+    setValue(eventConsentId, CONSTANTS.event_consent_id.name);
+    var body = {
+      event_consent_id: eventConsentId,
+      url: "".concat(window.location.hostname).concat(window.location.pathname)
+    };
+
+    _classPrivateMethodGet(this, _callApi, _callApi2).call(this, {
+      urlIterator: _classPrivateFieldGet(this, _proofConsentUrlIterator),
+      body: body,
+      caller: '#setPOC'
     });
   }
 
   function _setConsent2(consent) {
     var shouldLog = consent !== this.consent;
+    var shouldSetupPOC = !this.eventConsentId && this.subid && consent === CONSTANTS.consent.status.optin;
     setValue(consent, CONSTANTS.consent.name);
 
     if (shouldLog) {
-      _classPrivateMethodGet(this, _log, _log2).call(this, {
-        type: 'consent',
-        value: consent
+      _classPrivateMethodGet(this, _logStats, _logStats2).call(this, {
+        consent: consent,
+        type: CONSTANTS.stats.type.visit
       });
+    }
+
+    if (shouldSetupPOC) {
+      _classPrivateMethodGet(this, _setPOC, _setPOC2).call(this);
     }
   }
 
   function _handleNoConsent2() {
     removeValue(CONSTANTS.subid.name);
+    removeValue(CONSTANTS.event_consent_id.name);
   }
 
   function _canConvert2() {
@@ -7669,33 +7910,35 @@
   }
 
   function _getErrors2() {
-    return _classPrivateFieldGet(this, _errors).map(function (_ref5) {
-      var error = _ref5.error,
-          method = _ref5.method,
-          extra = _ref5.extra;
+    return _classPrivateFieldGet(this, _errors).map(function (_ref6) {
+      var error = _ref6.error,
+          caller = _ref6.caller,
+          extra = _ref6.extra;
       return {
-        message: "While calling \"".concat(method, "\" method: ").concat(error.message),
+        message: "While calling the method \"".concat(caller, "\": ").concat(error.message),
         extra: extra
       };
     });
   }
 
-  function _setConversion2(_x5) {
+  function _setConversion2(_x6) {
     return _setConversion3.apply(this, arguments);
   }
 
   function _setConversion3() {
-    _setConversion3 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee5(_ref6) {
-      var _ref6$data, data, _ref6$method, method, progid, comid, iu, toSubid, toCashback, toSubids, payload, sanitizedPayload, response, error;
+    _setConversion3 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee6(_ref7) {
+      var _classPrivateFieldGet2;
 
-      return regeneratorRuntime.wrap(function _callee5$(_context5) {
+      var _ref7$data, data, _ref7$caller, caller, progid, comid, iu, _classPrivateFieldGet3, toSubid, toCashback, toSubids, payload, body;
+
+      return regeneratorRuntime.wrap(function _callee6$(_context6) {
         while (1) {
-          switch (_context5.prev = _context5.next) {
+          switch (_context6.prev = _context6.next) {
             case 0:
-              _ref6$data = _ref6.data, data = _ref6$data === void 0 ? {} : _ref6$data, _ref6$method = _ref6.method, method = _ref6$method === void 0 ? 'setConversion' : _ref6$method;
+              _ref7$data = _ref7.data, data = _ref7$data === void 0 ? {} : _ref7$data, _ref7$caller = _ref7.caller, caller = _ref7$caller === void 0 ? 'setConversion' : _ref7$caller;
 
               if (_classPrivateMethodGet(this, _canConvert, _canConvert2).call(this)) {
-                _context5.next = 3;
+                _context6.next = 3;
                 break;
               }
 
@@ -7705,105 +7948,56 @@
               progid = data.progid, comid = data.comid, iu = data.iu;
 
               if (!(!progid || !comid || !iu)) {
-                _context5.next = 6;
+                _context6.next = 6;
                 break;
               }
 
               throw new Error("Missing progid or comid or iu. Those data are mandatory to make a conversion");
 
             case 6:
-              if (_classPrivateFieldGet(this, _conversionUrl)) {
-                _context5.next = 8;
+              if ((_classPrivateFieldGet2 = _classPrivateFieldGet(this, _conversionUrlIterator)) !== null && _classPrivateFieldGet2 !== void 0 && _classPrivateFieldGet2.url) {
+                _context6.next = 8;
                 break;
               }
 
-              throw new Error("Failed to contact server on ".concat(JSON.stringify(CONSTANTS.urls.conversion)));
+              throw new Error("Failed to contact server on ".concat(JSON.stringify((_classPrivateFieldGet3 = _classPrivateFieldGet(this, _conversionUrlIterator)) === null || _classPrivateFieldGet3 === void 0 ? void 0 : _classPrivateFieldGet3.urls)));
 
             case 8:
               toSubid = {
                 type: 'consent',
-                value: this.subid || this.constructor.getProgramDataFromQueryParams(CONSTANTS.subid.queryname)
+                value: this.subid
               };
               toCashback = {
                 type: 'cashback',
-                value: this.cashbackSubid || this.constructor.getProgramDataFromQueryParams(CONSTANTS.cashback.queryname)
+                value: this.cashbackSubid
               };
-              toSubids = [toSubid, toCashback].filter(function (_ref7) {
-                var value = _ref7.value;
+              toSubids = [toSubid, toCashback].filter(function (_ref8) {
+                var value = _ref8.value;
                 return !!value;
               });
               payload = _objectSpread2(_objectSpread2({}, data), {}, {
+                event_consent_id: this.eventConsentId,
                 toSubids: toSubids
               });
-              sanitizedPayload = Object.fromEntries(Object.entries(payload).filter(function (_ref8) {
-                var _ref9 = _slicedToArray(_ref8, 2),
-                    value = _ref9[1];
+              body = Object.fromEntries(Object.entries(payload).filter(function (_ref9) {
+                var _ref10 = _slicedToArray(_ref9, 2),
+                    value = _ref10[1];
 
                 return !!value;
               }));
-              _context5.prev = 13;
-              _context5.next = 16;
-              return fetch(_classPrivateFieldGet(this, _conversionUrl), {
-                method: 'POST',
-                headers: {
-                  accept: 'application/json',
-                  'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(sanitizedPayload)
+              _context6.next = 15;
+              return _classPrivateMethodGet(this, _callApi, _callApi2).call(this, {
+                urlIterator: _classPrivateFieldGet(this, _conversionUrlIterator),
+                body: body,
+                caller: caller
               });
 
-            case 16:
-              response = _context5.sent;
-
-              if (response.ok) {
-                _context5.next = 22;
-                break;
-              }
-
-              _context5.next = 20;
-              return response.json();
-
-            case 20:
-              error = _context5.sent;
-
-              _classPrivateMethodGet(this, _setError, _setError2).call(this, {
-                error: error,
-                method: method,
-                extra: _objectSpread2(_objectSpread2({}, data), {}, {
-                  url: _classPrivateFieldGet(this, _conversionUrl)
-                })
-              });
-
-            case 22:
-              _context5.next = 30;
-              break;
-
-            case 24:
-              _context5.prev = 24;
-              _context5.t0 = _context5["catch"](13);
-
-              _classPrivateMethodGet(this, _setError, _setError2).call(this, {
-                error: _context5.t0,
-                method: method,
-                extra: _objectSpread2(_objectSpread2({}, data), {}, {
-                  url: _classPrivateFieldGet(this, _conversionUrl)
-                })
-              });
-
-              _classPrivateMethodGet(this, _setNextConversionUrl, _setNextConversionUrl2).call(this);
-
-              _context5.next = 30;
-              return _classPrivateMethodGet(this, _setConversion, _setConversion2).call(this, {
-                data: data,
-                method: method
-              });
-
-            case 30:
+            case 15:
             case "end":
-              return _context5.stop();
+              return _context6.stop();
           }
         }
-      }, _callee5, this, [[13, 24]]);
+      }, _callee6, this);
     }));
     return _setConversion3.apply(this, arguments);
   }

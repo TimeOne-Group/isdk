@@ -28,7 +28,7 @@ export default async function shouldSetSdkToUnknownState(driver) {
 
     expect(initialConsent).toEqual(CONSTANTS.consent.status.unknown);
     expect(initialprogid).toBeFalsy();
-    expect(initialSubid).toBeFalsy();
+    expect(initialSubid).toEqual(TEST_CONSTANTS.subid);
     expect(initialCashbackSubid).toEqual(TEST_CONSTANTS.cashbackSubid);
 
     await setOptin(driver);
@@ -48,7 +48,7 @@ export default async function shouldSetSdkToUnknownState(driver) {
     const cashbackSubidAfterClean = await getSdkState(driver, 'cashbackSubid');
 
     expect(consentAfterClean).toEqual(CONSTANTS.consent.status.unknown);
-    expect(subidAfterClean).toBeFalsy();
+    expect(subidAfterClean).toEqual(TEST_CONSTANTS.subid);
     expect(cashbackSubidAfterClean).toEqual(TEST_CONSTANTS.cashbackSubid);
 
     await browserstackLogSuccess(
