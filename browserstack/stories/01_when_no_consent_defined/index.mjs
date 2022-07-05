@@ -4,3 +4,4 @@ export { default as shouldSetConsentToOptout } from './should_set_consent_to_opt
 export { default as shouldSetSubidIfConsentIsOptin } from './should_set_subid_if_consent_is_optin.mjs';
 export { default as shouldNotSetSubidIfConsentIsOptoutOrUnknown } from './should_not_set_subid_if_consent_is_optout_or_unknown.mjs';
 export { default as shouldSetSdkCashbackSubid } from './should_set_sdk_cashbackSubid.mjs';
+export { default as shouldSetSubidIfConsentIsOptoutOrUnknownAndSubidInQueryparams } from './should_set_subid_if_consent_is_optout_or_unknown_and_subid_in_queryparams.mjs';

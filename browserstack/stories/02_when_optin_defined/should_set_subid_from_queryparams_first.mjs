@@ -25,7 +25,7 @@ export default async function shouldSetSubidFromQueryparamsFirst(driver) {
 
     expect(initialConsent).toEqual(CONSTANTS.consent.status.unknown);
     expect(initialprogid).toBeFalsy();
-    expect(initialSubid).toBeFalsy();
+    expect(initialSubid).toEqual(TEST_CONSTANTS.subid);
 
     await setOptin(driver);
 

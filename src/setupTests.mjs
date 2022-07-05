@@ -1,8 +1,12 @@
 /* eslint-disable import/no-extraneous-dependencies */
 import { enableFetchMocks } from 'jest-fetch-mock';
+import dotenv from 'dotenv';
 
 import './polyfill.mjs';
 
 enableFetchMocks();
+dotenv.config({ path: './.env.test' });
 
-process.env.API_CONVERSION_URLS = 'https://fake-api/v1/b,https://fallback-fake-api/v1/b';
+jest.mock('uuid', () => ({
+  v4: () => '993be906-9074-499a-aeb6-5af4e627aa06',
+}));

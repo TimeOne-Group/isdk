@@ -1,8 +1,8 @@
 /* eslint-disable no-console */
-import init from './init.mjs';
-import Sdk from './Sdk.mjs';
+import init from '../init.mjs';
+import Sdk from '../Sdk.mjs';
 
-import CONSTANTS from './constants.mjs';
+import CONSTANTS from '../constants.mjs';
 
 const { sdkName } = CONSTANTS;
 

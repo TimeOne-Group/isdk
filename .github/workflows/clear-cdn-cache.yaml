@@ -1,0 +1,16 @@
+---
+name: Clear CDN cache
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  clear-cdn-cache:
+    name: Clear CDN cache
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - run: curl $CLEAR_CDN_CACHE_URL
+        env:
+          CLEAR_CDN_CACHE_URL: ${{ secrets.CLEAR_CDN_CACHE_URL }}

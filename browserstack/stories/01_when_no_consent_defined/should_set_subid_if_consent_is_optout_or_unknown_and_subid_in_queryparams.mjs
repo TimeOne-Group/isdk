@@ -5,18 +5,19 @@ import {
   browserstackLogSuccess,
   browserstackLogError,
   getSdkState,
-  setOptin,
+  setOptout,
   printTestInConsole,
 } from '../../utils.mjs';
 import CONSTANTS from '../../../src/constants.mjs';
 import TEST_CONSTANTS from './constants.mjs';
 
-const testName = 'should_set_subid_from_storage';
+const testName = 'should_set_subid_if_consent_is_optout_or_unknown_and_subid_in_queryparams';
+const url = `${TEST_CONSTANTS.baseUrl}?${CONSTANTS.subid.queryname}=${TEST_CONSTANTS.subid}`;
 
-export default async function shouldSetSubidFromStorage(driver) {
+export default async function shouldNotSetSubidIfConsentIsOptoutOrUnknown(driver) {
   printTestInConsole(TEST_CONSTANTS.groupTestName, testName);
 
-  await driver.get(`${TEST_CONSTANTS.baseUrl}?${CONSTANTS.subid.queryname}=${TEST_CONSTANTS.subid}`);
+  await driver.get(url);
 
   try {
     const initialConsent = await getSdkState(driver, 'consent');
@@ -27,29 +28,20 @@ export default async function shouldSetSubidFromStorage(driver) {
     expect(initialprogid).toBeFalsy();
     expect(initialSubid).toEqual(TEST_CONSTANTS.subid);
 
-    await setOptin(driver);
+    await setOptout(driver);
 
     const consent = await getSdkState(driver, 'consent');
     const subid = await getSdkState(driver, 'subid');
 
-    expect(consent).toEqual(CONSTANTS.consent.status.optin);
+    expect(consent).toEqual(CONSTANTS.consent.status.optout);
     expect(subid).toEqual(TEST_CONSTANTS.subid);
-
-    await driver.get(`${TEST_CONSTANTS.baseUrl}`);
-
-    const subidFromStorage = await getSdkState(driver, 'subid');
-
-    expect(subidFromStorage).toEqual(TEST_CONSTANTS.subid);
 
     await browserstackLogSuccess(
       driver,
-      `${TEST_CONSTANTS.groupTestName} | ${testName} - Check subid value to be equal to ${TEST_CONSTANTS.subid}`
+      `${TEST_CONSTANTS.groupTestName} | ${testName} - Check subid value is not set`
     );
   } catch (e) {
     console.error(e.message);
-    await browserstackLogError(
-      driver,
-      `${TEST_CONSTANTS.groupTestName} | ${testName} - subid value is not equal to ${TEST_CONSTANTS.subid}`
-    );
+    await browserstackLogError(driver, `${TEST_CONSTANTS.groupTestName} | ${testName} - subid value should not be set`);
   }
 }
