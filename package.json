@@ -14,8 +14,7 @@
     "test:unit:watch": "npm run test:unit -- --watch",
     "test": "npm run test:unit && npm run test:browserstack",
     "release": "standard-version -m 'chore(release): %s 🚀'",
-    "hotfix": "standard-version -m 'chore(hotfix): %s 🔧' --release-as patch",
-    "prepare": "husky install"
+    "hotfix": "standard-version -m 'chore(hotfix): %s 🔧' --release-as patch"
   },
   "repository": {
     "type": "git",

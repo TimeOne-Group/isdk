@@ -7075,7 +7075,7 @@
     return StorageJS;
   }();
 
-  var _httpsBTime1MeV, _httpsCTime1MeV, _httpsCTime1MeV2;
+  var _httpsBackService, _httpsTrackingSer, _httpsTrackingSer2;
 
   var CONSTANTS = {
     sdkName: '__ISDK',
@@ -7113,9 +7113,9 @@
     default_storage_prefix: 'to',
     default_ttl: 390,
     urls: {
-      conversion: ((_httpsBTime1MeV = "https://b.time1.me/v1/b") === null || _httpsBTime1MeV === void 0 ? void 0 : _httpsBTime1MeV.split(',')) || [],
-      stats: ((_httpsCTime1MeV = "https://c.time1.me/v1/log/consent") === null || _httpsCTime1MeV === void 0 ? void 0 : _httpsCTime1MeV.split(',')) || [],
-      proofConsent: ((_httpsCTime1MeV2 = "https://c.time1.me/v1/log/consent/proof") === null || _httpsCTime1MeV2 === void 0 ? void 0 : _httpsCTime1MeV2.split(',')) || []
+      conversion: ((_httpsBackService = "https://back.service.sandbox.localhost/v1/b") === null || _httpsBackService === void 0 ? void 0 : _httpsBackService.split(',')) || [],
+      stats: ((_httpsTrackingSer = "https://tracking.service.sandbox.localhost/v1/log/consent,") === null || _httpsTrackingSer === void 0 ? void 0 : _httpsTrackingSer.split(',')) || [],
+      proofConsent: ((_httpsTrackingSer2 = "https://tracking.service.sandbox.localhost/v1/log/consent/proof") === null || _httpsTrackingSer2 === void 0 ? void 0 : _httpsTrackingSer2.split(',')) || []
     }
   };
 
@@ -7217,15 +7217,35 @@
 
   var sdkName$1 = CONSTANTS.sdkName;
 
+  var showJwtDebug = function showJwtDebug(name, id) {
+    if (!document.getElementById(id)) {
+      setTimeout(function () {
+        return showJwtDebug(name, id);
+      }, 300);
+    } else {
+      var _window$sdkName;
+
+      // eslint-disable-next-line no-underscore-dangle
+      var token = (_window$sdkName = window[sdkName$1]) === null || _window$sdkName === void 0 ? void 0 : _window$sdkName[name];
+
+      if (token) {
+        // eslint-disable-next-line no-underscore-dangle
+        var jwt = window.__jwtDecode("eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.".concat(token));
+
+        document.getElementById(id).textContent = JSON.stringify(jwt, null, '\t');
+      }
+    }
+  };
+
   var showTraceDebug = function showTraceDebug() {
     if (!document.getElementById('debug-trace')) {
       setTimeout(function () {
         return showTraceDebug();
       }, 300);
     } else {
-      var _window$sdkName, _window$sdkName$getTr;
+      var _window$sdkName2, _window$sdkName2$getT;
 
-      var traceState = (_window$sdkName = window[sdkName$1]) === null || _window$sdkName === void 0 ? void 0 : (_window$sdkName$getTr = _window$sdkName.getTrace) === null || _window$sdkName$getTr === void 0 ? void 0 : _window$sdkName$getTr.call(_window$sdkName);
+      var traceState = (_window$sdkName2 = window[sdkName$1]) === null || _window$sdkName2 === void 0 ? void 0 : (_window$sdkName2$getT = _window$sdkName2.getTrace) === null || _window$sdkName2$getT === void 0 ? void 0 : _window$sdkName2$getT.call(_window$sdkName2);
       document.getElementById('debug-trace').textContent = JSON.stringify(traceState, null, '\t');
     }
   };
@@ -7271,14 +7291,14 @@
         return showDebug(callback);
       }, 300);
     } else {
-      var _window$sdkName2, _window$sdkName3, _window$sdkName4, _window$sdkName5, _window$sdkName6;
+      var _window$sdkName3, _window$sdkName4, _window$sdkName5, _window$sdkName6, _window$sdkName7;
 
       var state = {
-        progid: (_window$sdkName2 = window[sdkName$1]) === null || _window$sdkName2 === void 0 ? void 0 : _window$sdkName2.progid,
-        consent: (_window$sdkName3 = window[sdkName$1]) === null || _window$sdkName3 === void 0 ? void 0 : _window$sdkName3.consent,
-        subid: (_window$sdkName4 = window[sdkName$1]) === null || _window$sdkName4 === void 0 ? void 0 : _window$sdkName4.subid,
-        cashback: (_window$sdkName5 = window[sdkName$1]) === null || _window$sdkName5 === void 0 ? void 0 : _window$sdkName5.cashback,
-        to_event_consent_id: (_window$sdkName6 = window[sdkName$1]) === null || _window$sdkName6 === void 0 ? void 0 : _window$sdkName6.eventConsentId
+        progid: (_window$sdkName3 = window[sdkName$1]) === null || _window$sdkName3 === void 0 ? void 0 : _window$sdkName3.progid,
+        consent: (_window$sdkName4 = window[sdkName$1]) === null || _window$sdkName4 === void 0 ? void 0 : _window$sdkName4.consent,
+        subid: (_window$sdkName5 = window[sdkName$1]) === null || _window$sdkName5 === void 0 ? void 0 : _window$sdkName5.subid,
+        cashback: (_window$sdkName6 = window[sdkName$1]) === null || _window$sdkName6 === void 0 ? void 0 : _window$sdkName6.cashback,
+        to_event_consent_id: (_window$sdkName7 = window[sdkName$1]) === null || _window$sdkName7 === void 0 ? void 0 : _window$sdkName7.eventConsentId
       };
       document.getElementById('debug').textContent = JSON.stringify(state, null, '\t');
     }
@@ -7290,6 +7310,8 @@
       showCookieDebug();
       showLocalstorageDebug();
       showTraceDebug();
+      showJwtDebug === null || showJwtDebug === void 0 ? void 0 : showJwtDebug('subid', 'debug-subid-jwt');
+      showJwtDebug === null || showJwtDebug === void 0 ? void 0 : showJwtDebug('cashbackSubid', 'debug-cashback-jwt');
     });
   };
 
@@ -7450,7 +7472,7 @@
         value: []
       });
 
-      this.env = "production";
+      this.env = "sandbox";
 
       _classPrivateMethodGet(this, _setProgids, _setProgids2).call(this);
 
@@ -7681,6 +7703,19 @@
         return _setClick;
       }()
     }, {
+      key: "addConversion",
+      value: function addConversion(progid) {
+        if (!progid) {
+          throw new Error("Missing progid. This data is mandatory to add a conversion");
+        }
+
+        _classPrivateMethodGet(this, _logStats, _logStats2).call(this, {
+          consent: this.consent,
+          progid: progid,
+          type: CONSTANTS.stats.type.conversion
+        });
+      }
+    }, {
       key: "push",
       value: function push(args) {
         var _ref = args || [],
@@ -7844,23 +7879,20 @@
   }
 
   function _logStats2(_ref5) {
-    var _this = this;
-
     var consent = _ref5.consent,
-        type = _ref5.type;
+        type = _ref5.type,
+        progid = _ref5.progid;
     var toSubids = [this.subid, this.cashbackSubid].filter(Boolean);
 
-    _classPrivateFieldGet(this, _progids).forEach(function (progid) {
-      _classPrivateMethodGet(_this, _callApi, _callApi2).call(_this, {
-        urlIterator: _classPrivateFieldGet(_this, _statsUrlIterator),
-        body: {
-          type: type,
-          progid: progid,
-          status: consent,
-          toSubids: toSubids
-        },
-        caller: '#logStats'
-      });
+    _classPrivateMethodGet(this, _callApi, _callApi2).call(this, {
+      urlIterator: _classPrivateFieldGet(this, _statsUrlIterator),
+      body: {
+        type: type,
+        progid: progid,
+        status: consent,
+        toSubids: toSubids
+      },
+      caller: '#logStats'
     });
   }
 
@@ -7880,14 +7912,19 @@
   }
 
   function _setConsent2(consent) {
+    var _this = this;
+
     var shouldLog = consent !== this.consent;
     var shouldSetupPOC = !this.eventConsentId && this.subid && consent === CONSTANTS.consent.status.optin;
     setValue(consent, CONSTANTS.consent.name);
 
     if (shouldLog) {
-      _classPrivateMethodGet(this, _logStats, _logStats2).call(this, {
-        consent: consent,
-        type: CONSTANTS.stats.type.visit
+      _classPrivateFieldGet(this, _progids).forEach(function (progid) {
+        _classPrivateMethodGet(_this, _logStats, _logStats2).call(_this, {
+          consent: consent,
+          progid: progid,
+          type: CONSTANTS.stats.type.visit
+        });
       });
     }
 
