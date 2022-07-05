@@ -1,6 +1,15 @@
 # ISDK Changelog
 
 
+## [1.1.0](https://github.com/TimeOne-Group/isdk/compare/1.0.1...1.1.0) (2022-07-05)
+
+
+### Features
+
+* ajoute methode addConversion ([84fe828](https://github.com/TimeOne-Group/isdk/commit/84fe828333748a6ede33581fc0da6b352ddea509))
+* gere la preuve de consentement ([22a74b0](https://github.com/TimeOne-Group/isdk/commit/22a74b09fa13c896f94a0f7221efee345cebf49e))
+* remonte les stats de consentement ([6f4b167](https://github.com/TimeOne-Group/isdk/commit/6f4b167c05490390a0f15a7e58aa82ef20fd42ba))
+
 ### [1.0.1](https://github.com/TimeOne-Group/isdk/compare/1.0.0...1.0.1) (2022-06-14)
 
 
