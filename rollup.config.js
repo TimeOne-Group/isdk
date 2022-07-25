@@ -28,6 +28,7 @@ const banner = {
     return `/*! ${pkg.name} ${pkg.version} https://github.com/${pkg.homepage} @license ${pkg.license} */`;
   },
 };
+
 const defaultPlugins = [
   nodeResolve(),
   commonjs(),
