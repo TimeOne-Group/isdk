@@ -1,6 +1,13 @@
 # ISDK Changelog
 
 
+### [1.1.1](https://github.com/TimeOne-Group/isdk/compare/1.1.0...1.1.1) (2022-07-25)
+
+
+### Bug Fixes
+
+* **assets:** génére le build de prod ([dedc281](https://github.com/TimeOne-Group/isdk/commit/dedc281852edb76c404d4fd587509c6998e035bc))
+
 ## [1.1.0](https://github.com/TimeOne-Group/isdk/compare/1.0.1...1.1.0) (2022-07-05)
 
 
