@@ -90,14 +90,14 @@ Le SDK TimeOne **conservant le choix du consentement** de l'internaute, le code 
 ```HTML
 <script>
     window.__ISDK = window.__ISDK || [];
-    window.__ISDK.push(["_setSale"',
+    window.__ISDK.push(["_setSale",
             {
                 progid:"PROGID",
                 comid:"COMID",
                 iu:"IU",
-                uniqid: 'UNIQUE ID',        // transaction ID - required
-                price: 'DUTY-FREE PRICE',        // total : does not include tax and shipping - required
-                additionalData: 'ADDITIONAL DATA'    // additional data
+                uniqid: "UNIQUE ID",        // transaction ID - required
+                price: "DUTY-FREE PRICE",        // total : does not include tax and shipping - required
+                additionalData: "ADDITIONAL DATA"    // additional data
             }
         ]
     );
@@ -109,13 +109,13 @@ Le SDK TimeOne **conservant le choix du consentement** de l'internaute, le code 
 ```HTML
 <script>
     window.__ISDK = window.__ISDK || [];
-    window.__ISDK.push(["_setLead"',
+    window.__ISDK.push(["_setLead",
             {
                 progid:"PROGID",
                 comid:"COMID",
                 iu:"IU",
-                uniqid: 'UNIQUE ID',        // transaction ID - required
-                additionalData: 'ADDITIONAL DATA'    // additional data
+                uniqid: "UNIQUE ID",        // transaction ID - required
+                additionalData: "ADDITIONAL DATA"    // additional data
             }
         ]
     );
