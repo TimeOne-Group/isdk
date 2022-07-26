@@ -1,6 +1,13 @@
 # ISDK Changelog
 
 
+### [1.1.2](https://github.com/TimeOne-Group/isdk/compare/1.1.1...1.1.2) (2022-07-26)
+
+
+### Bug Fixes
+
+* **readme:** corrige typo ([9bbbb4f](https://github.com/TimeOne-Group/isdk/commit/9bbbb4f1e2442bc4e89c05414c19fc4ad28996bb))
+
 ### [1.1.1](https://github.com/TimeOne-Group/isdk/compare/1.1.0...1.1.1) (2022-07-25)
 
 
