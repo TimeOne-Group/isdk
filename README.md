@@ -49,8 +49,14 @@ Cet outil est réservé aux clients du groupe [TimeOne](https://timeone.io), si 
 
 Intégration du SDK sur **toutes les pages du site sans conditionnement** de source de trafic ou d'acceptation des cookies par l'internaute.
 
-```HTML
-<script async type="text/javascript" id="__ISDK_ASSETS" data-progids="[PROGID]" src="https://cdn.jsdelivr.net/gh/TimeOne-Group/isdk@main/dist/isdk.min.js"></script>
+```html
+<script
+  async
+  type="text/javascript"
+  id="__ISDK_ASSETS"
+  data-progids="[PROGID]"
+  src="https://cdn.jsdelivr.net/gh/TimeOne-Group/isdk@main/dist/isdk.min.js"
+></script>
 ```
 
 - `PROGID` : identifiant de la campagne chez TimeOne
@@ -65,19 +71,19 @@ Cette fonctionnalité doit être activée lorsque l'internaute a **accepté ou r
 
 - Dans le cas de l'**acceptation** de l'internaute
 
-```HTML
+```html
 <script>
-    window.__ISDK = window.__ISDK || [];
-    window.__ISDK.push(["_setOptin"]);
+  window.__ISDK = window.__ISDK || [];
+  window.__ISDK.push(["_setOptin"]);
 </script>
 ```
 
 - Dans le cas du **refus** de l'internaute
 
-```HTML
+```html
 <script>
-    window.__ISDK = window.__ISDK || [];
-    window.__ISDK.push(["_setOptout"]);
+  window.__ISDK = window.__ISDK || [];
+  window.__ISDK.push(["_setOptout"]);
 </script>
 ```
 
@@ -85,40 +91,49 @@ Cette fonctionnalité doit être activée lorsque l'internaute a **accepté ou r
 
 Le SDK TimeOne **conservant le choix du consentement** de l'internaute, le code suivant **ne doit pas être conditionné par la CMP.**
 
+- Code à intégrer sur toutes les pages de confirmation d'une conversion **sans conditionnement à la source de trafic TimeOne**
+
+```html
+<script>
+  window.__ISDK = window.__ISDK || [];
+  window.__ISDK.push(["addConversion", "PROGID"]);
+</script>
+```
+
 - Code à intégrer sur la page de confirmation de commande pour une **vente**
 
-```HTML
+```html
 <script>
-    window.__ISDK = window.__ISDK || [];
-    window.__ISDK.push(["_setSale",
-            {
-                progid:"PROGID",
-                comid:"COMID",
-                iu:"IU",
-                uniqid: "UNIQUE ID",        // transaction ID - required
-                price: "DUTY-FREE PRICE",        // total : does not include tax and shipping - required
-                additionalData: "ADDITIONAL DATA"    // additional data
-            }
-        ]
-    );
+  window.__ISDK = window.__ISDK || [];
+  window.__ISDK.push([
+    "_setSale",
+    {
+      progid: "PROGID",
+      comid: "COMID",
+      iu: "IU",
+      uniqid: "UNIQUE ID", // transaction ID - required
+      price: "DUTY-FREE PRICE", // total : does not include tax and shipping - required
+      additionalData: "ADDITIONAL DATA", // additional data
+    },
+  ]);
 </script>
 ```
 
 - Code à intégrer sur la page de confirmation d'un **lead**
 
-```HTML
+```html
 <script>
-    window.__ISDK = window.__ISDK || [];
-    window.__ISDK.push(["_setLead",
-            {
-                progid:"PROGID",
-                comid:"COMID",
-                iu:"IU",
-                uniqid: "UNIQUE ID",        // transaction ID - required
-                additionalData: "ADDITIONAL DATA"    // additional data
-            }
-        ]
-    );
+  window.__ISDK = window.__ISDK || [];
+  window.__ISDK.push([
+    "_setLead",
+    {
+      progid: "PROGID",
+      comid: "COMID",
+      iu: "IU",
+      uniqid: "UNIQUE ID", // transaction ID - required
+      additionalData: "ADDITIONAL DATA", // additional data
+    },
+  ]);
 </script>
 ```
 
