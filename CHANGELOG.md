@@ -1,6 +1,8 @@
 # ISDK Changelog
 
 
+### [1.1.3](https://github.com/TimeOne-Group/isdk/compare/1.1.2...1.1.3) (2022-07-29)
+
 ### [1.1.2](https://github.com/TimeOne-Group/isdk/compare/1.1.1...1.1.2) (2022-07-26)
 
 
