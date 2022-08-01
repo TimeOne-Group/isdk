@@ -61,8 +61,12 @@ export default class Sdk {
       if (progids) {
         this.#progids = JSON.parse(progids);
       }
+
+      if (!progids && window.__ISDK_progid) {
+        this.#progids = Array.isArray(window.__ISDK_progid) ? window.__ISDK_progid : [window.__ISDK_progid];
+      }
     } catch (error) {
-      this.#setError({ error, method: 'setProgids' });
+      this.#setError({ error, caller: 'setProgids' });
     }
   }
 

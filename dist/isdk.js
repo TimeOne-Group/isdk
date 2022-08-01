@@ -1,5 +1,5 @@
 
-/*! isdk 1.1.0 https://github.com/https://github.com/TimeOne-Group/isdk#readme @license GPL-3.0 */
+/*! isdk 1.1.4 https://github.com/https://github.com/TimeOne-Group/isdk#readme @license GPL-3.0 */
 (function () {
   'use strict';
 
@@ -7556,10 +7556,14 @@
       if (progids) {
         _classPrivateFieldSet(this, _progids, JSON.parse(progids));
       }
+
+      if (!progids && window.__ISDK_progid) {
+        _classPrivateFieldSet(this, _progids, Array.isArray(window.__ISDK_progid) ? window.__ISDK_progid : [window.__ISDK_progid]);
+      }
     } catch (error) {
       _classPrivateMethodGet(this, _setError, _setError2).call(this, {
         error: error,
-        method: 'setProgids'
+        caller: 'setProgids'
       });
     }
   }
