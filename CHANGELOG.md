@@ -1,6 +1,13 @@
 # ISDK Changelog
 
 
+### [1.1.4](https://github.com/TimeOne-Group/isdk/compare/1.1.3...1.1.4) (2022-08-02)
+
+
+### Bug Fixes
+
+* récupére progid depuis gtm sandbox ([68c88e9](https://github.com/TimeOne-Group/isdk/commit/68c88e90dc13de034f4c90f8a7aea3ee66931204))
+
 ### [1.1.3](https://github.com/TimeOne-Group/isdk/compare/1.1.2...1.1.3) (2022-07-29)
 
 ### [1.1.2](https://github.com/TimeOne-Group/isdk/compare/1.1.1...1.1.2) (2022-07-26)
