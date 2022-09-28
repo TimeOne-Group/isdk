@@ -74,3 +74,7 @@ export function getApiIterator(urls) {
     urls,
   };
 }
+
+export function getCurrentUrl() {
+  return `${window.location.hostname}${window.location.pathname}`;
+}

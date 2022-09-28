@@ -7,12 +7,21 @@ import Sdk from '../Sdk.mjs';
 import * as utils from '../utils.mjs';
 import CONSTANTS from '../constants.mjs';
 
-const progids = [109];
+const progid = 109;
+const progids = [progid];
 const event_consent_id = '993be906-9074-499a-aeb6-5af4e627aa06';
 const minimumConvertPayload = {
   progid: progids[0],
   comid: 123,
   iu: 456,
+};
+
+const apiOptions = {
+  method: 'POST',
+  headers: {
+    accept: 'application/json',
+    'Content-Type': 'application/json',
+  },
 };
 
 const noConsentMethods = [
@@ -53,8 +62,7 @@ describe('The ISDK class test', () => {
 
         instance.push([method, minimumConvertPayload]);
         expect(fetch).toHaveBeenCalledWith(CONSTANTS.urls.conversion[0], {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json', accept: 'application/json' },
+          ...apiOptions,
           body: JSON.stringify({
             ...minimumConvertPayload,
             toSubids: [{ type: 'consent', value: subid }],
@@ -77,8 +85,7 @@ describe('The ISDK class test', () => {
 
         instance.push([method, minimumConvertPayload]);
         expect(fetch).toHaveBeenCalledWith(CONSTANTS.urls.conversion[0], {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json', accept: 'application/json' },
+          ...apiOptions,
           body: JSON.stringify({
             ...minimumConvertPayload,
             toSubids: [
@@ -100,8 +107,7 @@ describe('The ISDK class test', () => {
 
         instance.push([method, minimumConvertPayload]);
         expect(fetch).toHaveBeenCalledWith(CONSTANTS.urls.conversion[0], {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json', accept: 'application/json' },
+          ...apiOptions,
           body: JSON.stringify({
             ...minimumConvertPayload,
             toSubids: [{ type: 'cashback', value: cashbackSubid }],
@@ -151,8 +157,7 @@ describe('The ISDK class test', () => {
 
           expect(instance.consent).toEqual(consentName);
           expect(fetch).toHaveBeenCalledWith(CONSTANTS.urls.conversion[0], {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json', accept: 'application/json' },
+            ...apiOptions,
             body: JSON.stringify({
               ...minimumConvertPayload,
               toSubids: [{ type: 'consent', value: subid }],
@@ -174,8 +179,7 @@ describe('The ISDK class test', () => {
 
           expect(instance.consent).toEqual(consentName);
           expect(fetch).toHaveBeenCalledWith(CONSTANTS.urls.conversion[0], {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json', accept: 'application/json' },
+            ...apiOptions,
             body: JSON.stringify({
               ...minimumConvertPayload,
               toSubids: [{ type: 'cashback', value: cashbackSubid }],
@@ -201,8 +205,7 @@ describe('The ISDK class test', () => {
 
           expect(instance.consent).toEqual(consentName);
           expect(fetch).toHaveBeenCalledWith(CONSTANTS.urls.conversion[0], {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json', accept: 'application/json' },
+            ...apiOptions,
             body: JSON.stringify({
               ...minimumConvertPayload,
               toSubids: [
@@ -278,8 +281,7 @@ describe('The ISDK class test', () => {
 
         expect(instance.consent).toEqual(CONSTANTS.consent.status.optin);
         expect(fetch).toHaveBeenCalledWith(CONSTANTS.urls.conversion[0], {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json', accept: 'application/json' },
+          ...apiOptions,
           body: JSON.stringify({
             ...minimumConvertPayload,
             event_consent_id,
@@ -308,8 +310,7 @@ describe('The ISDK class test', () => {
 
         expect(instance.consent).toEqual(CONSTANTS.consent.status.optin);
         expect(fetch).toHaveBeenCalledWith(CONSTANTS.urls.conversion[0], {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json', accept: 'application/json' },
+          ...apiOptions,
           body: JSON.stringify({
             ...minimumConvertPayload,
             event_consent_id,
@@ -320,8 +321,7 @@ describe('The ISDK class test', () => {
         process.nextTick(() => {
           try {
             expect(fetch).toHaveBeenCalledWith(CONSTANTS.urls.conversion[1], {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json', accept: 'application/json' },
+              ...apiOptions,
               body: JSON.stringify({
                 ...minimumConvertPayload,
                 event_consent_id,
@@ -344,6 +344,25 @@ describe('The ISDK class test', () => {
         expect(instance.consent).toEqual(CONSTANTS.consent.status.optin);
         expect(fetch).not.toHaveBeenCalledWith(CONSTANTS.urls.conversion[0], expect.anything());
       });
+    });
+  });
+
+  test('method addConversion - Should log a conversion when addConversion is called ', () => {
+    Sdk.getProgramDataFromQueryParams = jest.fn(() => null);
+
+    const instance = new Sdk();
+
+    instance.addConversion(progid);
+
+    expect(fetch).toHaveBeenCalledWith(CONSTANTS.urls.stats[0], {
+      ...apiOptions,
+      body: JSON.stringify({
+        type: CONSTANTS.stats.type.conversion,
+        progid,
+        url: 'localhost/',
+        status: CONSTANTS.consent.status.unknown,
+        toSubids: [],
+      }),
     });
   });
 });

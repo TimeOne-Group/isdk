@@ -118,6 +118,7 @@ export default class Sdk {
       body: {
         type,
         progid,
+        url: utils.getCurrentUrl(),
         status: consent,
         toSubids,
       },
@@ -131,7 +132,7 @@ export default class Sdk {
 
     const body = {
       event_consent_id: eventConsentId,
-      url: `${window.location.hostname}${window.location.pathname}`,
+      url: utils.getCurrentUrl(),
     };
 
     this.#callApi({

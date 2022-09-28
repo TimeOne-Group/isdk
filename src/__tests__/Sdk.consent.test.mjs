@@ -23,7 +23,7 @@ const apiOptions = {
   },
 };
 
-const defaultPayload = { progid: progids[0] };
+const defaultPayload = { progid: progids[0], url: 'localhost/' };
 
 const noConsentMethods = [
   { methodName: '_setUnknown', consentName: CONSTANTS.consent.status.unknown },

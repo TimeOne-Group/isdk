@@ -7174,6 +7174,9 @@
       urls: urls
     };
   }
+  function getCurrentUrl() {
+    return "".concat(window.location.hostname).concat(window.location.pathname);
+  }
 
   var _progids = /*#__PURE__*/new WeakMap();
 
@@ -7679,6 +7682,7 @@
       body: {
         type: type,
         progid: progid,
+        url: getCurrentUrl(),
         status: consent,
         toSubids: toSubids
       },
@@ -7691,7 +7695,7 @@
     setValue(eventConsentId, CONSTANTS.event_consent_id.name);
     var body = {
       event_consent_id: eventConsentId,
-      url: "".concat(window.location.hostname).concat(window.location.pathname)
+      url: getCurrentUrl()
     };
 
     _classPrivateMethodGet(this, _callApi, _callApi2).call(this, {
