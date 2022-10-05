@@ -1,5 +1,6 @@
 import Cookies from 'js-cookie';
 import StorageJS from '@timeone-group/storage-js';
+import LZString from 'lz-string';
 
 import CONSTANTS from './constants.mjs';
 
@@ -14,34 +15,49 @@ export function getPrefixedCookieName(name) {
 }
 
 export function setValue(value, id) {
-  const option = CONSTANTS[id] || {
+  const options = CONSTANTS[id] || {
     name: id,
     ttl: CONSTANTS.default_ttl,
   };
 
-  Cookies.set(getPrefixedCookieName(option.name), value, {
-    expires: option.ttl,
+  const valueToStore = options?.compress ? LZString.compressToBase64(value) : value;
+
+  Cookies.set(getPrefixedCookieName(options.name), valueToStore, {
+    expires: options.ttl,
     sameSite: 'strict',
   });
 
-  Storage.save({ id, value });
+  Storage.save({ id, value: valueToStore });
+}
+
+export function isObject(obj) {
+  return obj === Object(obj);
 }
 
 export function getValue(id) {
-  const name = CONSTANTS[id]?.name || id;
-  const cookieValue = Cookies.get(getPrefixedCookieName(name));
+  const options = CONSTANTS[id] || { name: id };
+  const cookieValue = Cookies.get(getPrefixedCookieName(options.name));
+  const storage = Storage.find(options.name);
 
-  if (cookieValue) {
-    return cookieValue;
+  const rawValue = cookieValue || storage?.value || null;
+
+  if (!options?.compress) {
+    return rawValue;
   }
 
-  const storage = Storage.find(name);
+  try {
+    const uncompress = LZString.decompressFromBase64(rawValue);
 
-  if (storage?.value) {
-    return storage?.value;
+    if (options.type === 'Object') {
+      const isValid = isObject(JSON.parse(uncompress));
+
+      return isValid ? uncompress : rawValue;
+    }
+
+    return uncompress;
+  } catch (error) {
+    return rawValue;
   }
-
-  return null;
 }
 
 export function removeValue(id) {
@@ -77,4 +93,40 @@ export function getApiIterator(urls) {
 
 export function getCurrentUrl() {
   return `${window.location.hostname}${window.location.pathname}`;
+}
+
+export function getCurrentTimestamp() {
+  return Date.parse(new Date());
+}
+
+export function getTimestampFromTTL(ttl) {
+  return (ttl || 0) * 1000 * 60 * 60 * 24;
+}
+
+export function filterUnActiveSubids(subids, ttl) {
+  const currentTimestamp = getCurrentTimestamp();
+  const duration = getTimestampFromTTL(ttl);
+
+  return Object.fromEntries(Object.entries(subids).filter(([, createAt]) => currentTimestamp - createAt <= duration));
+}
+
+export function getMaxSubids(subids) {
+  const subidsSize = LZString.compressToBase64(JSON.stringify(subids))?.length || 0;
+
+  if (subidsSize > CONSTANTS.cookieMaxSize) {
+    const truncateSubids = Object.entries(subids)
+      .sort(([, prevcreateAt], [, nextcreateAt]) => nextcreateAt - prevcreateAt)
+      .slice(0, -1);
+
+    return getMaxSubids(Object.fromEntries(truncateSubids));
+  }
+
+  return subids;
+}
+
+export class SubidCookieTypeError extends Error {
+  constructor(subidName) {
+    super(`Cookie to_${subidName} or is a string. Expected object`);
+    this.code = CONSTANTS.errors.subidCookieType;
+  }
 }

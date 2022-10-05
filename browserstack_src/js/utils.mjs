@@ -12,7 +12,7 @@ const showJwtDebug = (name, id) => {
     const token = window[sdkName]?.[name];
     if (token) {
       // eslint-disable-next-line no-underscore-dangle
-      const jwt = window.__jwtDecode(`eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.${token}`);
+      const jwt = 'jwt'; // window.__jwtDecode(`eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.${token}`);
 
       document.getElementById(id).textContent = JSON.stringify(jwt, null, '\t');
     }

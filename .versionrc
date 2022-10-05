@@ -12,5 +12,8 @@
     {"type": "test", "hidden": true}
   ],
   "issueUrlFormat": "https://github.com/TimeOne-Group/isdk/issues/{{id}}",
-  "issuePrefixes": ["us", "task", "issue"]
+  "issuePrefixes": ["us", "task", "issue"],
+  "scripts": {
+    "postbump": "docker-compose run build npm run build:prod && git add browserstack debug dist"
+  }
 }

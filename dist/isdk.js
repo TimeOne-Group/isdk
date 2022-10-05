@@ -1,5 +1,5 @@
 
-/*! isdk 1.1.4 https://github.com/https://github.com/TimeOne-Group/isdk#readme @license GPL-3.0 */
+/*! isdk 1.1.4 https://github.com/TimeOne-Group/isdk#readme @license GPL-3.0 */
 (function () {
   'use strict';
 
@@ -113,6 +113,145 @@
     }
 
     return obj;
+  }
+
+  function _inherits(subClass, superClass) {
+    if (typeof superClass !== "function" && superClass !== null) {
+      throw new TypeError("Super expression must either be null or a function");
+    }
+
+    subClass.prototype = Object.create(superClass && superClass.prototype, {
+      constructor: {
+        value: subClass,
+        writable: true,
+        configurable: true
+      }
+    });
+    Object.defineProperty(subClass, "prototype", {
+      writable: false
+    });
+    if (superClass) _setPrototypeOf(subClass, superClass);
+  }
+
+  function _getPrototypeOf(o) {
+    _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) {
+      return o.__proto__ || Object.getPrototypeOf(o);
+    };
+    return _getPrototypeOf(o);
+  }
+
+  function _setPrototypeOf(o, p) {
+    _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) {
+      o.__proto__ = p;
+      return o;
+    };
+
+    return _setPrototypeOf(o, p);
+  }
+
+  function _isNativeReflectConstruct() {
+    if (typeof Reflect === "undefined" || !Reflect.construct) return false;
+    if (Reflect.construct.sham) return false;
+    if (typeof Proxy === "function") return true;
+
+    try {
+      Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {}));
+      return true;
+    } catch (e) {
+      return false;
+    }
+  }
+
+  function _construct(Parent, args, Class) {
+    if (_isNativeReflectConstruct()) {
+      _construct = Reflect.construct;
+    } else {
+      _construct = function _construct(Parent, args, Class) {
+        var a = [null];
+        a.push.apply(a, args);
+        var Constructor = Function.bind.apply(Parent, a);
+        var instance = new Constructor();
+        if (Class) _setPrototypeOf(instance, Class.prototype);
+        return instance;
+      };
+    }
+
+    return _construct.apply(null, arguments);
+  }
+
+  function _isNativeFunction(fn) {
+    return Function.toString.call(fn).indexOf("[native code]") !== -1;
+  }
+
+  function _wrapNativeSuper(Class) {
+    var _cache = typeof Map === "function" ? new Map() : undefined;
+
+    _wrapNativeSuper = function _wrapNativeSuper(Class) {
+      if (Class === null || !_isNativeFunction(Class)) return Class;
+
+      if (typeof Class !== "function") {
+        throw new TypeError("Super expression must either be null or a function");
+      }
+
+      if (typeof _cache !== "undefined") {
+        if (_cache.has(Class)) return _cache.get(Class);
+
+        _cache.set(Class, Wrapper);
+      }
+
+      function Wrapper() {
+        return _construct(Class, arguments, _getPrototypeOf(this).constructor);
+      }
+
+      Wrapper.prototype = Object.create(Class.prototype, {
+        constructor: {
+          value: Wrapper,
+          enumerable: false,
+          writable: true,
+          configurable: true
+        }
+      });
+      return _setPrototypeOf(Wrapper, Class);
+    };
+
+    return _wrapNativeSuper(Class);
+  }
+
+  function _assertThisInitialized(self) {
+    if (self === void 0) {
+      throw new ReferenceError("this hasn't been initialised - super() hasn't been called");
+    }
+
+    return self;
+  }
+
+  function _possibleConstructorReturn(self, call) {
+    if (call && (typeof call === "object" || typeof call === "function")) {
+      return call;
+    } else if (call !== void 0) {
+      throw new TypeError("Derived constructors may only return object or undefined");
+    }
+
+    return _assertThisInitialized(self);
+  }
+
+  function _createSuper(Derived) {
+    var hasNativeReflectConstruct = _isNativeReflectConstruct();
+
+    return function _createSuperInternal() {
+      var Super = _getPrototypeOf(Derived),
+          result;
+
+      if (hasNativeReflectConstruct) {
+        var NewTarget = _getPrototypeOf(this).constructor;
+
+        result = Reflect.construct(Super, arguments, NewTarget);
+      } else {
+        result = Super.apply(this, arguments);
+      }
+
+      return _possibleConstructorReturn(this, result);
+    };
   }
 
   function _slicedToArray(arr, i) {
@@ -473,7 +612,7 @@
     return WellKnownSymbolsStore$1[name];
   };
 
-  var isObject$1 = function isObject(it) {
+  var isObject$2 = function isObject(it) {
     return _typeof(it) == 'object' ? it !== null : isCallable(it);
   };
 
@@ -481,7 +620,7 @@
   var TypeError$c = global$3.TypeError; // `Assert: Type(argument) is Object`
 
   var anObject$1 = function anObject(argument) {
-    if (isObject$1(argument)) return argument;
+    if (isObject$2(argument)) return argument;
     throw TypeError$c(String$4(argument) + ' is not an object');
   };
 
@@ -508,7 +647,7 @@
 
   var document$2 = global$3.document; // typeof document.createElement is 'object' in old IE
 
-  var EXISTS$2 = isObject$1(document$2) && isObject$1(document$2.createElement);
+  var EXISTS$2 = isObject$2(document$2) && isObject$2(document$2.createElement);
 
   var documentCreateElement$1 = function documentCreateElement(it) {
     return EXISTS$2 ? document$2.createElement(it) : {};
@@ -567,9 +706,9 @@
 
   var ordinaryToPrimitive = function ordinaryToPrimitive(input, pref) {
     var fn, val;
-    if (pref === 'string' && isCallable(fn = input.toString) && !isObject$1(val = functionCall(fn, input))) return val;
-    if (isCallable(fn = input.valueOf) && !isObject$1(val = functionCall(fn, input))) return val;
-    if (pref !== 'string' && isCallable(fn = input.toString) && !isObject$1(val = functionCall(fn, input))) return val;
+    if (pref === 'string' && isCallable(fn = input.toString) && !isObject$2(val = functionCall(fn, input))) return val;
+    if (isCallable(fn = input.valueOf) && !isObject$2(val = functionCall(fn, input))) return val;
+    if (pref !== 'string' && isCallable(fn = input.toString) && !isObject$2(val = functionCall(fn, input))) return val;
     throw TypeError$a("Can't convert object to primitive value");
   };
 
@@ -578,14 +717,14 @@
   // https://tc39.es/ecma262/#sec-toprimitive
 
   var toPrimitive$1 = function toPrimitive(input, pref) {
-    if (!isObject$1(input) || isSymbol(input)) return input;
+    if (!isObject$2(input) || isSymbol(input)) return input;
     var exoticToPrim = getMethod(input, TO_PRIMITIVE);
     var result;
 
     if (exoticToPrim) {
       if (pref === undefined) pref = 'default';
       result = functionCall(exoticToPrim, input, pref);
-      if (!isObject$1(result) || isSymbol(result)) return result;
+      if (!isObject$2(result) || isSymbol(result)) return result;
       throw TypeError$9("Can't convert object to primitive value");
     }
 
@@ -917,7 +1056,7 @@
     return function (it) {
       var state;
 
-      if (!isObject$1(it) || (state = get$1(it)).type !== TYPE) {
+      if (!isObject$2(it) || (state = get$1(it)).type !== TYPE) {
         throw TypeError$7('Incompatible receiver, ' + TYPE + ' required');
       }
 
@@ -1613,7 +1752,7 @@
   // https://tc39.es/ecma262/#sec-object.isextensible
 
   var objectIsExtensible = FAILS_ON_PRIMITIVES || arrayBufferNonExtensible ? function isExtensible(it) {
-    if (!isObject$1(it)) return false;
+    if (!isObject$2(it)) return false;
     if (arrayBufferNonExtensible && classofRaw$1(it) == 'ArrayBuffer') return false;
     return $isExtensible ? $isExtensible(it) : true;
   } : $isExtensible;
@@ -1642,7 +1781,7 @@
 
     var fastKey = function fastKey(it, create) {
       // return a primitive with prefix
-      if (!isObject$1(it)) return _typeof(it) == 'symbol' ? it : (typeof it == 'string' ? 'S' : 'P') + it;
+      if (!isObject$2(it)) return _typeof(it) == 'symbol' ? it : (typeof it == 'string' ? 'S' : 'P') + it;
 
       if (!hasOwnProperty_1(it, METADATA)) {
         // can't set metadata to uncaught frozen object
@@ -1903,7 +2042,7 @@
     var NewTarget, NewTargetPrototype;
     if ( // it can work only with native `setPrototypeOf`
     objectSetPrototypeOf$1 && // we haven't completely correct pre-ES6 way for getting `new.target`, so use this
-    isCallable(NewTarget = dummy.constructor) && NewTarget !== Wrapper && isObject$1(NewTargetPrototype = NewTarget.prototype) && NewTargetPrototype !== Wrapper.prototype) objectSetPrototypeOf$1($this, NewTargetPrototype);
+    isCallable(NewTarget = dummy.constructor) && NewTarget !== Wrapper && isObject$2(NewTargetPrototype = NewTarget.prototype) && NewTargetPrototype !== Wrapper.prototype) objectSetPrototypeOf$1($this, NewTargetPrototype);
     return $this;
   };
 
@@ -1922,11 +2061,11 @@
         uncurriedNativeMethod(this, value === 0 ? 0 : value);
         return this;
       } : KEY == 'delete' ? function (key) {
-        return IS_WEAK && !isObject$1(key) ? false : uncurriedNativeMethod(this, key === 0 ? 0 : key);
+        return IS_WEAK && !isObject$2(key) ? false : uncurriedNativeMethod(this, key === 0 ? 0 : key);
       } : KEY == 'get' ? function get(key) {
-        return IS_WEAK && !isObject$1(key) ? undefined : uncurriedNativeMethod(this, key === 0 ? 0 : key);
+        return IS_WEAK && !isObject$2(key) ? undefined : uncurriedNativeMethod(this, key === 0 ? 0 : key);
       } : KEY == 'has' ? function has(key) {
-        return IS_WEAK && !isObject$1(key) ? false : uncurriedNativeMethod(this, key === 0 ? 0 : key);
+        return IS_WEAK && !isObject$2(key) ? false : uncurriedNativeMethod(this, key === 0 ? 0 : key);
       } : function set(key, value) {
         uncurriedNativeMethod(this, key === 0 ? 0 : key, value);
         return this;
@@ -2078,7 +2217,7 @@
     if (isArray(originalArray)) {
       C = originalArray.constructor; // cross-realm fallback
 
-      if (isConstructor(C) && (C === Array$1 || isArray(C.prototype))) C = undefined;else if (isObject$1(C)) {
+      if (isConstructor(C) && (C === Array$1 || isArray(C.prototype))) C = undefined;else if (isObject$2(C)) {
         C = C[SPECIES$1];
         if (C === null) C = undefined;
       }
@@ -2252,7 +2391,7 @@
         // https://tc39.es/ecma262/#sec-weakset.prototype.delete
         'delete': function _delete(key) {
           var state = getInternalState(this);
-          if (!isObject$1(key)) return false;
+          if (!isObject$2(key)) return false;
           var data = getWeakData(key);
           if (data === true) return uncaughtFrozenStore(state)['delete'](key);
           return data && hasOwnProperty_1(data, state.id) && delete data[state.id];
@@ -2262,7 +2401,7 @@
         // https://tc39.es/ecma262/#sec-weakset.prototype.has
         has: function has(key) {
           var state = getInternalState(this);
-          if (!isObject$1(key)) return false;
+          if (!isObject$2(key)) return false;
           var data = getWeakData(key);
           if (data === true) return uncaughtFrozenStore(state).has(key);
           return data && hasOwnProperty_1(data, state.id);
@@ -2274,7 +2413,7 @@
         get: function get(key) {
           var state = getInternalState(this);
 
-          if (isObject$1(key)) {
+          if (isObject$2(key)) {
             var data = getWeakData(key);
             if (data === true) return uncaughtFrozenStore(state).get(key);
             return data ? data[state.id] : undefined;
@@ -2558,7 +2697,7 @@
     this.url = null;
 
     if (init !== undefined) {
-      if (isObject$1(init)) this.parseObject(init);else this.parseQuery(typeof init == 'string' ? charAt$1(init, 0) === '?' ? stringSlice(init, 1) : init : toString$1(init));
+      if (isObject$2(init)) this.parseObject(init);else this.parseQuery(typeof init == 'string' ? charAt$1(init, 0) === '?' ? stringSlice(init, 1) : init : toString$1(init));
     }
   };
 
@@ -2806,7 +2945,7 @@
     var headersSet = functionUncurryThis(HeadersPrototype.set);
 
     var wrapRequestOptions = function wrapRequestOptions(init) {
-      if (isObject$1(init)) {
+      if (isObject$2(init)) {
         var body = init.body;
         var headers;
 
@@ -4545,13 +4684,13 @@
     })[1] != 7;
   });
 
-  var isObject = function isObject(it) {
+  var isObject$1 = function isObject(it) {
     return _typeof(it) === 'object' ? it !== null : typeof it === 'function';
   };
 
   var document$1 = global$1.document; // typeof document.createElement is 'object' in old IE
 
-  var EXISTS = isObject(document$1) && isObject(document$1.createElement);
+  var EXISTS = isObject$1(document$1) && isObject$1(document$1.createElement);
 
   var documentCreateElement = function documentCreateElement(it) {
     return EXISTS ? document$1.createElement(it) : {};
@@ -4567,7 +4706,7 @@
   });
 
   var anObject = function anObject(it) {
-    if (!isObject(it)) {
+    if (!isObject$1(it)) {
       throw TypeError(String(it) + ' is not an object');
     }
 
@@ -4579,11 +4718,11 @@
 
 
   var toPrimitive = function toPrimitive(input, PREFERRED_STRING) {
-    if (!isObject(input)) return input;
+    if (!isObject$1(input)) return input;
     var fn, val;
-    if (PREFERRED_STRING && typeof (fn = input.toString) == 'function' && !isObject(val = fn.call(input))) return val;
-    if (typeof (fn = input.valueOf) == 'function' && !isObject(val = fn.call(input))) return val;
-    if (!PREFERRED_STRING && typeof (fn = input.toString) == 'function' && !isObject(val = fn.call(input))) return val;
+    if (PREFERRED_STRING && typeof (fn = input.toString) == 'function' && !isObject$1(val = fn.call(input))) return val;
+    if (typeof (fn = input.valueOf) == 'function' && !isObject$1(val = fn.call(input))) return val;
+    if (!PREFERRED_STRING && typeof (fn = input.toString) == 'function' && !isObject$1(val = fn.call(input))) return val;
     throw TypeError("Can't convert object to primitive value");
   };
 
@@ -4687,7 +4826,7 @@
     return function (it) {
       var state;
 
-      if (!isObject(it) || (state = get(it)).type !== TYPE) {
+      if (!isObject$1(it) || (state = get(it)).type !== TYPE) {
         throw TypeError('Incompatible receiver, ' + TYPE + ' required');
       }
 
@@ -5251,7 +5390,7 @@
   };
 
   var aPossiblePrototype = function aPossiblePrototype(it) {
-    if (!isObject(it) && it !== null) {
+    if (!isObject$1(it) && it !== null) {
       throw TypeError("Can't set " + String(it) + ' as a prototype');
     }
 
@@ -5648,7 +5787,7 @@
 
     var fastKey = function fastKey(it, create) {
       // return a primitive with prefix
-      if (!isObject(it)) return _typeof(it) == 'symbol' ? it : (typeof it == 'string' ? 'S' : 'P') + it;
+      if (!isObject$1(it)) return _typeof(it) == 'symbol' ? it : (typeof it == 'string' ? 'S' : 'P') + it;
 
       if (!has$1(it, METADATA)) {
         // can't set metadata to uncaught frozen object
@@ -5764,7 +5903,7 @@
     var NewTarget, NewTargetPrototype;
     if ( // it can work only with native `setPrototypeOf`
     objectSetPrototypeOf && // we haven't completely correct pre-ES6 way for getting `new.target`, so use this
-    typeof (NewTarget = dummy.constructor) == 'function' && NewTarget !== Wrapper && isObject(NewTargetPrototype = NewTarget.prototype) && NewTargetPrototype !== Wrapper.prototype) objectSetPrototypeOf($this, NewTargetPrototype);
+    typeof (NewTarget = dummy.constructor) == 'function' && NewTarget !== Wrapper && isObject$1(NewTargetPrototype = NewTarget.prototype) && NewTargetPrototype !== Wrapper.prototype) objectSetPrototypeOf($this, NewTargetPrototype);
     return $this;
   };
 
@@ -5783,11 +5922,11 @@
         nativeMethod.call(this, value === 0 ? 0 : value);
         return this;
       } : KEY == 'delete' ? function (key) {
-        return IS_WEAK && !isObject(key) ? false : nativeMethod.call(this, key === 0 ? 0 : key);
+        return IS_WEAK && !isObject$1(key) ? false : nativeMethod.call(this, key === 0 ? 0 : key);
       } : KEY == 'get' ? function get(key) {
-        return IS_WEAK && !isObject(key) ? undefined : nativeMethod.call(this, key === 0 ? 0 : key);
+        return IS_WEAK && !isObject$1(key) ? undefined : nativeMethod.call(this, key === 0 ? 0 : key);
       } : KEY == 'has' ? function has(key) {
-        return IS_WEAK && !isObject(key) ? false : nativeMethod.call(this, key === 0 ? 0 : key);
+        return IS_WEAK && !isObject$1(key) ? false : nativeMethod.call(this, key === 0 ? 0 : key);
       } : function set(key, value) {
         nativeMethod.call(this, key === 0 ? 0 : key, value);
         return this;
@@ -6272,7 +6411,7 @@
     return Key;
   }();
 
-  var lzString = createCommonjsModule(function (module) {
+  var lzString$1 = createCommonjsModule(function (module) {
     // Copyright (c) 2013 Pieroxy <pieroxy@pieroxy.net>
     // This work is free. You can redistribute it and/or modify it
     // under the terms of the WTFPL, Version 2
@@ -6903,7 +7042,7 @@
     _createClass(Store, [{
       key: "set",
       value: function set(key, object) {
-        this.engine.setItem(key, lzString.compressToBase64(JSON.stringify(object)));
+        this.engine.setItem(key, lzString$1.compressToBase64(JSON.stringify(object)));
       }
     }, {
       key: "get",
@@ -6912,7 +7051,7 @@
 
         if (value) {
           try {
-            return JSON.parse(lzString.decompressFromBase64(value));
+            return JSON.parse(lzString$1.decompressFromBase64(value));
           } catch (e) {
             Logger.catchError(e);
             return null;
@@ -7035,11 +7174,513 @@
     return StorageJS;
   }();
 
+  var lzString = createCommonjsModule$1(function (module) {
+  // Copyright (c) 2013 Pieroxy <pieroxy@pieroxy.net>
+  // This work is free. You can redistribute it and/or modify it
+  // under the terms of the WTFPL, Version 2
+  // For more information see LICENSE.txt or http://www.wtfpl.net/
+  //
+  // For more information, the home page:
+  // http://pieroxy.net/blog/pages/lz-string/testing.html
+  //
+  // LZ-based compression algorithm, version 1.4.4
+  var LZString = (function() {
+
+  // private property
+  var f = String.fromCharCode;
+  var keyStrBase64 = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=";
+  var keyStrUriSafe = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+-$";
+  var baseReverseDic = {};
+
+  function getBaseValue(alphabet, character) {
+    if (!baseReverseDic[alphabet]) {
+      baseReverseDic[alphabet] = {};
+      for (var i=0 ; i<alphabet.length ; i++) {
+        baseReverseDic[alphabet][alphabet.charAt(i)] = i;
+      }
+    }
+    return baseReverseDic[alphabet][character];
+  }
+
+  var LZString = {
+    compressToBase64 : function (input) {
+      if (input == null) return "";
+      var res = LZString._compress(input, 6, function(a){return keyStrBase64.charAt(a);});
+      switch (res.length % 4) { // To produce valid Base64
+      default: // When could this happen ?
+      case 0 : return res;
+      case 1 : return res+"===";
+      case 2 : return res+"==";
+      case 3 : return res+"=";
+      }
+    },
+
+    decompressFromBase64 : function (input) {
+      if (input == null) return "";
+      if (input == "") return null;
+      return LZString._decompress(input.length, 32, function(index) { return getBaseValue(keyStrBase64, input.charAt(index)); });
+    },
+
+    compressToUTF16 : function (input) {
+      if (input == null) return "";
+      return LZString._compress(input, 15, function(a){return f(a+32);}) + " ";
+    },
+
+    decompressFromUTF16: function (compressed) {
+      if (compressed == null) return "";
+      if (compressed == "") return null;
+      return LZString._decompress(compressed.length, 16384, function(index) { return compressed.charCodeAt(index) - 32; });
+    },
+
+    //compress into uint8array (UCS-2 big endian format)
+    compressToUint8Array: function (uncompressed) {
+      var compressed = LZString.compress(uncompressed);
+      var buf=new Uint8Array(compressed.length*2); // 2 bytes per character
+
+      for (var i=0, TotalLen=compressed.length; i<TotalLen; i++) {
+        var current_value = compressed.charCodeAt(i);
+        buf[i*2] = current_value >>> 8;
+        buf[i*2+1] = current_value % 256;
+      }
+      return buf;
+    },
+
+    //decompress from uint8array (UCS-2 big endian format)
+    decompressFromUint8Array:function (compressed) {
+      if (compressed===null || compressed===undefined){
+          return LZString.decompress(compressed);
+      } else {
+          var buf=new Array(compressed.length/2); // 2 bytes per character
+          for (var i=0, TotalLen=buf.length; i<TotalLen; i++) {
+            buf[i]=compressed[i*2]*256+compressed[i*2+1];
+          }
+
+          var result = [];
+          buf.forEach(function (c) {
+            result.push(f(c));
+          });
+          return LZString.decompress(result.join(''));
+
+      }
+
+    },
+
+
+    //compress into a string that is already URI encoded
+    compressToEncodedURIComponent: function (input) {
+      if (input == null) return "";
+      return LZString._compress(input, 6, function(a){return keyStrUriSafe.charAt(a);});
+    },
+
+    //decompress from an output of compressToEncodedURIComponent
+    decompressFromEncodedURIComponent:function (input) {
+      if (input == null) return "";
+      if (input == "") return null;
+      input = input.replace(/ /g, "+");
+      return LZString._decompress(input.length, 32, function(index) { return getBaseValue(keyStrUriSafe, input.charAt(index)); });
+    },
+
+    compress: function (uncompressed) {
+      return LZString._compress(uncompressed, 16, function(a){return f(a);});
+    },
+    _compress: function (uncompressed, bitsPerChar, getCharFromInt) {
+      if (uncompressed == null) return "";
+      var i, value,
+          context_dictionary= {},
+          context_dictionaryToCreate= {},
+          context_c="",
+          context_wc="",
+          context_w="",
+          context_enlargeIn= 2, // Compensate for the first entry which should not count
+          context_dictSize= 3,
+          context_numBits= 2,
+          context_data=[],
+          context_data_val=0,
+          context_data_position=0,
+          ii;
+
+      for (ii = 0; ii < uncompressed.length; ii += 1) {
+        context_c = uncompressed.charAt(ii);
+        if (!Object.prototype.hasOwnProperty.call(context_dictionary,context_c)) {
+          context_dictionary[context_c] = context_dictSize++;
+          context_dictionaryToCreate[context_c] = true;
+        }
+
+        context_wc = context_w + context_c;
+        if (Object.prototype.hasOwnProperty.call(context_dictionary,context_wc)) {
+          context_w = context_wc;
+        } else {
+          if (Object.prototype.hasOwnProperty.call(context_dictionaryToCreate,context_w)) {
+            if (context_w.charCodeAt(0)<256) {
+              for (i=0 ; i<context_numBits ; i++) {
+                context_data_val = (context_data_val << 1);
+                if (context_data_position == bitsPerChar-1) {
+                  context_data_position = 0;
+                  context_data.push(getCharFromInt(context_data_val));
+                  context_data_val = 0;
+                } else {
+                  context_data_position++;
+                }
+              }
+              value = context_w.charCodeAt(0);
+              for (i=0 ; i<8 ; i++) {
+                context_data_val = (context_data_val << 1) | (value&1);
+                if (context_data_position == bitsPerChar-1) {
+                  context_data_position = 0;
+                  context_data.push(getCharFromInt(context_data_val));
+                  context_data_val = 0;
+                } else {
+                  context_data_position++;
+                }
+                value = value >> 1;
+              }
+            } else {
+              value = 1;
+              for (i=0 ; i<context_numBits ; i++) {
+                context_data_val = (context_data_val << 1) | value;
+                if (context_data_position ==bitsPerChar-1) {
+                  context_data_position = 0;
+                  context_data.push(getCharFromInt(context_data_val));
+                  context_data_val = 0;
+                } else {
+                  context_data_position++;
+                }
+                value = 0;
+              }
+              value = context_w.charCodeAt(0);
+              for (i=0 ; i<16 ; i++) {
+                context_data_val = (context_data_val << 1) | (value&1);
+                if (context_data_position == bitsPerChar-1) {
+                  context_data_position = 0;
+                  context_data.push(getCharFromInt(context_data_val));
+                  context_data_val = 0;
+                } else {
+                  context_data_position++;
+                }
+                value = value >> 1;
+              }
+            }
+            context_enlargeIn--;
+            if (context_enlargeIn == 0) {
+              context_enlargeIn = Math.pow(2, context_numBits);
+              context_numBits++;
+            }
+            delete context_dictionaryToCreate[context_w];
+          } else {
+            value = context_dictionary[context_w];
+            for (i=0 ; i<context_numBits ; i++) {
+              context_data_val = (context_data_val << 1) | (value&1);
+              if (context_data_position == bitsPerChar-1) {
+                context_data_position = 0;
+                context_data.push(getCharFromInt(context_data_val));
+                context_data_val = 0;
+              } else {
+                context_data_position++;
+              }
+              value = value >> 1;
+            }
+
+
+          }
+          context_enlargeIn--;
+          if (context_enlargeIn == 0) {
+            context_enlargeIn = Math.pow(2, context_numBits);
+            context_numBits++;
+          }
+          // Add wc to the dictionary.
+          context_dictionary[context_wc] = context_dictSize++;
+          context_w = String(context_c);
+        }
+      }
+
+      // Output the code for w.
+      if (context_w !== "") {
+        if (Object.prototype.hasOwnProperty.call(context_dictionaryToCreate,context_w)) {
+          if (context_w.charCodeAt(0)<256) {
+            for (i=0 ; i<context_numBits ; i++) {
+              context_data_val = (context_data_val << 1);
+              if (context_data_position == bitsPerChar-1) {
+                context_data_position = 0;
+                context_data.push(getCharFromInt(context_data_val));
+                context_data_val = 0;
+              } else {
+                context_data_position++;
+              }
+            }
+            value = context_w.charCodeAt(0);
+            for (i=0 ; i<8 ; i++) {
+              context_data_val = (context_data_val << 1) | (value&1);
+              if (context_data_position == bitsPerChar-1) {
+                context_data_position = 0;
+                context_data.push(getCharFromInt(context_data_val));
+                context_data_val = 0;
+              } else {
+                context_data_position++;
+              }
+              value = value >> 1;
+            }
+          } else {
+            value = 1;
+            for (i=0 ; i<context_numBits ; i++) {
+              context_data_val = (context_data_val << 1) | value;
+              if (context_data_position == bitsPerChar-1) {
+                context_data_position = 0;
+                context_data.push(getCharFromInt(context_data_val));
+                context_data_val = 0;
+              } else {
+                context_data_position++;
+              }
+              value = 0;
+            }
+            value = context_w.charCodeAt(0);
+            for (i=0 ; i<16 ; i++) {
+              context_data_val = (context_data_val << 1) | (value&1);
+              if (context_data_position == bitsPerChar-1) {
+                context_data_position = 0;
+                context_data.push(getCharFromInt(context_data_val));
+                context_data_val = 0;
+              } else {
+                context_data_position++;
+              }
+              value = value >> 1;
+            }
+          }
+          context_enlargeIn--;
+          if (context_enlargeIn == 0) {
+            context_enlargeIn = Math.pow(2, context_numBits);
+            context_numBits++;
+          }
+          delete context_dictionaryToCreate[context_w];
+        } else {
+          value = context_dictionary[context_w];
+          for (i=0 ; i<context_numBits ; i++) {
+            context_data_val = (context_data_val << 1) | (value&1);
+            if (context_data_position == bitsPerChar-1) {
+              context_data_position = 0;
+              context_data.push(getCharFromInt(context_data_val));
+              context_data_val = 0;
+            } else {
+              context_data_position++;
+            }
+            value = value >> 1;
+          }
+
+
+        }
+        context_enlargeIn--;
+        if (context_enlargeIn == 0) {
+          context_enlargeIn = Math.pow(2, context_numBits);
+          context_numBits++;
+        }
+      }
+
+      // Mark the end of the stream
+      value = 2;
+      for (i=0 ; i<context_numBits ; i++) {
+        context_data_val = (context_data_val << 1) | (value&1);
+        if (context_data_position == bitsPerChar-1) {
+          context_data_position = 0;
+          context_data.push(getCharFromInt(context_data_val));
+          context_data_val = 0;
+        } else {
+          context_data_position++;
+        }
+        value = value >> 1;
+      }
+
+      // Flush the last char
+      while (true) {
+        context_data_val = (context_data_val << 1);
+        if (context_data_position == bitsPerChar-1) {
+          context_data.push(getCharFromInt(context_data_val));
+          break;
+        }
+        else context_data_position++;
+      }
+      return context_data.join('');
+    },
+
+    decompress: function (compressed) {
+      if (compressed == null) return "";
+      if (compressed == "") return null;
+      return LZString._decompress(compressed.length, 32768, function(index) { return compressed.charCodeAt(index); });
+    },
+
+    _decompress: function (length, resetValue, getNextValue) {
+      var dictionary = [],
+          enlargeIn = 4,
+          dictSize = 4,
+          numBits = 3,
+          entry = "",
+          result = [],
+          i,
+          w,
+          bits, resb, maxpower, power,
+          c,
+          data = {val:getNextValue(0), position:resetValue, index:1};
+
+      for (i = 0; i < 3; i += 1) {
+        dictionary[i] = i;
+      }
+
+      bits = 0;
+      maxpower = Math.pow(2,2);
+      power=1;
+      while (power!=maxpower) {
+        resb = data.val & data.position;
+        data.position >>= 1;
+        if (data.position == 0) {
+          data.position = resetValue;
+          data.val = getNextValue(data.index++);
+        }
+        bits |= (resb>0 ? 1 : 0) * power;
+        power <<= 1;
+      }
+
+      switch (bits) {
+        case 0:
+            bits = 0;
+            maxpower = Math.pow(2,8);
+            power=1;
+            while (power!=maxpower) {
+              resb = data.val & data.position;
+              data.position >>= 1;
+              if (data.position == 0) {
+                data.position = resetValue;
+                data.val = getNextValue(data.index++);
+              }
+              bits |= (resb>0 ? 1 : 0) * power;
+              power <<= 1;
+            }
+          c = f(bits);
+          break;
+        case 1:
+            bits = 0;
+            maxpower = Math.pow(2,16);
+            power=1;
+            while (power!=maxpower) {
+              resb = data.val & data.position;
+              data.position >>= 1;
+              if (data.position == 0) {
+                data.position = resetValue;
+                data.val = getNextValue(data.index++);
+              }
+              bits |= (resb>0 ? 1 : 0) * power;
+              power <<= 1;
+            }
+          c = f(bits);
+          break;
+        case 2:
+          return "";
+      }
+      dictionary[3] = c;
+      w = c;
+      result.push(c);
+      while (true) {
+        if (data.index > length) {
+          return "";
+        }
+
+        bits = 0;
+        maxpower = Math.pow(2,numBits);
+        power=1;
+        while (power!=maxpower) {
+          resb = data.val & data.position;
+          data.position >>= 1;
+          if (data.position == 0) {
+            data.position = resetValue;
+            data.val = getNextValue(data.index++);
+          }
+          bits |= (resb>0 ? 1 : 0) * power;
+          power <<= 1;
+        }
+
+        switch (c = bits) {
+          case 0:
+            bits = 0;
+            maxpower = Math.pow(2,8);
+            power=1;
+            while (power!=maxpower) {
+              resb = data.val & data.position;
+              data.position >>= 1;
+              if (data.position == 0) {
+                data.position = resetValue;
+                data.val = getNextValue(data.index++);
+              }
+              bits |= (resb>0 ? 1 : 0) * power;
+              power <<= 1;
+            }
+
+            dictionary[dictSize++] = f(bits);
+            c = dictSize-1;
+            enlargeIn--;
+            break;
+          case 1:
+            bits = 0;
+            maxpower = Math.pow(2,16);
+            power=1;
+            while (power!=maxpower) {
+              resb = data.val & data.position;
+              data.position >>= 1;
+              if (data.position == 0) {
+                data.position = resetValue;
+                data.val = getNextValue(data.index++);
+              }
+              bits |= (resb>0 ? 1 : 0) * power;
+              power <<= 1;
+            }
+            dictionary[dictSize++] = f(bits);
+            c = dictSize-1;
+            enlargeIn--;
+            break;
+          case 2:
+            return result.join('');
+        }
+
+        if (enlargeIn == 0) {
+          enlargeIn = Math.pow(2, numBits);
+          numBits++;
+        }
+
+        if (dictionary[c]) {
+          entry = dictionary[c];
+        } else {
+          if (c === dictSize) {
+            entry = w + w.charAt(0);
+          } else {
+            return null;
+          }
+        }
+        result.push(entry);
+
+        // Add w+entry[0] to the dictionary.
+        dictionary[dictSize++] = w + entry.charAt(0);
+        enlargeIn--;
+
+        w = entry;
+
+        if (enlargeIn == 0) {
+          enlargeIn = Math.pow(2, numBits);
+          numBits++;
+        }
+
+      }
+    }
+  };
+    return LZString;
+  })();
+
+  if( module != null ) {
+    module.exports = LZString;
+  }
+  });
+
   var _httpsBTime1MeV, _httpsCTime1MeV, _httpsCTime1MeV2;
 
   var CONSTANTS = {
     sdkName: '__ISDK',
     sdkScriptId: '__ISDK_ASSETS',
+    cookieMaxSize: 3900,
     consent: {
       name: 'consent',
       ttl: 390,
@@ -7048,21 +7689,29 @@
         unknown: 'unknown',
         optin: 'optin',
         optout: 'optout'
-      }
+      },
+      compress: false
     },
     event_consent_id: {
       name: 'event_consent_id',
-      ttl: 390
+      ttl: 390,
+      compress: false
     },
     subid: {
       name: 'subid',
+      payloadType: 'consent',
       queryname: 'toSubid',
-      ttl: 40
+      ttl: 40,
+      compress: true,
+      type: 'Object'
     },
     cashback: {
       name: 'cashback',
+      payloadType: 'cashback',
       queryname: 'toCashback',
-      ttl: 30
+      ttl: 30,
+      compress: true,
+      type: 'Object'
     },
     stats: {
       type: {
@@ -7076,6 +7725,9 @@
       conversion: ((_httpsBTime1MeV = "https://b.time1.me/v1/b") === null || _httpsBTime1MeV === void 0 ? void 0 : _httpsBTime1MeV.split(',')) || [],
       stats: ((_httpsCTime1MeV = "https://c.time1.me/v1/log/consent") === null || _httpsCTime1MeV === void 0 ? void 0 : _httpsCTime1MeV.split(',')) || [],
       proofConsent: ((_httpsCTime1MeV2 = "https://c.time1.me/v1/log/consent/proof") === null || _httpsCTime1MeV2 === void 0 ? void 0 : _httpsCTime1MeV2.split(',')) || []
+    },
+    errors: {
+      subidCookieType: 'subid_cookie_type'
     }
   };
 
@@ -7089,41 +7741,52 @@
     return "".concat(CONSTANTS.default_storage_prefix, "_").concat(name);
   }
   function setValue(value, id) {
-    var option = CONSTANTS[id] || {
+    var options = CONSTANTS[id] || {
       name: id,
       ttl: CONSTANTS.default_ttl
     };
-    api.set(getPrefixedCookieName(option.name), value, {
-      expires: option.ttl,
+    var valueToStore = options !== null && options !== void 0 && options.compress ? lzString.compressToBase64(value) : value;
+    api.set(getPrefixedCookieName(options.name), valueToStore, {
+      expires: options.ttl,
       sameSite: 'strict'
     });
     Storage.save({
       id: id,
-      value: value
+      value: valueToStore
     });
   }
+  function isObject(obj) {
+    return obj === Object(obj);
+  }
   function getValue(id) {
+    var options = CONSTANTS[id] || {
+      name: id
+    };
+    var cookieValue = api.get(getPrefixedCookieName(options.name));
+    var storage = Storage.find(options.name);
+    var rawValue = cookieValue || (storage === null || storage === void 0 ? void 0 : storage.value) || null;
+
+    if (!(options !== null && options !== void 0 && options.compress)) {
+      return rawValue;
+    }
+
+    try {
+      var uncompress = lzString.decompressFromBase64(rawValue);
+
+      if (options.type === 'Object') {
+        var isValid = isObject(JSON.parse(uncompress));
+        return isValid ? uncompress : rawValue;
+      }
+
+      return uncompress;
+    } catch (error) {
+      return rawValue;
+    }
+  }
+  function removeValue(id) {
     var _CONSTANTS$id;
 
     var name = ((_CONSTANTS$id = CONSTANTS[id]) === null || _CONSTANTS$id === void 0 ? void 0 : _CONSTANTS$id.name) || id;
-    var cookieValue = api.get(getPrefixedCookieName(name));
-
-    if (cookieValue) {
-      return cookieValue;
-    }
-
-    var storage = Storage.find(name);
-
-    if (storage !== null && storage !== void 0 && storage.value) {
-      return storage === null || storage === void 0 ? void 0 : storage.value;
-    }
-
-    return null;
-  }
-  function removeValue(id) {
-    var _CONSTANTS$id2;
-
-    var name = ((_CONSTANTS$id2 = CONSTANTS[id]) === null || _CONSTANTS$id2 === void 0 ? void 0 : _CONSTANTS$id2.name) || id;
     api.remove(getPrefixedCookieName(name));
     Storage.delete(name);
   }
@@ -7177,6 +7840,59 @@
   function getCurrentUrl() {
     return "".concat(window.location.hostname).concat(window.location.pathname);
   }
+  function getCurrentTimestamp() {
+    return Date.parse(new Date());
+  }
+  function getTimestampFromTTL(ttl) {
+    return (ttl || 0) * 1000 * 60 * 60 * 24;
+  }
+  function filterUnActiveSubids(subids, ttl) {
+    var currentTimestamp = getCurrentTimestamp();
+    var duration = getTimestampFromTTL(ttl);
+    return Object.fromEntries(Object.entries(subids).filter(function (_ref) {
+      var _ref2 = _slicedToArray(_ref, 2),
+          createAt = _ref2[1];
+
+      return currentTimestamp - createAt <= duration;
+    }));
+  }
+  function getMaxSubids(subids) {
+    var _LZString$compressToB;
+
+    var subidsSize = ((_LZString$compressToB = lzString.compressToBase64(JSON.stringify(subids))) === null || _LZString$compressToB === void 0 ? void 0 : _LZString$compressToB.length) || 0;
+
+    if (subidsSize > CONSTANTS.cookieMaxSize) {
+      var truncateSubids = Object.entries(subids).sort(function (_ref3, _ref4) {
+        var _ref5 = _slicedToArray(_ref3, 2),
+            prevcreateAt = _ref5[1];
+
+        var _ref6 = _slicedToArray(_ref4, 2),
+            nextcreateAt = _ref6[1];
+
+        return nextcreateAt - prevcreateAt;
+      }).slice(0, -1);
+      return getMaxSubids(Object.fromEntries(truncateSubids));
+    }
+
+    return subids;
+  }
+  var SubidCookieTypeError = /*#__PURE__*/function (_Error) {
+    _inherits(SubidCookieTypeError, _Error);
+
+    var _super = _createSuper(SubidCookieTypeError);
+
+    function SubidCookieTypeError(subidName) {
+      var _this;
+
+      _classCallCheck(this, SubidCookieTypeError);
+
+      _this = _super.call(this, "Cookie to_".concat(subidName, " or is a string. Expected object"));
+      _this.code = CONSTANTS.errors.subidCookieType;
+      return _this;
+    }
+
+    return _createClass(SubidCookieTypeError);
+  }( /*#__PURE__*/_wrapNativeSuper(Error));
 
   var _progids = /*#__PURE__*/new WeakMap();
 
@@ -7188,6 +7904,12 @@
 
   var _errors = /*#__PURE__*/new WeakMap();
 
+  var _formatSubidEntry = /*#__PURE__*/new WeakSet();
+
+  var _getActiveSubids = /*#__PURE__*/new WeakSet();
+
+  var _getActiveSubidsValues = /*#__PURE__*/new WeakSet();
+
   var _setProgids = /*#__PURE__*/new WeakSet();
 
   var _configureProgramData = /*#__PURE__*/new WeakSet();
@@ -7197,6 +7919,8 @@
   var _logStats = /*#__PURE__*/new WeakSet();
 
   var _setPOC = /*#__PURE__*/new WeakSet();
+
+  var _hasSubids = /*#__PURE__*/new WeakSet();
 
   var _setConsent = /*#__PURE__*/new WeakSet();
 
@@ -7226,6 +7950,8 @@
 
       _classPrivateMethodInitSpec(this, _setConsent);
 
+      _classPrivateMethodInitSpec(this, _hasSubids);
+
       _classPrivateMethodInitSpec(this, _setPOC);
 
       _classPrivateMethodInitSpec(this, _logStats);
@@ -7235,6 +7961,12 @@
       _classPrivateMethodInitSpec(this, _configureProgramData);
 
       _classPrivateMethodInitSpec(this, _setProgids);
+
+      _classPrivateMethodInitSpec(this, _getActiveSubidsValues);
+
+      _classPrivateMethodInitSpec(this, _getActiveSubids);
+
+      _classPrivateMethodInitSpec(this, _formatSubidEntry);
 
       _classPrivateFieldInitSpec(this, _progids, {
         writable: true,
@@ -7262,6 +7994,7 @@
       });
 
       this.env = "production";
+      this.version = "1.1.4";
 
       _classPrivateMethodGet(this, _setProgids, _setProgids2).call(this);
 
@@ -7279,19 +8012,19 @@
     }
 
     _createClass(Sdk, [{
+      key: "subids",
+      get: function get() {
+        return _classPrivateMethodGet(this, _getActiveSubids, _getActiveSubids2).call(this, CONSTANTS.subid);
+      }
+    }, {
+      key: "cashbackSubids",
+      get: function get() {
+        return _classPrivateMethodGet(this, _getActiveSubids, _getActiveSubids2).call(this, CONSTANTS.cashback);
+      }
+    }, {
       key: "consent",
       get: function get() {
         return getValue(CONSTANTS.consent.name);
-      }
-    }, {
-      key: "subid",
-      get: function get() {
-        return this.constructor.getProgramDataFromQueryParams(CONSTANTS.subid.queryname) || getValue(CONSTANTS.subid.name);
-      }
-    }, {
-      key: "cashbackSubid",
-      get: function get() {
-        return this.constructor.getProgramDataFromQueryParams(CONSTANTS.cashback.queryname) || getValue(CONSTANTS.cashback.name);
       }
     }, {
       key: "eventConsentId",
@@ -7532,9 +8265,9 @@
           env: this.env,
           progids: _classPrivateFieldGet(this, _progids),
           consent: this.consent,
-          subid: this.subid,
+          subids: this.subids,
           event_consent_id: this.eventConsentId,
-          cashbackSubid: this.cashbackSubid,
+          cashbackSubids: this.cashbackSubids,
           errors: _classPrivateMethodGet(this, _getErrors, _getErrors2).call(this),
           conversionUrls: CONSTANTS.urls.conversion
         };
@@ -7549,6 +8282,66 @@
 
     return Sdk;
   }();
+
+  function _formatSubidEntry2(subid) {
+    if (!subid) {
+      return {};
+    }
+
+    return _defineProperty({}, subid, getCurrentTimestamp());
+  }
+
+  function _getActiveSubids2() {
+    var _ref4 = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {},
+        name = _ref4.name,
+        queryname = _ref4.queryname,
+        ttl = _ref4.ttl;
+
+    var subidQueryParam = this.constructor.getProgramDataFromQueryParams(queryname);
+    var storedSubids = getValue(name);
+
+    var subidQueryParamEntry = _classPrivateMethodGet(this, _formatSubidEntry, _formatSubidEntry2).call(this, subidQueryParam);
+
+    if (!storedSubids) {
+      return subidQueryParamEntry;
+    }
+
+    try {
+      var subids = JSON.parse(storedSubids);
+
+      if (isObject(subids) && Object.keys(subids).length > 0) {
+        var activeStoredSubids = filterUnActiveSubids(subids, ttl);
+
+        var activeSubids = _objectSpread2(_objectSpread2({}, activeStoredSubids), subidQueryParamEntry);
+
+        var maxSubids = getMaxSubids(activeSubids);
+        return maxSubids;
+      }
+
+      if (isObject(subids) && Object.keys(subids).length === 0) {
+        return subidQueryParamEntry;
+      }
+
+      throw new SubidCookieTypeError(name);
+    } catch (error) {
+      var oldSubidStoredFormat = _classPrivateMethodGet(this, _formatSubidEntry, _formatSubidEntry2).call(this, storedSubids);
+
+      _classPrivateMethodGet(this, _setError, _setError2).call(this, {
+        error: error,
+        caller: '#getActiveSubids',
+        extra: {
+          storedSubids: storedSubids
+        }
+      });
+
+      return _objectSpread2(_objectSpread2({}, oldSubidStoredFormat), subidQueryParamEntry);
+    }
+  }
+
+  function _getActiveSubidsValues2() {
+    var options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+    return Object.keys(_classPrivateMethodGet(this, _getActiveSubids, _getActiveSubids2).call(this, options));
+  }
 
   function _setProgids2() {
     try {
@@ -7571,13 +8364,11 @@
     }
   }
 
-  function _configureProgramData2(_ref3) {
-    var name = _ref3.name,
-        queryname = _ref3.queryname;
-    var subid = this.constructor.getProgramDataFromQueryParams(queryname);
+  function _configureProgramData2(options) {
+    var subids = _classPrivateMethodGet(this, _getActiveSubids, _getActiveSubids2).call(this, options);
 
-    if (subid) {
-      setValue(subid, name);
+    if (subids) {
+      setValue(JSON.stringify(subids), options.name);
     }
   }
 
@@ -7586,14 +8377,14 @@
   }
 
   function _callApi3() {
-    _callApi3 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee5(_ref4) {
-      var urlIterator, _ref4$body, body, caller, response, error;
+    _callApi3 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee5(_ref5) {
+      var urlIterator, _ref5$body, body, caller, response, error;
 
       return regeneratorRuntime.wrap(function _callee5$(_context5) {
         while (1) {
           switch (_context5.prev = _context5.next) {
             case 0:
-              urlIterator = _ref4.urlIterator, _ref4$body = _ref4.body, body = _ref4$body === void 0 ? {} : _ref4$body, caller = _ref4.caller;
+              urlIterator = _ref5.urlIterator, _ref5$body = _ref5.body, body = _ref5$body === void 0 ? {} : _ref5$body, caller = _ref5.caller;
 
               if (urlIterator !== null && urlIterator !== void 0 && urlIterator.url) {
                 _context5.next = 4;
@@ -7671,18 +8462,23 @@
     return _callApi3.apply(this, arguments);
   }
 
-  function _logStats2(_ref5) {
-    var consent = _ref5.consent,
-        type = _ref5.type,
-        progid = _ref5.progid;
-    var toSubids = [this.subid, this.cashbackSubid].filter(Boolean);
+  function _logStats2(_ref6) {
+    var consent = _ref6.consent,
+        type = _ref6.type,
+        progid = _ref6.progid;
+
+    var subids = _classPrivateMethodGet(this, _getActiveSubidsValues, _getActiveSubidsValues2).call(this, CONSTANTS.subid);
+
+    var cashbackSubids = _classPrivateMethodGet(this, _getActiveSubidsValues, _getActiveSubidsValues2).call(this, CONSTANTS.cashback);
+
+    var toSubids = [].concat(_toConsumableArray(subids), _toConsumableArray(cashbackSubids)).filter(Boolean);
 
     _classPrivateMethodGet(this, _callApi, _callApi2).call(this, {
       urlIterator: _classPrivateFieldGet(this, _statsUrlIterator),
       body: {
         type: type,
         progid: progid,
-        url: getCurrentUrl(),
+        // url: utils.getCurrentUrl(), wait until API ready
         status: consent,
         toSubids: toSubids
       },
@@ -7705,11 +8501,19 @@
     });
   }
 
+  function _hasSubids2(options) {
+    var subids = _classPrivateMethodGet(this, _getActiveSubidsValues, _getActiveSubidsValues2).call(this, options);
+
+    return (subids === null || subids === void 0 ? void 0 : subids.length) > 0;
+  }
+
   function _setConsent2(consent) {
     var _this = this;
 
     var shouldLog = consent !== this.consent;
-    var shouldSetupPOC = !this.eventConsentId && this.subid && consent === CONSTANTS.consent.status.optin;
+
+    var shouldSetupPOC = consent === CONSTANTS.consent.status.optin && !this.eventConsentId && _classPrivateMethodGet(this, _hasSubids, _hasSubids2).call(this, CONSTANTS.subid);
+
     setValue(consent, CONSTANTS.consent.name);
 
     if (shouldLog) {
@@ -7733,7 +8537,7 @@
   }
 
   function _canConvert2() {
-    return this.cashbackSubid || this.constructor.getProgramDataFromQueryParams(CONSTANTS.subid.queryname) || this.subid && this.consent === CONSTANTS.consent.status.optin;
+    return this.constructor.getProgramDataFromQueryParams(CONSTANTS.subid.queryname) || _classPrivateMethodGet(this, _hasSubids, _hasSubids2).call(this, CONSTANTS.cashback) || _classPrivateMethodGet(this, _hasSubids, _hasSubids2).call(this, CONSTANTS.subid) && this.consent === CONSTANTS.consent.status.optin;
   }
 
   function _setError2(data) {
@@ -7741,10 +8545,10 @@
   }
 
   function _getErrors2() {
-    return _classPrivateFieldGet(this, _errors).map(function (_ref6) {
-      var error = _ref6.error,
-          caller = _ref6.caller,
-          extra = _ref6.extra;
+    return _classPrivateFieldGet(this, _errors).map(function (_ref7) {
+      var error = _ref7.error,
+          caller = _ref7.caller,
+          extra = _ref7.extra;
       return {
         message: "While calling the method \"".concat(caller, "\": ").concat(error.message),
         extra: extra
@@ -7757,16 +8561,16 @@
   }
 
   function _setConversion3() {
-    _setConversion3 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee6(_ref7) {
+    _setConversion3 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee6(_ref8) {
       var _classPrivateFieldGet2;
 
-      var _ref7$data, data, _ref7$caller, caller, progid, comid, iu, _classPrivateFieldGet3, toSubid, toCashback, toSubids, payload, body;
+      var _ref8$data, data, _ref8$caller, caller, progid, comid, iu, _classPrivateFieldGet3, subids, cashbackSubids, toSubids, toCashbackSubids, payload, body;
 
       return regeneratorRuntime.wrap(function _callee6$(_context6) {
         while (1) {
           switch (_context6.prev = _context6.next) {
             case 0:
-              _ref7$data = _ref7.data, data = _ref7$data === void 0 ? {} : _ref7$data, _ref7$caller = _ref7.caller, caller = _ref7$caller === void 0 ? 'setConversion' : _ref7$caller;
+              _ref8$data = _ref8.data, data = _ref8$data === void 0 ? {} : _ref8$data, _ref8$caller = _ref8.caller, caller = _ref8$caller === void 0 ? 'setConversion' : _ref8$caller;
 
               if (_classPrivateMethodGet(this, _canConvert, _canConvert2).call(this)) {
                 _context6.next = 3;
@@ -7794,36 +8598,41 @@
               throw new Error("Failed to contact server on ".concat(JSON.stringify((_classPrivateFieldGet3 = _classPrivateFieldGet(this, _conversionUrlIterator)) === null || _classPrivateFieldGet3 === void 0 ? void 0 : _classPrivateFieldGet3.urls)));
 
             case 8:
-              toSubid = {
-                type: 'consent',
-                value: this.subid
-              };
-              toCashback = {
-                type: 'cashback',
-                value: this.cashbackSubid
-              };
-              toSubids = [toSubid, toCashback].filter(function (_ref8) {
-                var value = _ref8.value;
-                return !!value;
+              subids = _classPrivateMethodGet(this, _getActiveSubidsValues, _getActiveSubidsValues2).call(this, CONSTANTS.subid);
+              cashbackSubids = _classPrivateMethodGet(this, _getActiveSubidsValues, _getActiveSubidsValues2).call(this, CONSTANTS.cashback);
+              toSubids = subids.map(function (subid) {
+                return {
+                  type: CONSTANTS.subid.payloadType,
+                  value: subid
+                };
+              });
+              toCashbackSubids = cashbackSubids.map(function (cashbackSubid) {
+                return {
+                  type: CONSTANTS.cashback.payloadType,
+                  value: cashbackSubid
+                };
               });
               payload = _objectSpread2(_objectSpread2({}, data), {}, {
                 event_consent_id: this.eventConsentId,
-                toSubids: toSubids
+                toSubids: [].concat(_toConsumableArray(toSubids), _toConsumableArray(toCashbackSubids)).filter(function (_ref9) {
+                  var value = _ref9.value;
+                  return !!value;
+                })
               });
-              body = Object.fromEntries(Object.entries(payload).filter(function (_ref9) {
-                var _ref10 = _slicedToArray(_ref9, 2),
-                    value = _ref10[1];
+              body = Object.fromEntries(Object.entries(payload).filter(function (_ref10) {
+                var _ref11 = _slicedToArray(_ref10, 2),
+                    value = _ref11[1];
 
                 return !!value;
               }));
-              _context6.next = 15;
+              _context6.next = 16;
               return _classPrivateMethodGet(this, _callApi, _callApi2).call(this, {
                 urlIterator: _classPrivateFieldGet(this, _conversionUrlIterator),
                 body: body,
                 caller: caller
               });
 
-            case 15:
+            case 16:
             case "end":
               return _context6.stop();
           }

@@ -16,16 +16,21 @@ import CONSTANTS from './src/constants.mjs';
 const NODE_ENV = process.env.NODE_ENV || 'production';
 dotenv.config({ path: `.env.${NODE_ENV}` });
 
+function getSdkVersion() {
+  return `${pkg.version}${process.env.SDK_VERSION_SUFFIX || ''}`;
+}
+
 console.log({
   NODE_ENV,
   API_CONVERSION_URLS: process.env.API_CONVERSION_URLS,
   API_STATS_URLS: process.env.API_STATS_URLS,
   API_PROOF_CONSENT_URLS: process.env.API_PROOF_CONSENT_URLS,
+  SDK_VERSION: getSdkVersion(),
 });
 
 const banner = {
   banner() {
-    return `/*! ${pkg.name} ${pkg.version} https://github.com/${pkg.homepage} @license ${pkg.license} */`;
+    return `/*! ${pkg.name} ${pkg.version} ${pkg.homepage} @license ${pkg.license} */`;
   },
 };
 
@@ -39,6 +44,7 @@ const defaultPlugins = [
       'process.env.API_CONVERSION_URLS': `"${process.env.API_CONVERSION_URLS}"`,
       'process.env.API_STATS_URLS': `"${process.env.API_STATS_URLS}"`,
       'process.env.API_PROOF_CONSENT_URLS': `"${process.env.API_PROOF_CONSENT_URLS}"`,
+      'process.env.SDK_VERSION': `"${getSdkVersion()}"`,
     },
   }),
   postcss({
