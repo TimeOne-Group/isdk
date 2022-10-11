@@ -96,7 +96,9 @@ export function getCurrentUrl() {
 }
 
 export function getCurrentTimestamp() {
-  return Date.parse(new Date());
+  const currentDate = new Date();
+
+  return currentDate.getTime() + currentDate.getTimezoneOffset() * 60 * 1000;
 }
 
 export function getTimestampFromTTL(ttl) {

@@ -16,7 +16,7 @@ const noConsentValues = [CONSTANTS.consent.status.unknown, CONSTANTS.consent.sta
 const eventsName = ['_setUnknown', '_setOptin', '_setOptout'];
 const conversionUrls = CONSTANTS.urls.conversion;
 
-const currentTimestamp = 1664575200000; // cf date mock => https://github.com/TimeOne-Group/isdk/blob/main/src/setupTests.mjs#L16
+let currentTimestamp;
 
 const apiOptions = {
   method: 'POST',
@@ -44,7 +44,9 @@ function compress(subids) {
 describe('The ISDK class test', () => {
   beforeAll(() => {
     jest.useFakeTimers('modern');
-    jest.setSystemTime(new Date(2022, 9, 1)); // timestamp 1664575200000
+    jest.setSystemTime(new Date(2022, 9, 1));
+
+    currentTimestamp = utils.getCurrentTimestamp();
   });
 
   beforeEach(() => {

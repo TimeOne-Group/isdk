@@ -23,7 +23,7 @@ const ios = [
   {
     device: 'iPhone XS',
     osVersion: [
-      12,
+      // 12,
       // 13, Not work with docker service name domain. Require localhost
       14, 15,
     ],
@@ -45,7 +45,7 @@ const android = [
 ];
 
 const browserToIgnore = ['ie', 'opera'];
-const browserVersions = ['latest', 'latest-1', 'latest-2'];
+const browserVersions = ['latest', 'latest-1'];
 
 const desktopOsVersion = {
   Windows: ['7', '11'],
