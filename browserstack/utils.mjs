@@ -75,8 +75,15 @@ export function ciLogError(driver, message) {
   );
 }
 
-export function getSdkState(driver, key) {
-  return driver.executeScript(`return window.${sdkName}${key ? `.${key}` : ''}`);
+export async function getSdkState(driver, key) {
+  const response = await driver.executeScript(`return window.${sdkName}${key ? `.${key}` : ''}`);
+
+  if (response === Object(response)) {
+    delete response.sessionId;
+    delete response.capabilities;
+  }
+
+  return response;
 }
 
 export function callSdkMethod(driver, { methodName, params }) {

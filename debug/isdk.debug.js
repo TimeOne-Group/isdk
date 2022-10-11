@@ -7797,7 +7797,8 @@
     return "".concat(window.location.hostname).concat(window.location.pathname);
   }
   function getCurrentTimestamp() {
-    return Date.parse(new Date());
+    var currentDate = new Date();
+    return currentDate.getTime() + currentDate.getTimezoneOffset() * 60 * 1000;
   }
   function getTimestampFromTTL(ttl) {
     return (ttl || 0) * 1000 * 60 * 60 * 24;
