@@ -22,19 +22,27 @@ export default async function shouldNotSetSubidIfConsentIsOptoutOrUnknown(driver
   try {
     const initialConsent = await getSdkState(driver, 'consent');
     const initialprogid = await getSdkState(driver, 'progid');
-    const initialSubid = await getSdkState(driver, 'subid');
+    const initialSubids = await getSdkState(driver, 'subids');
 
     expect(initialConsent).toEqual(CONSTANTS.consent.status.unknown);
     expect(initialprogid).toBeFalsy();
-    expect(initialSubid).toEqual(TEST_CONSTANTS.subid);
+    expect(initialSubids).toEqual(
+      expect.objectContaining({
+        [TEST_CONSTANTS.subid]: expect.any(Number),
+      })
+    );
 
     await setOptout(driver);
 
     const consent = await getSdkState(driver, 'consent');
-    const subid = await getSdkState(driver, 'subid');
+    const subids = await getSdkState(driver, 'subids');
 
     expect(consent).toEqual(CONSTANTS.consent.status.optout);
-    expect(subid).toEqual(TEST_CONSTANTS.subid);
+    expect(subids).toEqual(
+      expect.objectContaining({
+        [TEST_CONSTANTS.subid]: expect.any(Number),
+      })
+    );
 
     await browserstackLogSuccess(
       driver,

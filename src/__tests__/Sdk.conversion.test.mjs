@@ -2,6 +2,8 @@
 /* eslint-disable import/no-extraneous-dependencies */
 // eslint-disable-next-line import/no-unresolved
 import { expect } from 'expect';
+import Cookie from 'js-cookie';
+import LZString from 'lz-string';
 
 import Sdk from '../Sdk.mjs';
 import * as utils from '../utils.mjs';
@@ -30,18 +32,25 @@ const noConsentMethods = [
 ];
 const conversionMethods = ['_setSale', '_setLead', '_setDbClick', '_setClick'];
 
-beforeEach(() => {
-  Sdk.getProgramDataFromQueryParams = jest.fn();
-  fetch.resetMocks();
-  document.getElementById = jest.fn(() => ({
-    getAttribute: () => JSON.stringify(progids),
-  }));
-  utils.removeValue(CONSTANTS.subid.name);
-  utils.removeValue(CONSTANTS.cashback.name);
-  utils.removeValue(CONSTANTS.consent.name);
-});
+const subidsConfig = [CONSTANTS.subid, CONSTANTS.cashback];
+
+function compress(subids) {
+  const value = JSON.stringify(subids);
+  return LZString.compressToBase64(value);
+}
 
 describe('The ISDK class test', () => {
+  beforeEach(() => {
+    Sdk.getProgramDataFromQueryParams = jest.fn();
+    fetch.resetMocks();
+    document.getElementById = jest.fn(() => ({
+      getAttribute: () => JSON.stringify(progids),
+    }));
+    utils.removeValue(CONSTANTS.subid.name);
+    utils.removeValue(CONSTANTS.cashback.name);
+    utils.removeValue(CONSTANTS.consent.name);
+  });
+
   describe('Conversions', () => {
     conversionMethods.forEach((method) => {
       test(`method ${method} - Should not do a conversion when consent is not set and subid not defined`, () => {
@@ -344,6 +353,129 @@ describe('The ISDK class test', () => {
         expect(instance.consent).toEqual(CONSTANTS.consent.status.optin);
         expect(fetch).not.toHaveBeenCalledWith(CONSTANTS.urls.conversion[0], expect.anything());
       });
+
+      subidsConfig.forEach(({ name, queryname, payloadType }) => {
+        test(`Multisubids method ${method} - Should do a conversion with an existing ${name} cookie and ${queryname} in queryparams`, () => {
+          const subid =
+            'eyJkIjoxNjY0NzkyNjYzLCJwaSI6IjIiLCJwIjoiNzkzMyIsInByIjoiMjM3MTg3In0.K3QnOea5TUph2WvxcpXEcqbuZ1XjceB1hq8GFar2cp12345';
+          const subidEntry = {
+            [subid]: 1664575200000,
+          };
+          const compressedSubid = compress(subidEntry);
+          const subidQueryparams =
+            'eyJkIjoxNjY0NTMyMjAxLCJwaSI6IjIiLCJwIjoiNzkzMyIsInByIjoiMjM3MTg3In0.NVFhSZlDIqKOlKq-UURJD18u8t2sVoiT_dVB1cpHRRM';
+
+          Cookie.set(utils.getPrefixedCookieName(name), compressedSubid);
+          utils.setValue(CONSTANTS.consent.status.optin, CONSTANTS.consent.name);
+          Sdk.getProgramDataFromQueryParams = jest.fn((value) => (value === queryname ? subidQueryparams : null));
+
+          expect(Cookie.get(utils.getPrefixedCookieName(name))).toEqual(compressedSubid);
+          expect(utils.Storage.find(name)?.value).toBeFalsy();
+
+          const instance = new Sdk();
+
+          instance.push([method, minimumConvertPayload]);
+
+          expect(instance.consent).toEqual(CONSTANTS.consent.status.optin);
+          expect(fetch).toHaveBeenCalledWith(CONSTANTS.urls.conversion[0], {
+            ...apiOptions,
+            body: JSON.stringify({
+              ...minimumConvertPayload,
+              toSubids: [
+                { type: payloadType, value: subid },
+                { type: payloadType, value: subidQueryparams },
+              ],
+            }),
+          });
+        });
+      });
+
+      subidsConfig.forEach(({ name, queryname, payloadType }) => {
+        test(`Multisubids method ${method} - Should do a conversion with an existing ${name} storage and ${queryname} in queryparams`, () => {
+          const subid =
+            'eyJkIjoxNjY0NzkyNjYzLCJwaSI6IjIiLCJwIjoiNzkzMyIsInByIjoiMjM3MTg3In0.K3QnOea5TUph2WvxcpXEcqbuZ1XjceB1hq8GFar2cp12345';
+          const subidEntry = {
+            [subid]: 1664575200000,
+          };
+          const compressedSubid = compress(subidEntry);
+
+          const subidQueryparams =
+            'eyJkIjoxNjY0NTMyMjAxLCJwaSI6IjIiLCJwIjoiNzkzMyIsInByIjoiMjM3MTg3In0.NVFhSZlDIqKOlKq-UURJD18u8t2sVoiT_dVB1cpHRRM';
+
+          utils.Storage.save({ id: name, value: compressedSubid });
+          utils.setValue(CONSTANTS.consent.status.optin, CONSTANTS.consent.name);
+          Sdk.getProgramDataFromQueryParams = jest.fn((value) => (value === queryname ? subidQueryparams : null));
+
+          expect(utils.Storage.find(name)?.value).toEqual(compressedSubid);
+          expect(Cookie.get(utils.getPrefixedCookieName(name))).toBeFalsy();
+
+          const instance = new Sdk();
+
+          instance.push([method, minimumConvertPayload]);
+
+          expect(instance.consent).toEqual(CONSTANTS.consent.status.optin);
+          expect(fetch).toHaveBeenCalledWith(CONSTANTS.urls.conversion[0], {
+            ...apiOptions,
+            body: JSON.stringify({
+              ...minimumConvertPayload,
+              toSubids: [
+                { type: payloadType, value: subid },
+                { type: payloadType, value: subidQueryparams },
+              ],
+            }),
+          });
+        });
+      });
+
+      describe('Retrocompatibility', () => {
+        subidsConfig.forEach(({ name, payloadType }) => {
+          test(`Multisubids method ${method} - Should do a conversion with an old ${name} cookie format to the new one`, () => {
+            const oldSubid =
+              'eyJkIjoxNjY0NzkyNjYzLCJwaSI6IjIiLCJwIjoiNzkzMyIsInByIjoiMjM3MTg3In0.K3QnOea5TUph2WvxcpXEcqbuZ1XjceB1hq8GFar2cp12345';
+            Cookie.set(utils.getPrefixedCookieName(name), oldSubid);
+
+            utils.setValue(CONSTANTS.consent.status.optin, CONSTANTS.consent.name);
+
+            Sdk.getProgramDataFromQueryParams = jest.fn(() => null);
+
+            const instance = new Sdk();
+            instance.push([method, minimumConvertPayload]);
+
+            expect(instance.consent).toEqual(CONSTANTS.consent.status.optin);
+            expect(fetch).toHaveBeenCalledWith(CONSTANTS.urls.conversion[0], {
+              ...apiOptions,
+              body: JSON.stringify({
+                ...minimumConvertPayload,
+                toSubids: [{ type: payloadType, value: oldSubid }],
+              }),
+            });
+          });
+        });
+
+        subidsConfig.forEach(({ name, payloadType }) => {
+          test(`Multisubids method ${method} - Should do a conversion with an old ${name} storage format to the new one`, () => {
+            const oldSubid =
+              'eyJkIjoxNjY0NzkyNjYzLCJwaSI6IjIiLCJwIjoiNzkzMyIsInByIjoiMjM3MTg3In0.K3QnOea5TUph2WvxcpXEcqbuZ1XjceB1hq8GFar2cp12345';
+            utils.Storage.save({ id: name, value: oldSubid });
+
+            utils.setValue(CONSTANTS.consent.status.optin, CONSTANTS.consent.name);
+
+            Sdk.getProgramDataFromQueryParams = jest.fn(() => null);
+
+            const instance = new Sdk();
+            instance.push([method, minimumConvertPayload]);
+
+            expect(instance.consent).toEqual(CONSTANTS.consent.status.optin);
+            expect(fetch).toHaveBeenCalledWith(CONSTANTS.urls.conversion[0], {
+              ...apiOptions,
+              body: JSON.stringify({
+                ...minimumConvertPayload,
+                toSubids: [{ type: payloadType, value: oldSubid }],
+              }),
+            });
+          });
+        });
+      });
     });
   });
 
@@ -359,7 +491,7 @@ describe('The ISDK class test', () => {
       body: JSON.stringify({
         type: CONSTANTS.stats.type.conversion,
         progid,
-        url: 'localhost/',
+        // url: 'localhost/',
         status: CONSTANTS.consent.status.unknown,
         toSubids: [],
       }),

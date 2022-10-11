@@ -6,56 +6,45 @@ import {
   browserstackLogError,
   getSdkState,
   setOptin,
-  setUnknown,
   printTestInConsole,
+  setCookie,
+  findCookie,
 } from '../../utils.mjs';
 import CONSTANTS from '../../../src/constants.mjs';
 import TEST_CONSTANTS from './constants.mjs';
 
-const testName = 'should_set_sdk_to_unknown_state';
-const url = `${TEST_CONSTANTS.baseUrl}?${CONSTANTS.subid.queryname}=${TEST_CONSTANTS.subid}&${CONSTANTS.cashback.queryname}=${TEST_CONSTANTS.cashbackSubid}`;
+const testName = 'should_set_subid_if_consent_is_optin_from_old_storage_value';
+const oldSubidFormat = 'Old3R.sUb1d.F0rma7';
 const expectedSubids = expect.objectContaining({
-  [TEST_CONSTANTS.subid]: expect.any(Number),
+  [oldSubidFormat]: expect.any(Number),
 });
-const expectedCashbackSubids = expect.objectContaining({
-  [TEST_CONSTANTS.cashbackSubid]: expect.any(Number),
-});
+const cookieName = `to_${CONSTANTS.subid.name}`;
 
-export default async function shouldSetSdkToUnknownState(driver) {
+export default async function shouldSetSubidifConsentIsOptinFromOldStorageValue(driver) {
   printTestInConsole(TEST_CONSTANTS.groupTestName, testName);
-
-  await driver.get(url);
-
   try {
+    await driver.get(`${TEST_CONSTANTS.baseUrl}`);
+
+    await setCookie(driver, { cookieName, value: oldSubidFormat });
+    const subidFromCookie = await findCookie(driver, { cookieName });
+
+    expect(subidFromCookie).toEqual(oldSubidFormat);
+
     const initialConsent = await getSdkState(driver, 'consent');
     const initialprogid = await getSdkState(driver, 'progid');
     const initialSubids = await getSdkState(driver, 'subids');
-    const initialCashbackSubids = await getSdkState(driver, 'cashbackSubids');
 
     expect(initialConsent).toEqual(CONSTANTS.consent.status.unknown);
     expect(initialprogid).toBeFalsy();
     expect(initialSubids).toEqual(expectedSubids);
-    expect(initialCashbackSubids).toEqual(expectedCashbackSubids);
 
     await setOptin(driver);
 
     const consent = await getSdkState(driver, 'consent');
     const subids = await getSdkState(driver, 'subids');
-    const cashbackSubids = await getSdkState(driver, 'cashbackSubids');
 
     expect(consent).toEqual(CONSTANTS.consent.status.optin);
     expect(subids).toEqual(expectedSubids);
-    expect(cashbackSubids).toEqual(expectedCashbackSubids);
-
-    await setUnknown(driver);
-
-    const consentAfterClean = await getSdkState(driver, 'consent');
-    const subidAfterClean = await getSdkState(driver, 'subids');
-    const cashbackSubidAfterClean = await getSdkState(driver, 'cashbackSubids');
-
-    expect(consentAfterClean).toEqual(CONSTANTS.consent.status.unknown);
-    expect(subidAfterClean).toEqual(expectedSubids);
-    expect(cashbackSubidAfterClean).toEqual(expectedCashbackSubids);
 
     await browserstackLogSuccess(
       driver,

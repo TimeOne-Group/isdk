@@ -12,6 +12,9 @@ import CONSTANTS from '../../../src/constants.mjs';
 import TEST_CONSTANTS from './constants.mjs';
 
 const testName = 'should_set_subid_from_storage';
+const expectedSubids = expect.objectContaining({
+  [TEST_CONSTANTS.subid]: expect.any(Number),
+});
 
 export default async function shouldSetSubidFromStorage(driver) {
   printTestInConsole(TEST_CONSTANTS.groupTestName, testName);
@@ -21,25 +24,25 @@ export default async function shouldSetSubidFromStorage(driver) {
   try {
     const initialConsent = await getSdkState(driver, 'consent');
     const initialprogid = await getSdkState(driver, 'progid');
-    const initialSubid = await getSdkState(driver, 'subid');
+    const initialSubids = await getSdkState(driver, 'subids');
 
     expect(initialConsent).toEqual(CONSTANTS.consent.status.unknown);
     expect(initialprogid).toBeFalsy();
-    expect(initialSubid).toEqual(TEST_CONSTANTS.subid);
+    expect(initialSubids).toEqual(expectedSubids);
 
     await setOptin(driver);
 
     const consent = await getSdkState(driver, 'consent');
-    const subid = await getSdkState(driver, 'subid');
+    const subids = await getSdkState(driver, 'subids');
 
     expect(consent).toEqual(CONSTANTS.consent.status.optin);
-    expect(subid).toEqual(TEST_CONSTANTS.subid);
+    expect(subids).toEqual(expectedSubids);
 
     await driver.get(`${TEST_CONSTANTS.baseUrl}`);
 
-    const subidFromStorage = await getSdkState(driver, 'subid');
+    const subidsFromStorage = await getSdkState(driver, 'subids');
 
-    expect(subidFromStorage).toEqual(TEST_CONSTANTS.subid);
+    expect(subidsFromStorage).toEqual(expectedSubids);
 
     await browserstackLogSuccess(
       driver,

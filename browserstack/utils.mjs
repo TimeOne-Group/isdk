@@ -15,8 +15,12 @@ export function resetTestSuiteError() {
   testSuiteErrors = 0;
 }
 
+export function setCookie(driver, { cookieName, value }) {
+  return driver.executeScript(`return window.TOG_Cookies.set("${cookieName}", "${value}")`);
+}
+
 export function findCookie(driver, { cookieName }) {
-  return driver.executeScript(`return Cookies.get("${cookieName}")`);
+  return driver.executeScript(`return window.TOG_Cookies.get("${cookieName}")`);
 }
 
 export function findStorage(driver, { name }) {
