@@ -24,7 +24,7 @@ export default async function shouldSetSubidFromQueryparamsFirst(driver) {
   try {
     const initialConsent = await getSdkState(driver, 'consent');
     const initialprogid = await getSdkState(driver, 'progid');
-    const initialSubids = await getSdkState(driver, 'subids');
+    const initialSubids = await getSdkState(driver, 'consentSubids');
 
     expect(initialConsent).toEqual(CONSTANTS.consent.status.unknown);
     expect(initialprogid).toBeFalsy();
@@ -33,16 +33,16 @@ export default async function shouldSetSubidFromQueryparamsFirst(driver) {
     await setOptin(driver);
 
     const consent = await getSdkState(driver, 'consent');
-    const subids = await getSdkState(driver, 'subids');
+    const consentSubids = await getSdkState(driver, 'consentSubids');
 
     expect(consent).toEqual(CONSTANTS.consent.status.optin);
-    expect(subids).toEqual(expectedSubids);
+    expect(consentSubids).toEqual(expectedSubids);
 
     const newSubid = 'newSubidValue';
 
     await driver.get(`${TEST_CONSTANTS.baseUrl}?${CONSTANTS.subid.queryname}=${newSubid}`);
 
-    const subidFromNewUrl = await getSdkState(driver, 'subids');
+    const subidFromNewUrl = await getSdkState(driver, 'consentSubids');
 
     expect(subidFromNewUrl).toEqual(
       expect.objectContaining({

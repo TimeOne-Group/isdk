@@ -32,7 +32,7 @@ export default async function shouldSetSubidifConsentIsOptinFromOldStorageValue(
 
     const initialConsent = await getSdkState(driver, 'consent');
     const initialprogid = await getSdkState(driver, 'progid');
-    const initialSubids = await getSdkState(driver, 'subids');
+    const initialSubids = await getSdkState(driver, 'consentSubids');
 
     expect(initialConsent).toEqual(CONSTANTS.consent.status.unknown);
     expect(initialprogid).toBeFalsy();
@@ -41,10 +41,10 @@ export default async function shouldSetSubidifConsentIsOptinFromOldStorageValue(
     await setOptin(driver);
 
     const consent = await getSdkState(driver, 'consent');
-    const subids = await getSdkState(driver, 'subids');
+    const consentSubids = await getSdkState(driver, 'consentSubids');
 
     expect(consent).toEqual(CONSTANTS.consent.status.optin);
-    expect(subids).toEqual(expectedSubids);
+    expect(consentSubids).toEqual(expectedSubids);
 
     await browserstackLogSuccess(
       driver,

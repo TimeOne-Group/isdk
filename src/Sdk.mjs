@@ -34,7 +34,7 @@ export default class Sdk {
     }
   }
 
-  get subids() {
+  get consentSubids() {
     return this.#getActiveSubids(CONSTANTS.subid);
   }
 
@@ -153,9 +153,9 @@ export default class Sdk {
   }
 
   #logStats({ consent, type, progid }) {
-    const subids = this.#getActiveSubidsValues(CONSTANTS.subid);
+    const consentSubids = this.#getActiveSubidsValues(CONSTANTS.subid);
     const cashbackSubids = this.#getActiveSubidsValues(CONSTANTS.cashback);
-    const toSubids = [...subids, ...cashbackSubids].filter(Boolean);
+    const toSubids = [...consentSubids, ...cashbackSubids].filter(Boolean);
 
     this.#callApi({
       urlIterator: this.#statsUrlIterator,
@@ -265,10 +265,10 @@ export default class Sdk {
       throw new Error(`Failed to contact server on ${JSON.stringify(this.#conversionUrlIterator?.urls)}`);
     }
 
-    const subids = this.#getActiveSubidsValues(CONSTANTS.subid);
+    const consentSubids = this.#getActiveSubidsValues(CONSTANTS.subid);
     const cashbackSubids = this.#getActiveSubidsValues(CONSTANTS.cashback);
 
-    const toSubids = subids.map((subid) => ({
+    const toSubids = consentSubids.map((subid) => ({
       type: CONSTANTS.subid.payloadType,
       value: subid,
     }));
@@ -352,7 +352,7 @@ export default class Sdk {
       env: this.env,
       progids: this.#progids,
       consent: this.consent,
-      subids: this.subids,
+      consentSubids: this.consentSubids,
       event_consent_id: this.eventConsentId,
       cashbackSubids: this.cashbackSubids,
       errors: this.#getErrors(),

@@ -24,7 +24,7 @@ export default async function shouldSetSubidFromStorage(driver) {
   try {
     const initialConsent = await getSdkState(driver, 'consent');
     const initialprogid = await getSdkState(driver, 'progid');
-    const initialSubids = await getSdkState(driver, 'subids');
+    const initialSubids = await getSdkState(driver, 'consentSubids');
 
     expect(initialConsent).toEqual(CONSTANTS.consent.status.unknown);
     expect(initialprogid).toBeFalsy();
@@ -33,16 +33,16 @@ export default async function shouldSetSubidFromStorage(driver) {
     await setOptin(driver);
 
     const consent = await getSdkState(driver, 'consent');
-    const subids = await getSdkState(driver, 'subids');
+    const consentSubids = await getSdkState(driver, 'consentSubids');
 
     expect(consent).toEqual(CONSTANTS.consent.status.optin);
-    expect(subids).toEqual(expectedSubids);
+    expect(consentSubids).toEqual(expectedSubids);
 
     await driver.get(`${TEST_CONSTANTS.baseUrl}`);
 
-    const subidsFromStorage = await getSdkState(driver, 'subids');
+    const consentSubidsFromStorage = await getSdkState(driver, 'consentSubids');
 
-    expect(subidsFromStorage).toEqual(expectedSubids);
+    expect(consentSubidsFromStorage).toEqual(expectedSubids);
 
     await browserstackLogSuccess(
       driver,

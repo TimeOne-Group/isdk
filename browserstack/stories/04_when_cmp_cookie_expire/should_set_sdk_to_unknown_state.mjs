@@ -29,7 +29,7 @@ export default async function shouldSetSdkToUnknownState(driver) {
   try {
     const initialConsent = await getSdkState(driver, 'consent');
     const initialprogid = await getSdkState(driver, 'progid');
-    const initialSubids = await getSdkState(driver, 'subids');
+    const initialSubids = await getSdkState(driver, 'consentSubids');
     const initialCashbackSubids = await getSdkState(driver, 'cashbackSubids');
 
     expect(initialConsent).toEqual(CONSTANTS.consent.status.unknown);
@@ -40,17 +40,17 @@ export default async function shouldSetSdkToUnknownState(driver) {
     await setOptin(driver);
 
     const consent = await getSdkState(driver, 'consent');
-    const subids = await getSdkState(driver, 'subids');
+    const consentSubids = await getSdkState(driver, 'consentSubids');
     const cashbackSubids = await getSdkState(driver, 'cashbackSubids');
 
     expect(consent).toEqual(CONSTANTS.consent.status.optin);
-    expect(subids).toEqual(expectedSubids);
+    expect(consentSubids).toEqual(expectedSubids);
     expect(cashbackSubids).toEqual(expectedCashbackSubids);
 
     await setUnknown(driver);
 
     const consentAfterClean = await getSdkState(driver, 'consent');
-    const subidAfterClean = await getSdkState(driver, 'subids');
+    const subidAfterClean = await getSdkState(driver, 'consentSubids');
     const cashbackSubidAfterClean = await getSdkState(driver, 'cashbackSubids');
 
     expect(consentAfterClean).toEqual(CONSTANTS.consent.status.unknown);

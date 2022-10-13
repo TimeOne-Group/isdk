@@ -15,11 +15,11 @@ export default async function noConsentDefined(driver) {
   try {
     const consent = await getSdkState(driver, 'consent');
     const progid = await getSdkState(driver, 'progid');
-    const subids = await getSdkState(driver, 'subids');
+    const consentSubids = await getSdkState(driver, 'consentSubids');
 
     expect(consent).toEqual(CONSTANTS.consent.status.unknown);
     expect(progid).toBeFalsy();
-    expect(subids).toEqual({});
+    expect(consentSubids).toEqual({});
 
     await browserstackLogSuccess(
       driver,

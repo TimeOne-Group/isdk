@@ -8143,7 +8143,7 @@
     }
 
     _createClass(Sdk, [{
-      key: "subids",
+      key: "consentSubids",
       get: function get() {
         return _classPrivateMethodGet(this, _getActiveSubids, _getActiveSubids2).call(this, CONSTANTS.subid);
       }
@@ -8396,7 +8396,7 @@
           env: this.env,
           progids: _classPrivateFieldGet(this, _progids),
           consent: this.consent,
-          subids: this.subids,
+          consentSubids: this.consentSubids,
           event_consent_id: this.eventConsentId,
           cashbackSubids: this.cashbackSubids,
           errors: _classPrivateMethodGet(this, _getErrors, _getErrors2).call(this),
@@ -8598,11 +8598,11 @@
         type = _ref6.type,
         progid = _ref6.progid;
 
-    var subids = _classPrivateMethodGet(this, _getActiveSubidsValues, _getActiveSubidsValues2).call(this, CONSTANTS.subid);
+    var consentSubids = _classPrivateMethodGet(this, _getActiveSubidsValues, _getActiveSubidsValues2).call(this, CONSTANTS.subid);
 
     var cashbackSubids = _classPrivateMethodGet(this, _getActiveSubidsValues, _getActiveSubidsValues2).call(this, CONSTANTS.cashback);
 
-    var toSubids = [].concat(_toConsumableArray(subids), _toConsumableArray(cashbackSubids)).filter(Boolean);
+    var toSubids = [].concat(_toConsumableArray(consentSubids), _toConsumableArray(cashbackSubids)).filter(Boolean);
 
     _classPrivateMethodGet(this, _callApi, _callApi2).call(this, {
       urlIterator: _classPrivateFieldGet(this, _statsUrlIterator),
@@ -8695,7 +8695,7 @@
     _setConversion3 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee6(_ref8) {
       var _classPrivateFieldGet2;
 
-      var _ref8$data, data, _ref8$caller, caller, progid, comid, iu, _classPrivateFieldGet3, subids, cashbackSubids, toSubids, toCashbackSubids, payload, body;
+      var _ref8$data, data, _ref8$caller, caller, progid, comid, iu, _classPrivateFieldGet3, consentSubids, cashbackSubids, toSubids, toCashbackSubids, payload, body;
 
       return regeneratorRuntime.wrap(function _callee6$(_context6) {
         while (1) {
@@ -8729,9 +8729,9 @@
               throw new Error("Failed to contact server on ".concat(JSON.stringify((_classPrivateFieldGet3 = _classPrivateFieldGet(this, _conversionUrlIterator)) === null || _classPrivateFieldGet3 === void 0 ? void 0 : _classPrivateFieldGet3.urls)));
 
             case 8:
-              subids = _classPrivateMethodGet(this, _getActiveSubidsValues, _getActiveSubidsValues2).call(this, CONSTANTS.subid);
+              consentSubids = _classPrivateMethodGet(this, _getActiveSubidsValues, _getActiveSubidsValues2).call(this, CONSTANTS.subid);
               cashbackSubids = _classPrivateMethodGet(this, _getActiveSubidsValues, _getActiveSubidsValues2).call(this, CONSTANTS.cashback);
-              toSubids = subids.map(function (subid) {
+              toSubids = consentSubids.map(function (subid) {
                 return {
                   type: CONSTANTS.subid.payloadType,
                   value: subid

@@ -19,7 +19,7 @@ export default async function shouldSetSdkCashbackSubid(driver) {
   try {
     const initialConsent = await getSdkState(driver, 'consent');
     const initialprogid = await getSdkState(driver, 'progid');
-    const initialSubids = await getSdkState(driver, 'subids');
+    const initialSubids = await getSdkState(driver, 'consentSubids');
     const initialCashbackSubids = await getSdkState(driver, 'cashbackSubids');
 
     expect(initialConsent).toEqual(CONSTANTS.consent.status.unknown);
