@@ -3,7 +3,7 @@
 import { By } from 'selenium-webdriver';
 import CONSTANTS from '../src/constants.mjs';
 
-const { sdkName } = CONSTANTS;
+const { sdk_name: sdkName } = CONSTANTS;
 let testSuiteErrors = 0;
 let totalErrors = 0;
 

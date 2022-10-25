@@ -6,77 +6,103 @@ import * as utils from '../utils.mjs';
 import CONSTANTS from '../constants.mjs';
 
 const name = 'foo';
+let currentTimestamp;
+function formatAndCompress(value) {
+  const formattedValue = JSON.stringify({ createAt: currentTimestamp, value });
 
-function compress(subids) {
-  return LZString.compressToBase64(subids);
+  return LZString.compressToBase64(formattedValue);
+}
+
+function getConsentValueForStorage(value) {
+  return JSON.stringify({ createAt: currentTimestamp, value });
 }
 
 describe('The utils function', () => {
+  beforeAll(() => {
+    jest.useFakeTimers('modern');
+    jest.setSystemTime(new Date(2022, 9, 1));
+
+    currentTimestamp = utils.getCurrentTimestamp();
+  });
+
   beforeEach(() => {
     utils.removeValue(name);
   });
 
-  test('getPrefixedCookieName - Should return prefixed name', () => {
-    expect(`${CONSTANTS.default_storage_prefix}_${name}`).toEqual(utils.getPrefixedCookieName(name));
+  test('getPrefixedStorageName - Should return prefixed name', () => {
+    expect(`${CONSTANTS.default_storage_prefix}_${name}_${CONSTANTS.current_storage_version}`).toEqual(
+      utils.getPrefixedStorageName(name)
+    );
+  });
+
+  test('getPrefixedStorageName - Should return prefixed v1 name', () => {
+    expect(`${CONSTANTS.default_storage_prefix}_${name}`).toEqual(
+      utils.getPrefixedStorageName(name, CONSTANTS.previous_storage_version)
+    );
   });
 
   test('setValue - Should set cookie and localstorage when called', () => {
     const value = 'bar';
+    const formattedValue = getConsentValueForStorage(value);
 
     expect(Cookie.get(name)).toBeFalsy();
-    expect(Cookie.get(utils.getPrefixedCookieName(name))).toBeFalsy();
-    expect(utils.Storage.find(name)?.value).toBeFalsy();
+    expect(Cookie.get(utils.getPrefixedStorageName(name))).toBeFalsy();
+    expect(utils.Storage.find(utils.getPrefixedStorageName(name))).toBeFalsy();
 
     utils.setValue(value, name);
 
     expect(Cookie.get(name)).toBeFalsy();
-    expect(Cookie.get(utils.getPrefixedCookieName(name))).toEqual(value);
-    expect(utils.Storage.find(name)?.value).toEqual(value);
+    expect(Cookie.get(utils.getPrefixedStorageName(name))).toEqual(formattedValue);
+    expect(utils.Storage.find(utils.getPrefixedStorageName(name))).toEqual(formattedValue);
   });
 
   [CONSTANTS.subid.name, CONSTANTS.cashback.name].forEach((configName) => {
     test(`setValue - Should compress value when store ${configName}`, () => {
       const value = JSON.stringify({ foo: 'bar' });
-      const compressedValue = compress(value);
+      const compressedValue = formatAndCompress(value);
 
       expect(Cookie.get(configName)).toBeFalsy();
-      expect(Cookie.get(utils.getPrefixedCookieName(configName))).toBeFalsy();
-      expect(utils.Storage.find(configName)?.value).toBeFalsy();
+      expect(Cookie.get(utils.getPrefixedStorageName(configName))).toBeFalsy();
+      expect(utils.Storage.find(utils.getPrefixedStorageName(configName))).toBeFalsy();
       expect(utils.getValue(configName)).toBeFalsy();
 
       utils.setValue(value, configName);
 
       expect(Cookie.get(configName)).toBeFalsy();
-      expect(Cookie.get(utils.getPrefixedCookieName(configName))).toEqual(compressedValue);
-      expect(utils.Storage.find(configName)?.value).toEqual(compressedValue);
+      expect(Cookie.get(utils.getPrefixedStorageName(configName))).toEqual(compressedValue);
+      expect(utils.Storage.find(utils.getPrefixedStorageName(configName))).toEqual(compressedValue);
       expect(utils.getValue(configName)).toEqual(value);
     });
   });
 
   test('getValue - Should return value from cookie first', () => {
-    const value = 'bar';
+    const cookieValue = 'cookie';
+    const cookieStorageValue = JSON.stringify({ createAt: currentTimestamp, value: cookieValue });
+    const localstorageValue = 'localstorage';
+    const localstorageStorageValue = JSON.stringify({ createAt: currentTimestamp, value: localstorageValue });
 
     expect(Cookie.get(name)).toBeFalsy();
-    expect(Cookie.get(utils.getPrefixedCookieName(name))).toBeFalsy();
-    expect(utils.Storage.find(name)?.value).toBeFalsy();
+    expect(Cookie.get(utils.getPrefixedStorageName(name))).toBeFalsy();
+    expect(utils.Storage.find(utils.getPrefixedStorageName(name))).toBeFalsy();
 
     expect(utils.getValue(name)).toBeFalsy();
 
-    Cookie.set(utils.getPrefixedCookieName(name), value);
+    Cookie.set(utils.getPrefixedStorageName(name), cookieStorageValue);
+    utils.Storage.save(utils.getPrefixedStorageName(name), localstorageStorageValue);
 
-    expect(utils.getValue(name)).toEqual(value);
+    expect(utils.getValue(name)).toEqual(cookieValue);
   });
 
   test('getValue - Should return value from localstorage when cookie not set', () => {
     const value = 'bar';
+    const storageValue = JSON.stringify({ createAt: currentTimestamp, value });
 
-    expect(Cookie.get(name)).toBeFalsy();
-    expect(Cookie.get(utils.getPrefixedCookieName(name))).toBeFalsy();
-    expect(utils.Storage.find(name)?.value).toBeFalsy();
+    expect(Cookie.get(utils.getPrefixedStorageName(name))).toBeFalsy();
+    expect(utils.Storage.find(utils.getPrefixedStorageName(name))).toBeFalsy();
 
     expect(utils.getValue(name)).toBeFalsy();
 
-    utils.Storage.save({ id: name, value });
+    utils.Storage.save({ id: utils.getPrefixedStorageName(name), value: storageValue });
 
     expect(utils.getValue(name)).toEqual(value);
   });
@@ -87,39 +113,40 @@ describe('The utils function', () => {
 
   test('getValue - Should return value from cookie when localstorage is removed manually', () => {
     const value = 'bar';
+    const storageValue = JSON.stringify({ createAt: currentTimestamp, value });
 
     utils.setValue(value, name);
 
-    expect(Cookie.get(utils.getPrefixedCookieName(name))).toEqual(value);
-    expect(utils.Storage.find(name)?.value).toEqual(value);
+    expect(Cookie.get(utils.getPrefixedStorageName(name))).toEqual(storageValue);
+    expect(utils.Storage.find(utils.getPrefixedStorageName(name))).toEqual(storageValue);
     expect(utils.getValue(name)).toEqual(value);
 
-    utils.Storage.delete(name);
+    utils.Storage.delete(utils.getPrefixedStorageName(name));
 
-    expect(utils.Storage.find(name)?.value).toBeFalsy();
-
+    expect(utils.Storage.find(utils.getPrefixedStorageName(name))).toBeFalsy();
     expect(utils.getValue(name)).toEqual(value);
   });
 
   test('getValue - Should return value from localstorage when cookie is removed manually', () => {
     const value = 'bar';
+    const storageValue = JSON.stringify({ createAt: currentTimestamp, value });
 
     utils.setValue(value, name);
 
-    expect(Cookie.get(utils.getPrefixedCookieName(name))).toEqual(value);
-    expect(utils.Storage.find(name)?.value).toEqual(value);
+    expect(Cookie.get(utils.getPrefixedStorageName(name))).toEqual(storageValue);
+    expect(utils.Storage.find(utils.getPrefixedStorageName(name))).toEqual(storageValue);
     expect(utils.getValue(name)).toEqual(value);
 
-    Cookie.remove(utils.getPrefixedCookieName(name));
+    Cookie.remove(utils.getPrefixedStorageName(name));
 
-    expect(Cookie.get(utils.getPrefixedCookieName(name))).toBeFalsy();
-
+    expect(Cookie.get(utils.getPrefixedStorageName(name))).toBeFalsy();
     expect(utils.getValue(name)).toEqual(value);
   });
 
   test('removeValue - Should remove a specific cookie and localstorage value when called', () => {
     const value = 'bar';
     const notRemoveValueName = 'do_not_remove_me';
+    const notRemoveValueNameStorageValue = JSON.stringify({ createAt: currentTimestamp, value });
 
     utils.setValue(value, name);
     utils.setValue(value, notRemoveValueName);
@@ -132,8 +159,10 @@ describe('The utils function', () => {
     expect(utils.getValue(name)).toBeFalsy();
 
     expect(utils.getValue(notRemoveValueName)).toEqual(value);
-    expect(Cookie.get(utils.getPrefixedCookieName(notRemoveValueName))).toEqual(value);
-    expect(utils.Storage.find(notRemoveValueName)?.value).toEqual(value);
+    expect(Cookie.get(utils.getPrefixedStorageName(notRemoveValueName))).toEqual(notRemoveValueNameStorageValue);
+    expect(utils.Storage.find(utils.getPrefixedStorageName(notRemoveValueName))).toEqual(
+      notRemoveValueNameStorageValue
+    );
   });
 
   test('filterUnActiveSubids - Should remove expired subids base on TTL', () => {
@@ -162,7 +191,7 @@ describe('The utils function', () => {
 
   test('getMaxSubids - Should limit subids size and return the recent', () => {
     const ttlInDays = 10;
-    const subidSize = CONSTANTS.cookieMaxSize / ttlInDays;
+    const subidSize = CONSTANTS.cookie_max_size / ttlInDays;
     const olderSubidKey = '_lastone';
     const subidsEntries = [...Array(ttlInDays)].map((_, i) => [
       i !== 0 ? randomString(subidSize) : `${randomString(subidSize)}${olderSubidKey}`,
@@ -171,55 +200,61 @@ describe('The utils function', () => {
 
     const subids = Object.fromEntries(subidsEntries);
 
-    expect(JSON.stringify(subids).length).toBeGreaterThanOrEqual(CONSTANTS.cookieMaxSize);
+    expect(JSON.stringify(subids).length).toBeGreaterThanOrEqual(CONSTANTS.cookie_max_size);
     expect(subidsEntries.some((subid) => subid.indexOf(olderSubidKey))).toBeTruthy();
 
     const limitedSubids = utils.getMaxSubids(subids);
 
-    expect(JSON.stringify(limitedSubids).length).toBeLessThanOrEqual(CONSTANTS.cookieMaxSize);
+    expect(JSON.stringify(limitedSubids).length).toBeLessThanOrEqual(CONSTANTS.cookie_max_size);
     expect(Object.entries(limitedSubids).some((subid) => subid.indexOf(olderSubidKey))).toBeTruthy();
   });
 
   test('SubidCookieTypeError - Should throw custom error message', () => {
     const subidName = 'foo';
+
     expect(() => {
       throw new utils.SubidCookieTypeError(subidName);
     }).toThrow(`Cookie to_${subidName} or is a string. Expected object`);
   });
 
-  describe('Retrocompatibility', () => {
-    [CONSTANTS.subid.name, CONSTANTS.cashback.name].forEach((configName) => {
-      beforeEach(() => {
-        utils.removeValue(configName);
-      });
+  describe('Retrocompatibility v1', () => {
+    [CONSTANTS.consent.name, CONSTANTS.event_consent_id.name, CONSTANTS.subid.name, CONSTANTS.cashback.name].forEach(
+      (configName) => {
+        const sufixV1 = null;
+        const currentStorageName = utils.getPrefixedStorageName(configName);
+        const storageNameV1 = utils.getPrefixedStorageName(configName, sufixV1);
+        beforeEach(() => {
+          utils.removeValue(configName);
+        });
 
-      test(`getValue - Should not uncompress an existing ${configName} value not compressed from Cookie`, () => {
-        const value = 'bar';
-        const compressedValue = compress(value);
+        test(`getValue V1 - Should get ${configName} value from Cookie`, () => {
+          const value = 'bar';
 
-        Cookie.set(utils.getPrefixedCookieName(configName), value);
+          Cookie.set(storageNameV1, value);
 
-        expect(Cookie.get(configName)).toBeFalsy();
-        expect(utils.Storage.find(configName)?.value).toBeFalsy();
-        expect(Cookie.get(utils.getPrefixedCookieName(configName))).toEqual(value);
+          expect(Cookie.get(currentStorageName)).toBeFalsy();
+          expect(utils.Storage.find(currentStorageName)).toBeFalsy();
 
-        expect(utils.getValue(configName)).not.toEqual(compressedValue);
-        expect(utils.getValue(configName)).toEqual(value);
-      });
+          expect(Cookie.get(storageNameV1)).toEqual(value);
 
-      test(`getValue - Should not uncompress an existing ${configName} value not compressed from Storage`, () => {
-        const value = 'bar';
-        const compressedValue = compress(value);
+          expect(utils.getValue(configName)).toBeFalsy();
+          expect(utils.getValue(configName, sufixV1)).toEqual(value);
+        });
 
-        utils.Storage.save({ id: configName, value });
+        test(`removeValue V1 - Should get ${configName} value from Storage`, () => {
+          const value = 'bar';
 
-        expect(Cookie.get(configName)).toBeFalsy();
-        expect(Cookie.get(utils.getPrefixedCookieName(configName))).toBeFalsy();
-        expect(utils.Storage.find(configName)?.value).toEqual(value);
+          utils.Storage.save({ id: storageNameV1, value });
 
-        expect(utils.getValue(configName)).not.toEqual(compressedValue);
-        expect(utils.getValue(configName)).toEqual(value);
-      });
-    });
+          expect(Cookie.get(currentStorageName)).toBeFalsy();
+          expect(utils.Storage.find(currentStorageName)).toBeFalsy();
+
+          expect(utils.Storage.find(storageNameV1)).toEqual(value);
+
+          expect(utils.getValue(configName)).toBeFalsy();
+          expect(utils.getValue(configName, sufixV1)).toEqual(value);
+        });
+      }
+    );
   });
 });

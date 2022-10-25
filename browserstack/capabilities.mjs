@@ -116,14 +116,14 @@ function buildMobileCapabilities(mobileConfig, name) {
 export default async function getCapabilities(name) {
   if (process.env.DEV_BROWSERSTACK_TEST) {
     return [
-      {
-        device: 'iPhone XS',
-        os_version: 14,
-        browserName: 'iphone',
-        realMobile: 'true',
-        build: 'Development',
-        name: 'DEV - Building browserstack tests',
-      },
+      // {
+      //   device: 'iPhone XS',
+      //   os_version: 14,
+      //   browserName: 'iphone',
+      //   realMobile: 'true',
+      //   build: 'Development',
+      //   name: 'DEV - Building browserstack tests',
+      // },
       {
         browser: 'chrome',
         browser_version: 'latest',

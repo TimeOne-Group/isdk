@@ -2,22 +2,22 @@ import Cookies from 'js-cookie';
 import * as utils from '../../src/utils.mjs';
 import CONSTANTS from '../../src/constants.mjs';
 
-const { sdkName } = CONSTANTS;
+const { sdk_name: sdkName } = CONSTANTS;
 
-const showJwtDebug = (name, id) => {
-  if (!document.getElementById(id)) {
-    setTimeout(() => showJwtDebug(name, id), 300);
-  } else {
-    // eslint-disable-next-line no-underscore-dangle
-    const token = window[sdkName]?.[name];
-    if (token) {
-      // eslint-disable-next-line no-underscore-dangle
-      const jwt = 'jwt'; // window.__jwtDecode(`eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.${token}`);
+// const showJwtDebug = (name, id) => {
+//   if (!document.getElementById(id)) {
+//     setTimeout(() => showJwtDebug(name, id), 300);
+//   } else {
+//     // eslint-disable-next-line no-underscore-dangle
+//     const token = window[sdk_name]?.[name];
+//     if (token) {
+//       // eslint-disable-next-line no-underscore-dangle
+//       const jwt = 'jwt'; // window.__jwtDecode(`eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.${token}`);
 
-      document.getElementById(id).textContent = JSON.stringify(jwt, null, '\t');
-    }
-  }
-};
+//       document.getElementById(id).textContent = JSON.stringify(jwt, null, '\t');
+//     }
+//   }
+// };
 
 const showTraceDebug = () => {
   if (!document.getElementById('debug-trace')) {
@@ -34,13 +34,15 @@ const showLocalstorageDebug = () => {
     setTimeout(() => showLocalstorageDebug(), 300);
   } else {
     const storageState = {
-      to_consent: utils.Storage.find(CONSTANTS.consent.name)?.value,
-      to_subid: utils.Storage.find(CONSTANTS.subid.name)?.value,
-      to_cashback: utils.Storage.find(CONSTANTS.cashback.name)?.value,
-      to_event_consent_id: utils.Storage.find(CONSTANTS.event_consent_id.name)?.value,
+      to_consent: utils.Storage.find(utils.getPrefixedStorageName(CONSTANTS.consent.name)),
+      to_subid: utils.Storage.find(utils.getPrefixedStorageName(CONSTANTS.subid.name)),
+      to_cashback: utils.Storage.find(utils.getPrefixedStorageName(CONSTANTS.cashback.name)),
+      to_event_consent_id: utils.Storage.find(utils.getPrefixedStorageName(CONSTANTS.event_consent_id.name)),
     };
-
-    document.getElementById('debug-localstorage').textContent = JSON.stringify(storageState, null, '\t');
+    const sanitizedStorageState = Object.fromEntries(
+      Object.entries(storageState).map(([key, value]) => (value === null ? [key, undefined] : [key, value]))
+    );
+    document.getElementById('debug-localstorage').textContent = JSON.stringify(sanitizedStorageState, null, '\t');
   }
 };
 
@@ -50,10 +52,10 @@ const showCookieDebug = () => {
   } else {
     const cookieState = {
       cmp_cookie: Cookies.get('klaro'),
-      to_consent: Cookies.get(utils.getPrefixedCookieName(CONSTANTS.consent.name)),
-      to_subid: Cookies.get(utils.getPrefixedCookieName(CONSTANTS.subid.name)),
-      to_cashback: Cookies.get(utils.getPrefixedCookieName(CONSTANTS.cashback.name)),
-      to_event_consent_id: Cookies.get(utils.getPrefixedCookieName(CONSTANTS.event_consent_id.name)),
+      to_consent: Cookies.get(utils.getPrefixedStorageName(CONSTANTS.consent.name)),
+      to_subid: Cookies.get(utils.getPrefixedStorageName(CONSTANTS.subid.name)),
+      to_cashback: Cookies.get(utils.getPrefixedStorageName(CONSTANTS.cashback.name)),
+      to_event_consent_id: Cookies.get(utils.getPrefixedStorageName(CONSTANTS.event_consent_id.name)),
     };
 
     document.getElementById('debug-cookie').textContent = JSON.stringify(cookieState, null, '\t');
@@ -83,7 +85,7 @@ export const showDebugTestsite = () => {
     showCookieDebug();
     showLocalstorageDebug();
     showTraceDebug();
-    showJwtDebug?.('subid', 'debug-subid-jwt');
-    showJwtDebug?.('cashbackSubid', 'debug-cashback-jwt');
+    // showJwtDebug?.('subid', 'debug-subid-jwt');
+    // showJwtDebug?.('cashbackSubid', 'debug-cashback-jwt');
   });
 };

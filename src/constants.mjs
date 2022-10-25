@@ -1,7 +1,9 @@
 export default {
-  sdkName: '__ISDK',
-  sdkScriptId: '__ISDK_ASSETS',
-  cookieMaxSize: 3900,
+  sdk_name: '__ISDK',
+  sdk_script_id: '__ISDK_ASSETS',
+  cookie_max_size: 3900,
+  current_storage_version: 'v2',
+  previous_storage_version: null, // no version sufix defined for storage on V1
   consent: {
     name: 'consent',
     ttl: 390, // 13 mois

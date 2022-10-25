@@ -34,9 +34,10 @@ const conversionMethods = ['_setSale', '_setLead', '_setDbClick', '_setClick'];
 
 const subidsConfig = [CONSTANTS.subid, CONSTANTS.cashback];
 
-function compress(subids) {
-  const value = JSON.stringify(subids);
-  return LZString.compressToBase64(value);
+function formatAndCompress(value) {
+  const formattedValue = JSON.stringify({ createAt: 1664575200000, value });
+
+  return LZString.compressToBase64(formattedValue);
 }
 
 describe('The ISDK class test', () => {
@@ -361,16 +362,16 @@ describe('The ISDK class test', () => {
           const subidEntry = {
             [subid]: 1664575200000,
           };
-          const compressedSubid = compress(subidEntry);
+          const compressedSubid = formatAndCompress(subidEntry);
           const subidQueryparams =
             'eyJkIjoxNjY0NTMyMjAxLCJwaSI6IjIiLCJwIjoiNzkzMyIsInByIjoiMjM3MTg3In0.NVFhSZlDIqKOlKq-UURJD18u8t2sVoiT_dVB1cpHRRM';
 
-          Cookie.set(utils.getPrefixedCookieName(name), compressedSubid);
+          Cookie.set(utils.getPrefixedStorageName(name), compressedSubid);
           utils.setValue(CONSTANTS.consent.status.optin, CONSTANTS.consent.name);
           Sdk.getProgramDataFromQueryParams = jest.fn((value) => (value === queryname ? subidQueryparams : null));
 
-          expect(Cookie.get(utils.getPrefixedCookieName(name))).toEqual(compressedSubid);
-          expect(utils.Storage.find(name)?.value).toBeFalsy();
+          expect(Cookie.get(utils.getPrefixedStorageName(name))).toEqual(compressedSubid);
+          expect(utils.Storage.find(utils.getPrefixedStorageName(name))).toBeFalsy();
 
           const instance = new Sdk();
 
@@ -397,17 +398,17 @@ describe('The ISDK class test', () => {
           const subidEntry = {
             [subid]: 1664575200000,
           };
-          const compressedSubid = compress(subidEntry);
+          const compressedSubid = formatAndCompress(subidEntry);
 
           const subidQueryparams =
             'eyJkIjoxNjY0NTMyMjAxLCJwaSI6IjIiLCJwIjoiNzkzMyIsInByIjoiMjM3MTg3In0.NVFhSZlDIqKOlKq-UURJD18u8t2sVoiT_dVB1cpHRRM';
 
-          utils.Storage.save({ id: name, value: compressedSubid });
+          utils.Storage.save({ id: utils.getPrefixedStorageName(name), value: compressedSubid });
           utils.setValue(CONSTANTS.consent.status.optin, CONSTANTS.consent.name);
           Sdk.getProgramDataFromQueryParams = jest.fn((value) => (value === queryname ? subidQueryparams : null));
 
-          expect(utils.Storage.find(name)?.value).toEqual(compressedSubid);
-          expect(Cookie.get(utils.getPrefixedCookieName(name))).toBeFalsy();
+          expect(utils.Storage.find(utils.getPrefixedStorageName(name))).toEqual(compressedSubid);
+          expect(Cookie.get(utils.getPrefixedStorageName(name))).toBeFalsy();
 
           const instance = new Sdk();
 
@@ -427,12 +428,14 @@ describe('The ISDK class test', () => {
         });
       });
 
-      describe('Retrocompatibility', () => {
+      describe('Retrocompatibility v1', () => {
+        const sufixV1 = null;
+
         subidsConfig.forEach(({ name, payloadType }) => {
           test(`Multisubids method ${method} - Should do a conversion with an old ${name} cookie format to the new one`, () => {
             const oldSubid =
               'eyJkIjoxNjY0NzkyNjYzLCJwaSI6IjIiLCJwIjoiNzkzMyIsInByIjoiMjM3MTg3In0.K3QnOea5TUph2WvxcpXEcqbuZ1XjceB1hq8GFar2cp12345';
-            Cookie.set(utils.getPrefixedCookieName(name), oldSubid);
+            Cookie.set(utils.getPrefixedStorageName(name, sufixV1), oldSubid);
 
             utils.setValue(CONSTANTS.consent.status.optin, CONSTANTS.consent.name);
 
@@ -456,7 +459,7 @@ describe('The ISDK class test', () => {
           test(`Multisubids method ${method} - Should do a conversion with an old ${name} storage format to the new one`, () => {
             const oldSubid =
               'eyJkIjoxNjY0NzkyNjYzLCJwaSI6IjIiLCJwIjoiNzkzMyIsInByIjoiMjM3MTg3In0.K3QnOea5TUph2WvxcpXEcqbuZ1XjceB1hq8GFar2cp12345';
-            utils.Storage.save({ id: name, value: oldSubid });
+            utils.Storage.save({ id: utils.getPrefixedStorageName(name, sufixV1), value: oldSubid });
 
             utils.setValue(CONSTANTS.consent.status.optin, CONSTANTS.consent.name);
 

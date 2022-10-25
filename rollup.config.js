@@ -115,7 +115,7 @@ const sites = [
     htmlTemplate({
       template: `browserstack_src/html/${template}`,
       target: `${root}/index.html`,
-      attrs: [`id="${CONSTANTS.sdkScriptId}"`, 'data-progids="[109]"', 'async'],
+      attrs: [`id="${CONSTANTS.sdk_script_id}"`, 'data-progids="[109]"', 'async'],
       replaceVars: {
         __SDK_SRC__: './sdk.js',
         ...templateVar,

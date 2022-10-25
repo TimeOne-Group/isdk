@@ -31,14 +31,22 @@ const defaultPayload = {
   // url: 'localhost/'
 };
 
+const consentStorageName = utils.getPrefixedStorageName(CONSTANTS.consent.name);
+const consentSubidStorageName = utils.getPrefixedStorageName(CONSTANTS.subid.name);
+
 const noConsentMethods = [
   { methodName: '_setUnknown', consentName: CONSTANTS.consent.status.unknown },
   { methodName: '_setOptout', consentName: CONSTANTS.consent.status.optout },
 ];
 
-function compress(subids) {
-  const value = JSON.stringify(subids);
-  return LZString.compressToBase64(value);
+function formatAndCompress(value) {
+  const formattedValue = JSON.stringify({ createAt: currentTimestamp, value });
+
+  return LZString.compressToBase64(formattedValue);
+}
+
+function getConsentValueForStorage(value) {
+  return JSON.stringify({ createAt: currentTimestamp, value });
 }
 
 describe('The ISDK class test', () => {
@@ -62,11 +70,11 @@ describe('The ISDK class test', () => {
 
   describe('Consent', () => {
     test('constructor - Should set default values', () => {
-      expect(Cookie.get(utils.getPrefixedCookieName(CONSTANTS.consent.name))).toBeFalsy();
-      expect(utils.Storage.find(CONSTANTS.consent.name)?.value).toBeFalsy();
+      expect(Cookie.get(consentStorageName)).toBeFalsy();
+      expect(utils.Storage.find(consentStorageName)).toBeFalsy();
 
-      expect(Cookie.get(utils.getPrefixedCookieName(CONSTANTS.subid.name))).toBeFalsy();
-      expect(utils.Storage.find(CONSTANTS.subid.name)?.value).toBeFalsy();
+      expect(Cookie.get(consentSubidStorageName)).toBeFalsy();
+      expect(utils.Storage.find(consentSubidStorageName)).toBeFalsy();
 
       const instance = new Sdk();
 
@@ -87,11 +95,11 @@ describe('The ISDK class test', () => {
     test('constructor - Should set consent from cookie', () => {
       const consent = CONSTANTS.consent.status.optout;
 
-      Cookie.set(utils.getPrefixedCookieName(CONSTANTS.consent.name), consent);
-      expect(utils.Storage.find(CONSTANTS.consent.name)?.value).toBeFalsy();
+      Cookie.set(consentStorageName, getConsentValueForStorage(consent));
+      expect(utils.Storage.find(consentStorageName)).toBeFalsy();
 
-      expect(Cookie.get(utils.getPrefixedCookieName(CONSTANTS.subid.name)));
-      expect(utils.Storage.find(CONSTANTS.subid.name)?.value).toBeFalsy();
+      expect(Cookie.get(consentSubidStorageName));
+      expect(utils.Storage.find(consentSubidStorageName)).toBeFalsy();
 
       const instance = new Sdk();
 
@@ -103,12 +111,15 @@ describe('The ISDK class test', () => {
     test('constructor - Should set consent from localstorage', () => {
       const consent = CONSTANTS.consent.status.optout;
 
-      utils.Storage.save({ id: CONSTANTS.consent.name, value: consent });
+      utils.Storage.save({
+        id: consentStorageName,
+        value: getConsentValueForStorage(consent),
+      });
 
-      expect(Cookie.get(utils.getPrefixedCookieName(CONSTANTS.consent.name))).toBeFalsy();
+      expect(Cookie.get(consentStorageName)).toBeFalsy();
 
-      expect(Cookie.get(utils.getPrefixedCookieName(CONSTANTS.subid.name))).toBeFalsy();
-      expect(utils.Storage.find(CONSTANTS.subid.name)?.value).toBeFalsy();
+      expect(Cookie.get(consentSubidStorageName)).toBeFalsy();
+      expect(utils.Storage.find(consentSubidStorageName)).toBeFalsy();
 
       const instance = new Sdk();
 
@@ -181,19 +192,19 @@ describe('The ISDK class test', () => {
         [subid]: currentTimestamp,
       };
 
-      const compressSubids = compress(subids);
+      const compressSubids = formatAndCompress(subids);
 
-      utils.setValue(JSON.stringify(subids), CONSTANTS.subid.name);
+      utils.setValue(subids, CONSTANTS.subid.name);
 
-      expect(Cookie.get(utils.getPrefixedCookieName(CONSTANTS.subid.name))).toEqual(compressSubids);
-      expect(utils.Storage.find(CONSTANTS.subid.name)?.value).toEqual(compressSubids);
+      expect(Cookie.get(consentSubidStorageName)).toEqual(compressSubids);
+      expect(utils.Storage.find(consentSubidStorageName)).toEqual(compressSubids);
 
       const instance = new Sdk();
 
       expect(instance.consent).toEqual(CONSTANTS.consent.status.unknown);
       expect(instance.consentSubids).toEqual({});
-      expect(Cookie.get(utils.getPrefixedCookieName(CONSTANTS.subid.name))).toBeFalsy();
-      expect(utils.Storage.find(CONSTANTS.subid.name)?.value).toBeFalsy();
+      expect(Cookie.get(consentSubidStorageName)).toBeFalsy();
+      expect(utils.Storage.find(consentSubidStorageName)).toBeFalsy();
     });
 
     noConsentValues.forEach((consent) => {
@@ -203,24 +214,24 @@ describe('The ISDK class test', () => {
           [subid]: currentTimestamp,
         };
 
-        const compressSubids = compress(subids);
+        const compressSubids = formatAndCompress(subids);
 
-        utils.setValue(JSON.stringify(subids), CONSTANTS.subid.name);
+        utils.setValue(subids, CONSTANTS.subid.name);
 
-        expect(Cookie.get(utils.getPrefixedCookieName(CONSTANTS.subid.name))).toEqual(compressSubids);
-        expect(utils.Storage.find(CONSTANTS.subid.name)?.value).toEqual(compressSubids);
+        expect(Cookie.get(consentSubidStorageName)).toEqual(compressSubids);
+        expect(utils.Storage.find(consentSubidStorageName)).toEqual(compressSubids);
 
         utils.setValue(consent, CONSTANTS.consent.name);
 
-        expect(Cookie.get(utils.getPrefixedCookieName(CONSTANTS.consent.name))).toEqual(consent);
-        expect(utils.Storage.find(CONSTANTS.consent.name)?.value).toEqual(consent);
+        expect(Cookie.get(consentStorageName)).toEqual(getConsentValueForStorage(consent));
+        expect(utils.Storage.find(consentStorageName)).toEqual(getConsentValueForStorage(consent));
 
         const instance = new Sdk();
 
         expect(instance.consent).toEqual(consent);
         expect(instance.consentSubids).toEqual({});
-        expect(Cookie.get(utils.getPrefixedCookieName(CONSTANTS.subid.name))).toBeFalsy();
-        expect(utils.Storage.find(CONSTANTS.subid.name)?.value).toBeFalsy();
+        expect(Cookie.get(consentSubidStorageName)).toBeFalsy();
+        expect(utils.Storage.find(consentSubidStorageName)).toBeFalsy();
       });
     });
 
@@ -229,7 +240,7 @@ describe('The ISDK class test', () => {
       Sdk.getProgramDataFromQueryParams = jest.fn(() => null);
 
       const emptySubids = {};
-      const compressEmptySubids = compress(emptySubids);
+      const compressEmptySubids = formatAndCompress(emptySubids);
 
       const instance = new Sdk();
 
@@ -237,8 +248,8 @@ describe('The ISDK class test', () => {
       expect(instance.constructor.getProgramDataFromQueryParams).toHaveBeenCalledTimes(2);
       expect(instance.constructor.getProgramDataFromQueryParams).toHaveBeenCalledWith(CONSTANTS.subid.queryname);
       expect(instance.constructor.getProgramDataFromQueryParams).toHaveBeenCalledWith(CONSTANTS.cashback.queryname);
-      expect(Cookie.get(utils.getPrefixedCookieName(CONSTANTS.subid.name))).toEqual(compressEmptySubids);
-      expect(utils.Storage.find(CONSTANTS.subid.name)?.value).toEqual(compressEmptySubids);
+      expect(Cookie.get(consentSubidStorageName)).toEqual(compressEmptySubids);
+      expect(utils.Storage.find(consentSubidStorageName)).toEqual(compressEmptySubids);
       expect(instance.consentSubids).toEqual(emptySubids);
       expect(fetch).toHaveBeenCalledTimes(0);
     });
@@ -251,7 +262,7 @@ describe('The ISDK class test', () => {
         [subid]: currentTimestamp,
       };
 
-      const compressSubids = compress(subids);
+      const compressSubids = formatAndCompress(subids);
 
       Sdk.getProgramDataFromQueryParams = jest.fn((name) => (name === CONSTANTS.subid.queryname ? subid : null));
 
@@ -262,9 +273,9 @@ describe('The ISDK class test', () => {
       expect(instance.constructor.getProgramDataFromQueryParams).toHaveBeenCalledWith(CONSTANTS.subid.queryname);
       expect(instance.constructor.getProgramDataFromQueryParams).toHaveBeenCalledWith(CONSTANTS.cashback.queryname);
       expect(instance.consentSubids).toEqual(subids);
-      expect(Cookie.get(utils.getPrefixedCookieName(CONSTANTS.subid.name))).toEqual(compressSubids);
-      expect(utils.Storage.find(CONSTANTS.subid.name)?.value).toEqual(compressSubids);
-      expect(utils.getValue(CONSTANTS.subid.name)).toEqual(JSON.stringify(subids));
+      expect(Cookie.get(consentSubidStorageName)).toEqual(compressSubids);
+      expect(utils.Storage.find(consentSubidStorageName)).toEqual(compressSubids);
+      expect(utils.getValue(CONSTANTS.subid.name)).toEqual(subids);
       expect(fetch).toHaveBeenCalledTimes(0);
     });
 
@@ -274,13 +285,13 @@ describe('The ISDK class test', () => {
         [subid]: currentTimestamp,
       };
 
-      const compressSubids = compress(subids);
+      const compressSubids = formatAndCompress(subids);
 
       utils.setValue(CONSTANTS.consent.status.optin, CONSTANTS.consent.name);
-      Cookie.set(utils.getPrefixedCookieName(CONSTANTS.subid.name), compressSubids);
+      Cookie.set(consentSubidStorageName, compressSubids);
       Sdk.getProgramDataFromQueryParams = jest.fn(() => null);
 
-      expect(utils.Storage.find(CONSTANTS.subid.name)?.value).toBeFalsy();
+      expect(utils.Storage.find(consentSubidStorageName)).toBeFalsy();
 
       const instance = new Sdk();
 
@@ -289,8 +300,8 @@ describe('The ISDK class test', () => {
       expect(instance.constructor.getProgramDataFromQueryParams).toHaveBeenCalledWith(CONSTANTS.subid.queryname);
       expect(instance.constructor.getProgramDataFromQueryParams).toHaveBeenCalledWith(CONSTANTS.cashback.queryname);
       expect(instance.consentSubids).toEqual(subids);
-      expect(Cookie.get(utils.getPrefixedCookieName(CONSTANTS.subid.name))).toEqual(compressSubids);
-      expect(utils.getValue(CONSTANTS.subid.name)).toEqual(JSON.stringify(subids));
+      expect(Cookie.get(consentSubidStorageName)).toEqual(compressSubids);
+      expect(utils.getValue(CONSTANTS.subid.name)).toEqual(subids);
       expect(fetch).toHaveBeenCalledTimes(0);
     });
 
@@ -300,13 +311,13 @@ describe('The ISDK class test', () => {
         [subid]: currentTimestamp,
       };
 
-      const compressSubids = compress(subids);
+      const compressSubids = formatAndCompress(subids);
 
       utils.setValue(CONSTANTS.consent.status.optin, CONSTANTS.consent.name);
-      utils.Storage.save({ id: CONSTANTS.subid.name, value: compressSubids });
+      utils.Storage.save({ id: consentSubidStorageName, value: compressSubids });
       Sdk.getProgramDataFromQueryParams = jest.fn(() => null);
 
-      expect(Cookie.get(utils.getPrefixedCookieName(CONSTANTS.subid.name))).toBeFalsy();
+      expect(Cookie.get(consentSubidStorageName)).toBeFalsy();
 
       const instance = new Sdk();
 
@@ -316,8 +327,8 @@ describe('The ISDK class test', () => {
       expect(instance.constructor.getProgramDataFromQueryParams).toHaveBeenCalledWith(CONSTANTS.cashback.queryname);
       expect(instance.consentSubids).toEqual(subids);
       expect(instance.cashbackSubids).toEqual({});
-      expect(utils.Storage.find(CONSTANTS.subid.name)?.value).toEqual(compressSubids);
-      expect(utils.getValue(CONSTANTS.subid.name)).toEqual(JSON.stringify(subids));
+      expect(utils.Storage.find(consentSubidStorageName)).toEqual(compressSubids);
+      expect(utils.getValue(CONSTANTS.subid.name)).toEqual(subids);
       expect(fetch).toHaveBeenCalledTimes(0);
     });
 
@@ -328,20 +339,20 @@ describe('The ISDK class test', () => {
       const initialCookieSubids = {
         [cookieSubid]: currentTimestamp,
       };
-      const compressInitialCookieSubids = compress(initialCookieSubids);
+      const compressInitialCookieSubids = formatAndCompress(initialCookieSubids);
 
       const subids = {
         ...initialCookieSubids,
         [querySubid]: currentTimestamp,
       };
 
-      const compressSubids = compress(subids);
+      const compressSubids = formatAndCompress(subids);
 
       utils.setValue(CONSTANTS.consent.status.optin, CONSTANTS.consent.name);
-      Cookie.set(utils.getPrefixedCookieName(CONSTANTS.subid.name), compressInitialCookieSubids);
+      Cookie.set(consentSubidStorageName, compressInitialCookieSubids);
       Sdk.getProgramDataFromQueryParams = jest.fn((name) => (name === CONSTANTS.subid.queryname ? querySubid : null));
 
-      expect(utils.Storage.find(CONSTANTS.subid.name)?.value).toBeFalsy();
+      expect(utils.Storage.find(consentSubidStorageName)).toBeFalsy();
 
       const instance = new Sdk();
 
@@ -351,8 +362,8 @@ describe('The ISDK class test', () => {
       expect(instance.constructor.getProgramDataFromQueryParams).toHaveBeenCalledWith(CONSTANTS.cashback.queryname);
       expect(instance.consentSubids).toEqual(subids);
       expect(instance.cashbackSubids).toEqual({});
-      expect(Cookie.get(utils.getPrefixedCookieName(CONSTANTS.subid.name))).toEqual(compressSubids);
-      expect(utils.getValue(CONSTANTS.subid.name)).toEqual(JSON.stringify(subids));
+      expect(Cookie.get(consentSubidStorageName)).toEqual(compressSubids);
+      expect(utils.getValue(CONSTANTS.subid.name)).toEqual(subids);
       expect(fetch).toHaveBeenCalledTimes(0);
     });
 
@@ -362,20 +373,20 @@ describe('The ISDK class test', () => {
       const initialStorageSubids = {
         [storageSubid]: currentTimestamp,
       };
-      const compressInitialCookieSubids = compress(initialStorageSubids);
+      const compressInitialCookieSubids = formatAndCompress(initialStorageSubids);
 
       const subids = {
         ...initialStorageSubids,
         [querySubid]: currentTimestamp,
       };
 
-      const compressSubids = compress(subids);
+      const compressSubids = formatAndCompress(subids);
 
       utils.setValue(CONSTANTS.consent.status.optin, CONSTANTS.consent.name);
-      utils.Storage.save({ id: CONSTANTS.subid.name, value: compressInitialCookieSubids });
+      utils.Storage.save({ id: consentSubidStorageName, value: compressInitialCookieSubids });
       Sdk.getProgramDataFromQueryParams = jest.fn((name) => (name === CONSTANTS.subid.queryname ? querySubid : null));
 
-      expect(Cookie.get(utils.getPrefixedCookieName(CONSTANTS.subid.name))).toBeFalsy();
+      expect(Cookie.get(consentSubidStorageName)).toBeFalsy();
 
       const instance = new Sdk();
 
@@ -385,8 +396,8 @@ describe('The ISDK class test', () => {
       expect(instance.constructor.getProgramDataFromQueryParams).toHaveBeenCalledWith(CONSTANTS.cashback.queryname);
       expect(instance.cashbackSubids).toEqual({});
       expect(instance.consentSubids).toEqual(subids);
-      expect(utils.Storage.find(CONSTANTS.subid.name)?.value).toEqual(compressSubids);
-      expect(utils.getValue(CONSTANTS.subid.name)).toEqual(JSON.stringify(subids));
+      expect(utils.Storage.find(consentSubidStorageName)).toEqual(compressSubids);
+      expect(utils.getValue(CONSTANTS.subid.name)).toEqual(subids);
       expect(fetch).toHaveBeenCalledTimes(0);
     });
 
@@ -433,7 +444,7 @@ describe('The ISDK class test', () => {
             [subid]: currentTimestamp,
           };
 
-          const compressSubids = compress(subids);
+          const compressSubids = formatAndCompress(subids);
 
           Sdk.getProgramDataFromQueryParams = jest.fn((name) => (name === CONSTANTS.subid.queryname ? subid : null));
 
@@ -442,18 +453,18 @@ describe('The ISDK class test', () => {
           expect(instance.consent).toEqual(CONSTANTS.consent.status.optin);
           expect(instance.consentSubids).toEqual(subids);
           expect(instance.cashbackSubids).toEqual({});
-          expect(Cookie.get(utils.getPrefixedCookieName(CONSTANTS.subid.name))).toEqual(compressSubids);
-          expect(utils.Storage.find(CONSTANTS.subid.name)?.value).toEqual(compressSubids);
+          expect(Cookie.get(consentSubidStorageName)).toEqual(compressSubids);
+          expect(utils.Storage.find(consentSubidStorageName)).toEqual(compressSubids);
 
           instance[methodName]();
 
           expect(instance.consent).toEqual(consentName);
-          expect(Cookie.get(utils.getPrefixedCookieName(CONSTANTS.consent.name))).toEqual(consentName);
-          expect(utils.Storage.find(CONSTANTS.consent.name)?.value).toEqual(consentName);
+          expect(Cookie.get(consentStorageName)).toEqual(getConsentValueForStorage(consentName));
+          expect(utils.Storage.find(consentStorageName)).toEqual(getConsentValueForStorage(consentName));
 
           expect(instance.consentSubids).toEqual(subids);
-          expect(Cookie.get(utils.getPrefixedCookieName(CONSTANTS.subid.name))).toBeFalsy();
-          expect(utils.Storage.find(CONSTANTS.subid.name)?.value).toBeFalsy();
+          expect(Cookie.get(consentSubidStorageName)).toBeFalsy();
+          expect(utils.Storage.find(consentSubidStorageName)).toBeFalsy();
           expect(utils.getValue(CONSTANTS.subid.name)).toBeFalsy();
 
           expect(fetch).toHaveBeenCalledTimes(1);
@@ -475,7 +486,8 @@ describe('The ISDK class test', () => {
       const subids = {
         [subid]: currentTimestamp,
       };
-      const compressSubids = compress(subids);
+      const consent = CONSTANTS.consent.status.optin;
+      const compressSubids = formatAndCompress(subids);
       Sdk.getProgramDataFromQueryParams = jest.fn((name) => (name === CONSTANTS.subid.queryname ? subid : null));
 
       const instance = new Sdk();
@@ -492,18 +504,18 @@ describe('The ISDK class test', () => {
       expect(instance.consent).toEqual(CONSTANTS.consent.status.unknown);
       expect(instance.consentSubids).toEqual(subids);
       expect(instance.cashbackSubids).toEqual({});
-      expect(Cookie.get(utils.getPrefixedCookieName(CONSTANTS.subid.name))).toBeFalsy();
-      expect(utils.Storage.find(CONSTANTS.subid.name)?.value).toBeFalsy();
+      expect(Cookie.get(consentSubidStorageName)).toBeFalsy();
+      expect(utils.Storage.find(consentSubidStorageName)).toBeFalsy();
 
       instance.push(['_setOptin']);
-      expect(instance.consent).toEqual(CONSTANTS.consent.status.optin);
-      expect(Cookie.get(utils.getPrefixedCookieName(CONSTANTS.consent.name))).toEqual(CONSTANTS.consent.status.optin);
-      expect(utils.Storage.find(CONSTANTS.consent.name)?.value).toEqual(CONSTANTS.consent.status.optin);
+      expect(instance.consent).toEqual(consent);
+      expect(Cookie.get(consentStorageName)).toEqual(getConsentValueForStorage(consent));
+      expect(utils.Storage.find(consentStorageName)).toEqual(getConsentValueForStorage(consent));
 
       expect(instance.consentSubids).toEqual(subids);
-      expect(Cookie.get(utils.getPrefixedCookieName(CONSTANTS.subid.name))).toEqual(compressSubids);
-      expect(utils.Storage.find(CONSTANTS.subid.name)?.value).toEqual(compressSubids);
-      expect(utils.getValue(CONSTANTS.subid.name)).toEqual(JSON.stringify(subids));
+      expect(Cookie.get(consentSubidStorageName)).toEqual(compressSubids);
+      expect(utils.Storage.find(consentSubidStorageName)).toEqual(compressSubids);
+      expect(utils.getValue(CONSTANTS.subid.name)).toEqual(subids);
 
       expect(fetch).toHaveBeenCalledTimes(3);
       expect(fetch).toHaveBeenCalledWith(CONSTANTS.urls.stats[0], {
@@ -543,7 +555,6 @@ describe('The ISDK class test', () => {
         consent: CONSTANTS.consent.status.unknown,
         consentSubids,
         cashbackSubids: {},
-        event_consent_id: null,
         errors,
         conversionUrls,
       });
@@ -576,14 +587,15 @@ describe('The ISDK class test', () => {
         consent: CONSTANTS.consent.status.optout,
         consentSubids,
         cashbackSubids: {},
-        event_consent_id: null,
         errors,
         conversionUrls,
       });
     });
   });
 
-  describe('Retrocompatibility', () => {
+  describe('Retrocompatibility v1', () => {
+    const sufixV1 = null;
+
     [
       { ...CONSTANTS.subid, key: 'consentSubids' },
       { ...CONSTANTS.cashback, key: 'cashbackSubids' },
@@ -591,20 +603,20 @@ describe('The ISDK class test', () => {
       test(`Multisubids - Should convert old ${name} cookie format to the new one`, () => {
         const oldSubid =
           'eyJkIjoxNjY0NzkyNjYzLCJwaSI6IjIiLCJwIjoiNzkzMyIsInByIjoiMjM3MTg3In0.K3QnOea5TUph2WvxcpXEcqbuZ1XjceB1hq8GFar2cp12345';
-        Cookie.set(utils.getPrefixedCookieName(name), oldSubid);
+        Cookie.set(utils.getPrefixedStorageName(name, sufixV1), oldSubid);
 
         utils.setValue(CONSTANTS.consent.status.optin, CONSTANTS.consent.name);
 
         Sdk.getProgramDataFromQueryParams = jest.fn(() => null);
 
-        expect(Cookie.get(utils.getPrefixedCookieName(name))).toEqual(oldSubid);
-        expect(utils.getValue(name)).toEqual(oldSubid);
+        expect(Cookie.get(utils.getPrefixedStorageName(name, sufixV1))).toEqual(oldSubid);
+        expect(utils.getValue(name, sufixV1)).toEqual(oldSubid);
 
         const subids = {
           [oldSubid]: currentTimestamp,
         };
 
-        const compressSubids = compress(subids);
+        const compressSubids = formatAndCompress(subids);
 
         const instance = new Sdk();
 
@@ -612,8 +624,8 @@ describe('The ISDK class test', () => {
         expect(instance.constructor.getProgramDataFromQueryParams).toHaveBeenCalledTimes(2);
         expect(instance.constructor.getProgramDataFromQueryParams).toHaveBeenCalledWith(CONSTANTS.subid.queryname);
         expect(instance.constructor.getProgramDataFromQueryParams).toHaveBeenCalledWith(CONSTANTS.cashback.queryname);
-        expect(Cookie.get(utils.getPrefixedCookieName(name))).toEqual(compressSubids);
-        expect(utils.Storage.find(name)?.value).toEqual(compressSubids);
+        expect(Cookie.get(utils.getPrefixedStorageName(name))).toEqual(compressSubids);
+        expect(utils.Storage.find(utils.getPrefixedStorageName(name))).toEqual(compressSubids);
         expect(instance[key]).toEqual(subids);
         expect(fetch).toHaveBeenCalledTimes(0);
       });
@@ -626,27 +638,27 @@ describe('The ISDK class test', () => {
       test(`Multisubids - Should convert old ${name} storage format to the new one`, () => {
         const oldSubid =
           'eyJkIjoxNjY0NzkyNjYzLCJwaSI6IjIiLCJwIjoiNzkzMyIsInByIjoiMjM3MTg3In0.K3QnOea5TUph2WvxcpXEcqbuZ1XjceB1hq8GFar2cp';
-        utils.Storage.save({ id: name, value: oldSubid });
+        utils.Storage.save({ id: utils.getPrefixedStorageName(name, sufixV1), value: oldSubid });
         utils.setValue(CONSTANTS.consent.status.optin, CONSTANTS.consent.name);
 
         Sdk.getProgramDataFromQueryParams = jest.fn(() => null);
 
-        expect(utils.Storage.find(name)?.value).toEqual(oldSubid);
-        expect(utils.getValue(name)).toEqual(oldSubid);
+        expect(utils.Storage.find(utils.getPrefixedStorageName(name, sufixV1))).toEqual(oldSubid);
+        expect(utils.getValue(name, sufixV1)).toEqual(oldSubid);
 
         const subids = {
           [oldSubid]: currentTimestamp,
         };
 
-        const compressSubids = compress(subids);
+        const compressSubids = formatAndCompress(subids);
 
         const instance = new Sdk();
         expect(instance.consent).toEqual(CONSTANTS.consent.status.optin);
         expect(instance.constructor.getProgramDataFromQueryParams).toHaveBeenCalledTimes(2);
         expect(instance.constructor.getProgramDataFromQueryParams).toHaveBeenCalledWith(CONSTANTS.subid.queryname);
         expect(instance.constructor.getProgramDataFromQueryParams).toHaveBeenCalledWith(CONSTANTS.cashback.queryname);
-        expect(utils.Storage.find(name)?.value).toEqual(compressSubids);
-        expect(utils.Storage.find(name)?.value).toEqual(compressSubids);
+        expect(Cookie.get(utils.getPrefixedStorageName(name))).toEqual(compressSubids);
+        expect(utils.Storage.find(utils.getPrefixedStorageName(name))).toEqual(compressSubids);
         expect(instance[key]).toEqual(subids);
         expect(fetch).toHaveBeenCalledTimes(0);
       });

@@ -20,6 +20,8 @@ export default class Sdk {
     this.env = process.env.NODE_ENV;
     this.version = process.env.SDK_VERSION;
 
+    this.#runRetrocompatibility();
+
     this.#setProgids();
     this.#configureProgramData(CONSTANTS.cashback);
 
@@ -50,6 +52,41 @@ export default class Sdk {
     return utils.getValue(CONSTANTS.event_consent_id.name);
   }
 
+  #runRetrocompatibility() {
+    const previousStorageVersion = CONSTANTS.previous_storage_version;
+
+    const consent = utils.getValue(CONSTANTS.consent.name, previousStorageVersion);
+    const eventConsentId = utils.getValue(CONSTANTS.event_consent_id.name, previousStorageVersion);
+    const consentSubid = utils.getValue(CONSTANTS.subid.name, previousStorageVersion);
+    const cashbackSubid = utils.getValue(CONSTANTS.cashback.name, previousStorageVersion);
+
+    if (consent) {
+      utils.setValue(consent, CONSTANTS.consent.name);
+    }
+
+    if (eventConsentId) {
+      utils.setValue(eventConsentId, CONSTANTS.event_consent_id.name);
+    }
+
+    if (consentSubid) {
+      utils.setValue(this.#convertSubidFromPreviousToNextFormat(consentSubid), CONSTANTS.subid.name);
+    }
+
+    if (cashbackSubid) {
+      utils.setValue(this.#convertSubidFromPreviousToNextFormat(cashbackSubid), CONSTANTS.cashback.name);
+    }
+
+    utils.removeValue(CONSTANTS.consent.name, previousStorageVersion);
+    utils.removeValue(CONSTANTS.event_consent_id.name, previousStorageVersion);
+    utils.removeValue(CONSTANTS.subid.name, previousStorageVersion);
+    utils.removeValue(CONSTANTS.cashback.name, previousStorageVersion);
+    utils.Storage.delete('to_INDEX');
+  }
+
+  #convertSubidFromPreviousToNextFormat(subid) {
+    return this.#formatSubidEntry(subid);
+  }
+
   #formatSubidEntry(subid) {
     if (!subid) {
       return {};
@@ -69,7 +106,7 @@ export default class Sdk {
     }
 
     try {
-      const subids = JSON.parse(storedSubids);
+      const subids = storedSubids;
 
       if (utils.isObject(subids) && Object.keys(subids).length > 0) {
         const activeStoredSubids = utils.filterUnActiveSubids(subids, ttl);
@@ -79,16 +116,11 @@ export default class Sdk {
         return maxSubids;
       }
 
-      if (utils.isObject(subids) && Object.keys(subids).length === 0) {
-        return subidQueryParamEntry;
-      }
-
-      throw new utils.SubidCookieTypeError(name);
+      return subidQueryParamEntry;
     } catch (error) {
-      const oldSubidStoredFormat = this.#formatSubidEntry(storedSubids);
-      this.#setError({ error, caller: '#getActiveSubids', extra: { storedSubids } });
+      this.#setError({ error, caller: '#getActiveSubids', extra: { name, storedSubids } });
 
-      return { ...oldSubidStoredFormat, ...subidQueryParamEntry };
+      return subidQueryParamEntry;
     }
   }
 
@@ -98,7 +130,7 @@ export default class Sdk {
 
   #setProgids() {
     try {
-      const progids = document.getElementById(CONSTANTS.sdkScriptId)?.getAttribute('data-progids');
+      const progids = document.getElementById(CONSTANTS.sdk_script_id)?.getAttribute('data-progids');
 
       if (progids) {
         this.#progids = JSON.parse(progids);
@@ -116,7 +148,7 @@ export default class Sdk {
     const subids = this.#getActiveSubids(options);
 
     if (subids) {
-      utils.setValue(JSON.stringify(subids), options.name);
+      utils.setValue(subids, options.name);
     }
   }
 
@@ -193,14 +225,12 @@ export default class Sdk {
   }
 
   #setConsent(consent) {
-    const shouldLog = consent !== this.consent;
-
+    const shouldSetConsent = consent !== this.consent;
     const shouldSetupPOC =
       consent === CONSTANTS.consent.status.optin && !this.eventConsentId && this.#hasSubids(CONSTANTS.subid);
 
-    utils.setValue(consent, CONSTANTS.consent.name);
-
-    if (shouldLog) {
+    if (shouldSetConsent) {
+      utils.setValue(consent, CONSTANTS.consent.name);
       this.#progids.forEach((progid) => {
         this.#logStats({ consent, progid, type: CONSTANTS.stats.type.visit });
       });

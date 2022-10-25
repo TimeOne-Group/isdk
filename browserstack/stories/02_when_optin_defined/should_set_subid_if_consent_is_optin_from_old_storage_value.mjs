@@ -17,7 +17,9 @@ const testName = 'should_set_subid_if_consent_is_optin_from_old_storage_value';
 const oldSubidFormat = 'Old3R.sUb1d.F0rma7';
 const expectedSubids = expect.objectContaining({
   [oldSubidFormat]: expect.any(Number),
+  [TEST_CONSTANTS.subid]: expect.any(Number),
 });
+
 const cookieName = `to_${CONSTANTS.subid.name}`;
 
 export default async function shouldSetSubidifConsentIsOptinFromOldStorageValue(driver) {
@@ -36,14 +38,17 @@ export default async function shouldSetSubidifConsentIsOptinFromOldStorageValue(
 
     expect(initialConsent).toEqual(CONSTANTS.consent.status.unknown);
     expect(initialprogid).toBeFalsy();
-    expect(initialSubids).toEqual(expectedSubids);
+    expect(initialSubids).toEqual({});
 
     await setOptin(driver);
 
     const consent = await getSdkState(driver, 'consent');
+    expect(consent).toEqual(CONSTANTS.consent.status.optin);
+
+    await driver.get(`${TEST_CONSTANTS.baseUrl}?${CONSTANTS.subid.queryname}=${TEST_CONSTANTS.subid}`);
+
     const consentSubids = await getSdkState(driver, 'consentSubids');
 
-    expect(consent).toEqual(CONSTANTS.consent.status.optin);
     expect(consentSubids).toEqual(expectedSubids);
 
     await browserstackLogSuccess(
