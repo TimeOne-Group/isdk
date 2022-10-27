@@ -1,5 +1,5 @@
 
-/*! isdk 1.1.4 https://github.com/TimeOne-Group/isdk#readme @license GPL-3.0 */
+/*! isdk 2.0.0 https://github.com/TimeOne-Group/isdk#readme @license GPL-3.0 */
 (function () {
   'use strict';
 
@@ -160,61 +160,6 @@
     } catch (e) {
       return false;
     }
-  }
-
-  function _construct(Parent, args, Class) {
-    if (_isNativeReflectConstruct()) {
-      _construct = Reflect.construct;
-    } else {
-      _construct = function _construct(Parent, args, Class) {
-        var a = [null];
-        a.push.apply(a, args);
-        var Constructor = Function.bind.apply(Parent, a);
-        var instance = new Constructor();
-        if (Class) _setPrototypeOf(instance, Class.prototype);
-        return instance;
-      };
-    }
-
-    return _construct.apply(null, arguments);
-  }
-
-  function _isNativeFunction(fn) {
-    return Function.toString.call(fn).indexOf("[native code]") !== -1;
-  }
-
-  function _wrapNativeSuper(Class) {
-    var _cache = typeof Map === "function" ? new Map() : undefined;
-
-    _wrapNativeSuper = function _wrapNativeSuper(Class) {
-      if (Class === null || !_isNativeFunction(Class)) return Class;
-
-      if (typeof Class !== "function") {
-        throw new TypeError("Super expression must either be null or a function");
-      }
-
-      if (typeof _cache !== "undefined") {
-        if (_cache.has(Class)) return _cache.get(Class);
-
-        _cache.set(Class, Wrapper);
-      }
-
-      function Wrapper() {
-        return _construct(Class, arguments, _getPrototypeOf(this).constructor);
-      }
-
-      Wrapper.prototype = Object.create(Class.prototype, {
-        constructor: {
-          value: Wrapper,
-          enumerable: false,
-          writable: true,
-          configurable: true
-        }
-      });
-      return _setPrototypeOf(Wrapper, Class);
-    };
-
-    return _wrapNativeSuper(Class);
   }
 
   function _assertThisInitialized(self) {
@@ -5027,7 +4972,7 @@
   }
   });
 
-  var _httpsBackService, _httpsTrackingSer, _httpsTrackingSer2;
+  var _httpsBTime1MeV, _httpsCTime1MeV, _httpsCTime1MeV2;
 
   var CONSTANTS = {
     sdk_name: '__ISDK',
@@ -5077,9 +5022,9 @@
     default_storage_prefix: 'to',
     default_ttl: 390,
     urls: {
-      conversion: ((_httpsBackService = "https://back.service.sandbox.localhost/v1/b") === null || _httpsBackService === void 0 ? void 0 : _httpsBackService.split(',')) || [],
-      stats: ((_httpsTrackingSer = "https://tracking.service.sandbox.localhost/v1/log/consent,") === null || _httpsTrackingSer === void 0 ? void 0 : _httpsTrackingSer.split(',')) || [],
-      proofConsent: ((_httpsTrackingSer2 = "https://tracking.service.sandbox.localhost/v1/log/consent/proof") === null || _httpsTrackingSer2 === void 0 ? void 0 : _httpsTrackingSer2.split(',')) || []
+      conversion: ((_httpsBTime1MeV = "https://b.time1.me/v1/b") === null || _httpsBTime1MeV === void 0 ? void 0 : _httpsBTime1MeV.split(',')) || [],
+      stats: ((_httpsCTime1MeV = "https://c.time1.me/v1/log/consent") === null || _httpsCTime1MeV === void 0 ? void 0 : _httpsCTime1MeV.split(',')) || [],
+      proofConsent: ((_httpsCTime1MeV2 = "https://c.time1.me/v1/log/consent/proof") === null || _httpsCTime1MeV2 === void 0 ? void 0 : _httpsCTime1MeV2.split(',')) || []
     },
     errors: {
       subidCookieType: 'subid_cookie_type'
@@ -5278,23 +5223,6 @@
 
     return subids;
   }
-  var SubidCookieTypeError = /*#__PURE__*/function (_Error) {
-    _inherits(SubidCookieTypeError, _Error);
-
-    var _super = _createSuper(SubidCookieTypeError);
-
-    function SubidCookieTypeError(subidName) {
-      var _this;
-
-      _classCallCheck(this, SubidCookieTypeError);
-
-      _this = _super.call(this, "Cookie to_".concat(subidName, " or is a string. Expected object"));
-      _this.code = CONSTANTS.errors.subidCookieType;
-      return _this;
-    }
-
-    return _createClass(SubidCookieTypeError);
-  }( /*#__PURE__*/_wrapNativeSuper(Error));
 
   var sdkName$1 = CONSTANTS.sdk_name; // const showJwtDebug = (name, id) => {
   //   if (!document.getElementById(id)) {
@@ -5478,7 +5406,9 @@
 
   var _runRetrocompatibility = /*#__PURE__*/new WeakSet();
 
-  var _convertFromPreviousToNextSubid = /*#__PURE__*/new WeakSet();
+  var _convertSubidFromPreviousToNextFormat = /*#__PURE__*/new WeakSet();
+
+  var _formatSubidEntry = /*#__PURE__*/new WeakSet();
 
   var _getActiveSubids = /*#__PURE__*/new WeakSet();
 
@@ -5540,7 +5470,9 @@
 
       _classPrivateMethodInitSpec(this, _getActiveSubids);
 
-      _classPrivateMethodInitSpec(this, _convertFromPreviousToNextSubid);
+      _classPrivateMethodInitSpec(this, _formatSubidEntry);
+
+      _classPrivateMethodInitSpec(this, _convertSubidFromPreviousToNextFormat);
 
       _classPrivateMethodInitSpec(this, _runRetrocompatibility);
 
@@ -5569,8 +5501,8 @@
         value: []
       });
 
-      this.env = "sandbox";
-      this.version = "1.1.4-dev";
+      this.env = "production";
+      this.version = "2.0.0";
 
       _classPrivateMethodGet(this, _runRetrocompatibility, _runRetrocompatibility2).call(this);
 
@@ -5877,11 +5809,11 @@
     }
 
     if (consentSubid) {
-      setValue(_classPrivateMethodGet(this, _convertFromPreviousToNextSubid, _convertFromPreviousToNextSubid2).call(this, consentSubid), CONSTANTS.subid.name);
+      setValue(_classPrivateMethodGet(this, _convertSubidFromPreviousToNextFormat, _convertSubidFromPreviousToNextFormat2).call(this, consentSubid), CONSTANTS.subid.name);
     }
 
     if (cashbackSubid) {
-      setValue(_classPrivateMethodGet(this, _convertFromPreviousToNextSubid, _convertFromPreviousToNextSubid2).call(this, cashbackSubid), CONSTANTS.cashback.name);
+      setValue(_classPrivateMethodGet(this, _convertSubidFromPreviousToNextFormat, _convertSubidFromPreviousToNextFormat2).call(this, cashbackSubid), CONSTANTS.cashback.name);
     }
 
     removeValue(CONSTANTS.consent.name, previousStorageVersion);
@@ -5891,7 +5823,11 @@
     Storage.delete('to_INDEX');
   }
 
-  function _convertFromPreviousToNextSubid2(subid) {
+  function _convertSubidFromPreviousToNextFormat2(subid) {
+    return _classPrivateMethodGet(this, _formatSubidEntry, _formatSubidEntry2).call(this, subid);
+  }
+
+  function _formatSubidEntry2(subid) {
     if (!subid) {
       return {};
     }
@@ -5908,7 +5844,7 @@
     var subidQueryParam = this.constructor.getProgramDataFromQueryParams(queryname);
     var storedSubids = getValue(name);
 
-    var subidQueryParamEntry = _classPrivateMethodGet(this, _convertFromPreviousToNextSubid, _convertFromPreviousToNextSubid2).call(this, subidQueryParam);
+    var subidQueryParamEntry = _classPrivateMethodGet(this, _formatSubidEntry, _formatSubidEntry2).call(this, subidQueryParam);
 
     if (!storedSubids) {
       return subidQueryParamEntry;
@@ -5926,14 +5862,8 @@
         return maxSubids;
       }
 
-      if (isObject(subids) && Object.keys(subids).length === 0) {
-        return subidQueryParamEntry;
-      }
-
-      throw new SubidCookieTypeError(name);
+      return subidQueryParamEntry;
     } catch (error) {
-      var oldSubidStoredFormat = _classPrivateMethodGet(this, _convertFromPreviousToNextSubid, _convertFromPreviousToNextSubid2).call(this, storedSubids);
-
       _classPrivateMethodGet(this, _setError, _setError2).call(this, {
         error: error,
         caller: '#getActiveSubids',
@@ -5943,7 +5873,7 @@
         }
       });
 
-      return _objectSpread2(_objectSpread2({}, oldSubidStoredFormat), subidQueryParamEntry);
+      return subidQueryParamEntry;
     }
   }
 
