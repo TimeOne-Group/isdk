@@ -18,6 +18,9 @@ export default class Sdk {
 
   constructor() {
     this.env = process.env.NODE_ENV;
+    this.version = process.env.SDK_VERSION;
+
+    this.#runRetrocompatibility();
 
     this.#setProgids();
     this.#configureProgramData(CONSTANTS.cashback);
@@ -33,30 +36,101 @@ export default class Sdk {
     }
   }
 
+  get consentSubids() {
+    return this.#getActiveSubids(CONSTANTS.subid);
+  }
+
+  get cashbackSubids() {
+    return this.#getActiveSubids(CONSTANTS.cashback);
+  }
+
   get consent() {
     return utils.getValue(CONSTANTS.consent.name);
-  }
-
-  get subid() {
-    return (
-      this.constructor.getProgramDataFromQueryParams(CONSTANTS.subid.queryname) || utils.getValue(CONSTANTS.subid.name)
-    );
-  }
-
-  get cashbackSubid() {
-    return (
-      this.constructor.getProgramDataFromQueryParams(CONSTANTS.cashback.queryname) ||
-      utils.getValue(CONSTANTS.cashback.name)
-    );
   }
 
   get eventConsentId() {
     return utils.getValue(CONSTANTS.event_consent_id.name);
   }
 
+  #runRetrocompatibility() {
+    const previousStorageVersion = CONSTANTS.previous_storage_version;
+
+    const consent = utils.getValue(CONSTANTS.consent.name, previousStorageVersion);
+    const eventConsentId = utils.getValue(CONSTANTS.event_consent_id.name, previousStorageVersion);
+    const consentSubid = utils.getValue(CONSTANTS.subid.name, previousStorageVersion);
+    const cashbackSubid = utils.getValue(CONSTANTS.cashback.name, previousStorageVersion);
+
+    if (consent) {
+      utils.setValue(consent, CONSTANTS.consent.name);
+    }
+
+    if (eventConsentId) {
+      utils.setValue(eventConsentId, CONSTANTS.event_consent_id.name);
+    }
+
+    if (consentSubid) {
+      utils.setValue(this.#convertSubidFromPreviousToNextFormat(consentSubid), CONSTANTS.subid.name);
+    }
+
+    if (cashbackSubid) {
+      utils.setValue(this.#convertSubidFromPreviousToNextFormat(cashbackSubid), CONSTANTS.cashback.name);
+    }
+
+    utils.removeValue(CONSTANTS.consent.name, previousStorageVersion);
+    utils.removeValue(CONSTANTS.event_consent_id.name, previousStorageVersion);
+    utils.removeValue(CONSTANTS.subid.name, previousStorageVersion);
+    utils.removeValue(CONSTANTS.cashback.name, previousStorageVersion);
+    utils.Storage.delete('to_INDEX');
+  }
+
+  #convertSubidFromPreviousToNextFormat(subid) {
+    return this.#formatSubidEntry(subid);
+  }
+
+  #formatSubidEntry(subid) {
+    if (!subid) {
+      return {};
+    }
+
+    return { [subid]: utils.getCurrentTimestamp() };
+  }
+
+  #getActiveSubids({ name, queryname, ttl } = {}) {
+    const subidQueryParam = this.constructor.getProgramDataFromQueryParams(queryname);
+
+    const storedSubids = utils.getValue(name);
+    const subidQueryParamEntry = this.#formatSubidEntry(subidQueryParam);
+
+    if (!storedSubids) {
+      return subidQueryParamEntry;
+    }
+
+    try {
+      const subids = storedSubids;
+
+      if (utils.isObject(subids) && Object.keys(subids).length > 0) {
+        const activeStoredSubids = utils.filterUnActiveSubids(subids, ttl);
+        const activeSubids = { ...activeStoredSubids, ...subidQueryParamEntry };
+        const maxSubids = utils.getMaxSubids(activeSubids);
+
+        return maxSubids;
+      }
+
+      return subidQueryParamEntry;
+    } catch (error) {
+      this.#setError({ error, caller: '#getActiveSubids', extra: { name, storedSubids } });
+
+      return subidQueryParamEntry;
+    }
+  }
+
+  #getActiveSubidsValues(options = {}) {
+    return Object.keys(this.#getActiveSubids(options));
+  }
+
   #setProgids() {
     try {
-      const progids = document.getElementById(CONSTANTS.sdkScriptId)?.getAttribute('data-progids');
+      const progids = document.getElementById(CONSTANTS.sdk_script_id)?.getAttribute('data-progids');
 
       if (progids) {
         this.#progids = JSON.parse(progids);
@@ -70,11 +144,11 @@ export default class Sdk {
     }
   }
 
-  #configureProgramData({ name, queryname }) {
-    const subid = this.constructor.getProgramDataFromQueryParams(queryname);
+  #configureProgramData(options) {
+    const subids = this.#getActiveSubids(options);
 
-    if (subid) {
-      utils.setValue(subid, name);
+    if (subids) {
+      utils.setValue(subids, options.name);
     }
   }
 
@@ -111,13 +185,16 @@ export default class Sdk {
   }
 
   #logStats({ consent, type, progid }) {
-    const toSubids = [this.subid, this.cashbackSubid].filter(Boolean);
+    const consentSubids = this.#getActiveSubidsValues(CONSTANTS.subid);
+    const cashbackSubids = this.#getActiveSubidsValues(CONSTANTS.cashback);
+    const toSubids = [...consentSubids, ...cashbackSubids].filter(Boolean);
 
     this.#callApi({
       urlIterator: this.#statsUrlIterator,
       body: {
         type,
         progid,
+        // url: utils.getCurrentUrl(), wait until API ready
         status: consent,
         toSubids,
       },
@@ -131,7 +208,7 @@ export default class Sdk {
 
     const body = {
       event_consent_id: eventConsentId,
-      url: `${window.location.hostname}${window.location.pathname}`,
+      url: utils.getCurrentUrl(),
     };
 
     this.#callApi({
@@ -141,13 +218,19 @@ export default class Sdk {
     });
   }
 
+  #hasSubids(options) {
+    const subids = this.#getActiveSubidsValues(options);
+
+    return subids?.length > 0;
+  }
+
   #setConsent(consent) {
-    const shouldLog = consent !== this.consent;
-    const shouldSetupPOC = !this.eventConsentId && this.subid && consent === CONSTANTS.consent.status.optin;
+    const shouldSetConsent = consent !== this.consent;
+    const shouldSetupPOC =
+      consent === CONSTANTS.consent.status.optin && !this.eventConsentId && this.#hasSubids(CONSTANTS.subid);
 
-    utils.setValue(consent, CONSTANTS.consent.name);
-
-    if (shouldLog) {
+    if (shouldSetConsent) {
+      utils.setValue(consent, CONSTANTS.consent.name);
       this.#progids.forEach((progid) => {
         this.#logStats({ consent, progid, type: CONSTANTS.stats.type.visit });
       });
@@ -180,9 +263,9 @@ export default class Sdk {
 
   #canConvert() {
     return (
-      this.cashbackSubid ||
       this.constructor.getProgramDataFromQueryParams(CONSTANTS.subid.queryname) ||
-      (this.subid && this.consent === CONSTANTS.consent.status.optin)
+      this.#hasSubids(CONSTANTS.cashback) ||
+      (this.#hasSubids(CONSTANTS.subid) && this.consent === CONSTANTS.consent.status.optin)
     );
   }
 
@@ -212,20 +295,23 @@ export default class Sdk {
       throw new Error(`Failed to contact server on ${JSON.stringify(this.#conversionUrlIterator?.urls)}`);
     }
 
-    const toSubid = {
-      type: 'consent',
-      value: this.subid,
-    };
+    const consentSubids = this.#getActiveSubidsValues(CONSTANTS.subid);
+    const cashbackSubids = this.#getActiveSubidsValues(CONSTANTS.cashback);
 
-    const toCashback = {
-      type: 'cashback',
-      value: this.cashbackSubid,
-    };
-    const toSubids = [toSubid, toCashback].filter(({ value }) => !!value);
+    const toSubids = consentSubids.map((subid) => ({
+      type: CONSTANTS.subid.payloadType,
+      value: subid,
+    }));
+
+    const toCashbackSubids = cashbackSubids.map((cashbackSubid) => ({
+      type: CONSTANTS.cashback.payloadType,
+      value: cashbackSubid,
+    }));
+
     const payload = {
       ...data,
       event_consent_id: this.eventConsentId,
-      toSubids,
+      toSubids: [...toSubids, ...toCashbackSubids].filter(({ value }) => !!value),
     };
 
     const body = Object.fromEntries(Object.entries(payload).filter(([, value]) => !!value));
@@ -296,9 +382,9 @@ export default class Sdk {
       env: this.env,
       progids: this.#progids,
       consent: this.consent,
-      subid: this.subid,
+      consentSubids: this.consentSubids,
       event_consent_id: this.eventConsentId,
-      cashbackSubid: this.cashbackSubid,
+      cashbackSubids: this.cashbackSubids,
       errors: this.#getErrors(),
       conversionUrls: CONSTANTS.urls.conversion,
     };

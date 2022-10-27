@@ -21,11 +21,11 @@ export default async function shouldSetConsentToOptout(driver) {
   try {
     const initialConsent = await getSdkState(driver, 'consent');
     const initialprogid = await getSdkState(driver, 'progid');
-    const initialSubid = await getSdkState(driver, 'subid');
+    const initialSubids = await getSdkState(driver, 'consentSubids');
 
     expect(initialConsent).toEqual(CONSTANTS.consent.status.unknown);
     expect(initialprogid).toBeFalsy();
-    expect(initialSubid).toBeFalsy();
+    expect(initialSubids).toEqual({});
 
     await setOptout(driver);
 

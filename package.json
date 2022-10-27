@@ -10,11 +10,12 @@
     "clean": "rimraf dist debug",
     "lint": "eslint ./src/{**,__tests__/**}",
     "test:browserstack": "node browserstack/index.mjs",
-    "test:unit": "jest src --runInBand --verbose",
+    "test:unit": "npm run test:unit:path src",
+    "test:unit:path": "NODE_ENV=test jest --runInBand --verbose",
     "test:unit:watch": "npm run test:unit -- --watch",
     "test": "npm run test:unit && npm run test:browserstack",
-    "release": "standard-version -m 'chore(release): %s 🚀'",
-    "hotfix": "standard-version -m 'chore(hotfix): %s 🔧' --release-as patch"
+    "release": "standard-version -a -m 'chore(release): %s 🚀'",
+    "hotfix": "standard-version -a -m 'chore(hotfix): %s 🔧' --release-as patch"
   },
   "repository": {
     "type": "git",
@@ -30,6 +31,7 @@
     "@timeone-group/storage-js": "^0.3.1",
     "core-js": "^3.9.1",
     "js-cookie": "^3.0.1",
+    "lz-string": "^1.4.4",
     "regenerator-runtime": "^0.13.9",
     "standard-version": "^9.5.0",
     "uuid": "^8.3.2",
@@ -90,6 +92,11 @@
     "moduleFileExtensions": [
       "js",
       "mjs"
-    ]
+    ],
+    "standard-version": {
+      "scripts": {
+        "postbump": "npm run build:prod"
+      }
+    }
   }
 }

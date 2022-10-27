@@ -67,6 +67,7 @@ async function runTestWithCaps(capabilities) {
     whenOptinDefined.shouldSetSubidFromQueryparamsFirst,
     whenOptinDefined.shouldSetSubidFromStorage,
     whenOptinDefined.shouldSetSdkCashbackSubid,
+    whenOptinDefined.shouldSetSubidifConsentIsOptinFromOldStorageValue,
 
     whenOptoutDefined.shouldSetSubidButNotWriteInStorage,
     whenOptoutDefined.shouldSetSdkCashbackSubid,

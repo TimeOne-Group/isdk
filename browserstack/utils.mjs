@@ -3,7 +3,7 @@
 import { By } from 'selenium-webdriver';
 import CONSTANTS from '../src/constants.mjs';
 
-const { sdkName } = CONSTANTS;
+const { sdk_name: sdkName } = CONSTANTS;
 let testSuiteErrors = 0;
 let totalErrors = 0;
 
@@ -15,8 +15,12 @@ export function resetTestSuiteError() {
   testSuiteErrors = 0;
 }
 
+export function setCookie(driver, { cookieName, value }) {
+  return driver.executeScript(`return window.TOG_Cookies.set("${cookieName}", "${value}")`);
+}
+
 export function findCookie(driver, { cookieName }) {
-  return driver.executeScript(`return Cookies.get("${cookieName}")`);
+  return driver.executeScript(`return window.TOG_Cookies.get("${cookieName}")`);
 }
 
 export function findStorage(driver, { name }) {
@@ -71,8 +75,15 @@ export function ciLogError(driver, message) {
   );
 }
 
-export function getSdkState(driver, key) {
-  return driver.executeScript(`return window.${sdkName}${key ? `.${key}` : ''}`);
+export async function getSdkState(driver, key) {
+  const response = await driver.executeScript(`return window.${sdkName}${key ? `.${key}` : ''}`);
+
+  if (response === Object(response)) {
+    delete response.sessionId;
+    delete response.capabilities;
+  }
+
+  return response;
 }
 
 export function callSdkMethod(driver, { methodName, params }) {

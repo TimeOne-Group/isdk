@@ -1,7 +1,7 @@
 import ISDK from './Sdk.mjs';
 import CONSTANTS from './constants.mjs';
 
-const { sdkName } = CONSTANTS;
+const { sdk_name: sdkName } = CONSTANTS;
 
 export default function init(Sdk = ISDK) {
   try {
