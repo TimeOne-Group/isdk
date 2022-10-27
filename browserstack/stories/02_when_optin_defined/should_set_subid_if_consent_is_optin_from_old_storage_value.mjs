@@ -6,62 +6,51 @@ import {
   browserstackLogError,
   getSdkState,
   setOptin,
-  setOptout,
-  setUnknown,
   printTestInConsole,
+  setCookie,
+  findCookie,
 } from '../../utils.mjs';
 import CONSTANTS from '../../../src/constants.mjs';
 import TEST_CONSTANTS from './constants.mjs';
 
-const testName = 'should_set_subid_but_not_write_in_storage';
-const url = `${TEST_CONSTANTS.baseUrl}?${CONSTANTS.subid.queryname}=${TEST_CONSTANTS.subid}`;
+const testName = 'should_set_subid_if_consent_is_optin_from_old_storage_value';
+const oldSubidFormat = 'Old3R.sUb1d.F0rma7';
 const expectedSubids = expect.objectContaining({
+  [oldSubidFormat]: expect.any(Number),
   [TEST_CONSTANTS.subid]: expect.any(Number),
 });
 
-export default async function shouldNotSetSubid(driver) {
+const cookieName = `to_${CONSTANTS.subid.name}`;
+
+export default async function shouldSetSubidifConsentIsOptinFromOldStorageValue(driver) {
   printTestInConsole(TEST_CONSTANTS.groupTestName, testName);
-
-  await driver.get(url);
-
   try {
+    await driver.get(`${TEST_CONSTANTS.baseUrl}`);
+
+    await setCookie(driver, { cookieName, value: oldSubidFormat });
+    const subidFromCookie = await findCookie(driver, { cookieName });
+
+    expect(subidFromCookie).toEqual(oldSubidFormat);
+
     const initialConsent = await getSdkState(driver, 'consent');
     const initialprogid = await getSdkState(driver, 'progid');
     const initialSubids = await getSdkState(driver, 'consentSubids');
 
     expect(initialConsent).toEqual(CONSTANTS.consent.status.unknown);
     expect(initialprogid).toBeFalsy();
-    expect(initialSubids).toEqual(expectedSubids);
+    expect(initialSubids).toEqual({});
 
     await setOptin(driver);
 
     const consent = await getSdkState(driver, 'consent');
+    expect(consent).toEqual(CONSTANTS.consent.status.optin);
+
+    await driver.get(`${TEST_CONSTANTS.baseUrl}?${CONSTANTS.subid.queryname}=${TEST_CONSTANTS.subid}`);
+
     const consentSubids = await getSdkState(driver, 'consentSubids');
 
-    expect(consent).toEqual(CONSTANTS.consent.status.optin);
     expect(consentSubids).toEqual(expectedSubids);
 
-    await setUnknown(driver);
-
-    const unknownConsent = await getSdkState(driver, 'consent');
-    const subidAfterCleanCmp = await getSdkState(driver, 'consentSubids');
-
-    expect(unknownConsent).toEqual(CONSTANTS.consent.status.unknown);
-    expect(subidAfterCleanCmp).toEqual(expectedSubids);
-
-    await setOptout(driver);
-
-    const optoutConsent = await getSdkState(driver, 'consent');
-    const subidFromAfterSetOptout = await getSdkState(driver, 'consentSubids');
-
-    expect(optoutConsent).toEqual(CONSTANTS.consent.status.optout);
-    expect(subidFromAfterSetOptout).toEqual(expectedSubids);
-
-    await driver.get(url);
-
-    const subidFromReloadAfterOptout = await getSdkState(driver, 'consentSubids');
-
-    expect(subidFromReloadAfterOptout).toEqual(expectedSubids);
     await browserstackLogSuccess(
       driver,
       `${TEST_CONSTANTS.groupTestName} | ${testName} - Check subid value to be equal to ${TEST_CONSTANTS.subid}`

@@ -1,6 +1,9 @@
 export default {
-  sdkName: '__ISDK',
-  sdkScriptId: '__ISDK_ASSETS',
+  sdk_name: '__ISDK',
+  sdk_script_id: '__ISDK_ASSETS',
+  cookie_max_size: 3900,
+  current_storage_version: 'v2',
+  previous_storage_version: null, // no version sufix defined for storage on V1
   consent: {
     name: 'consent',
     ttl: 390, // 13 mois
@@ -9,20 +12,28 @@ export default {
       optin: 'optin',
       optout: 'optout',
     },
+    compress: false,
   },
   event_consent_id: {
     name: 'event_consent_id',
     ttl: 390,
+    compress: false,
   },
   subid: {
     name: 'subid',
+    payloadType: 'consent',
     queryname: 'toSubid',
     ttl: 40,
+    compress: true,
+    type: 'Object',
   },
   cashback: {
     name: 'cashback',
+    payloadType: 'cashback',
     queryname: 'toCashback',
     ttl: 30,
+    compress: true,
+    type: 'Object',
   },
   stats: {
     type: {
@@ -37,4 +48,5 @@ export default {
     stats: process.env.API_STATS_URLS?.split(',') || [],
     proofConsent: process.env.API_PROOF_CONSENT_URLS?.split(',') || [],
   },
+  errors: { subidCookieType: 'subid_cookie_type' },
 };

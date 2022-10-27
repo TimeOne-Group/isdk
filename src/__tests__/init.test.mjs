@@ -4,7 +4,7 @@ import Sdk from '../Sdk.mjs';
 
 import CONSTANTS from '../constants.mjs';
 
-const { sdkName } = CONSTANTS;
+const { sdk_name: sdkName } = CONSTANTS;
 
 describe('The init function', () => {
   test(`Should set global var window.${sdkName} when not defined`, () => {
