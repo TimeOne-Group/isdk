@@ -1,6 +1,19 @@
 # ISDK Changelog
 
 
+## [2.0.0](https://github.com/TimeOne-Group/isdk/compare/1.1.4...2.0.0) (2022-10-27)
+
+
+### Features
+
+* permet le stockage de plusieurs subids ([de4a903](https://github.com/TimeOne-Group/isdk/commit/de4a9038ed13719db3246ba20e70f0d8b264c514))
+* permet retrocompatibilité ([a9fa925](https://github.com/TimeOne-Group/isdk/commit/a9fa925096b07b7eedbde62cbf05a57d22929e56))
+
+
+### Bug Fixes
+
+* remonte url dans les stats consent et conversion ([f18d1f8](https://github.com/TimeOne-Group/isdk/commit/f18d1f83a6e9729f1c603b537ad8adc698d920c5))
+
 ### [1.1.4](https://github.com/TimeOne-Group/isdk/compare/1.1.3...1.1.4) (2022-08-02)
 
 
