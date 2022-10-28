@@ -454,30 +454,31 @@ describe('The ISDK class test', () => {
             });
           });
         });
+        // TODO: Désactivé entre la v1 et la v2. Pourra être réactivé pour les versions suivantes
 
-        subidsConfig.forEach(({ name, payloadType }) => {
-          test(`Multisubids method ${method} - Should do a conversion with an old ${name} storage format to the new one`, () => {
-            const oldSubid =
-              'eyJkIjoxNjY0NzkyNjYzLCJwaSI6IjIiLCJwIjoiNzkzMyIsInByIjoiMjM3MTg3In0.K3QnOea5TUph2WvxcpXEcqbuZ1XjceB1hq8GFar2cp12345';
-            utils.Storage.save({ id: utils.getPrefixedStorageName(name, sufixV1), value: oldSubid });
+        // subidsConfig.forEach(({ name, payloadType }) => {
+        //   test(`Multisubids method ${method} - Should do a conversion with an old ${name} storage format to the new one`, () => {
+        //     const oldSubid =
+        //       'eyJkIjoxNjY0NzkyNjYzLCJwaSI6IjIiLCJwIjoiNzkzMyIsInByIjoiMjM3MTg3In0.K3QnOea5TUph2WvxcpXEcqbuZ1XjceB1hq8GFar2cp12345';
+        //     utils.Storage.save({ id: utils.getPrefixedStorageName(name, sufixV1), value: oldSubid });
 
-            utils.setValue(CONSTANTS.consent.status.optin, CONSTANTS.consent.name);
+        //     utils.setValue(CONSTANTS.consent.status.optin, CONSTANTS.consent.name);
 
-            Sdk.getProgramDataFromQueryParams = jest.fn(() => null);
+        //     Sdk.getProgramDataFromQueryParams = jest.fn(() => null);
 
-            const instance = new Sdk();
-            instance.push([method, minimumConvertPayload]);
+        //     const instance = new Sdk();
+        //     instance.push([method, minimumConvertPayload]);
 
-            expect(instance.consent).toEqual(CONSTANTS.consent.status.optin);
-            expect(fetch).toHaveBeenCalledWith(CONSTANTS.urls.conversion[0], {
-              ...apiOptions,
-              body: JSON.stringify({
-                ...minimumConvertPayload,
-                toSubids: [{ type: payloadType, value: oldSubid }],
-              }),
-            });
-          });
-        });
+        //     expect(instance.consent).toEqual(CONSTANTS.consent.status.optin);
+        //     expect(fetch).toHaveBeenCalledWith(CONSTANTS.urls.conversion[0], {
+        //       ...apiOptions,
+        //       body: JSON.stringify({
+        //         ...minimumConvertPayload,
+        //         toSubids: [{ type: payloadType, value: oldSubid }],
+        //       }),
+        //     });
+        //   });
+        // });
       });
     });
   });

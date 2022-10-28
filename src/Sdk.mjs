@@ -55,6 +55,14 @@ export default class Sdk {
   #runRetrocompatibility() {
     const previousStorageVersion = CONSTANTS.previous_storage_version;
 
+    // TODO: Nécessaire entre la v1 et v2 car la gestion du localstorage différe. A supprimer dans les prochaine version.
+    utils.Storage.delete(utils.getPrefixedStorageName(CONSTANTS.consent.name, previousStorageVersion));
+    utils.Storage.delete(utils.getPrefixedStorageName(CONSTANTS.event_consent_id.name, previousStorageVersion));
+    utils.Storage.delete(utils.getPrefixedStorageName(CONSTANTS.subid.name, previousStorageVersion));
+    utils.Storage.delete(utils.getPrefixedStorageName(CONSTANTS.cashback.name, previousStorageVersion));
+    utils.Storage.delete('to_INDEX');
+    /// ////
+
     const consent = utils.getValue(CONSTANTS.consent.name, previousStorageVersion);
     const eventConsentId = utils.getValue(CONSTANTS.event_consent_id.name, previousStorageVersion);
     const consentSubid = utils.getValue(CONSTANTS.subid.name, previousStorageVersion);
@@ -80,7 +88,6 @@ export default class Sdk {
     utils.removeValue(CONSTANTS.event_consent_id.name, previousStorageVersion);
     utils.removeValue(CONSTANTS.subid.name, previousStorageVersion);
     utils.removeValue(CONSTANTS.cashback.name, previousStorageVersion);
-    utils.Storage.delete('to_INDEX');
   }
 
   #convertSubidFromPreviousToNextFormat(subid) {
