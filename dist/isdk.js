@@ -1,5 +1,5 @@
 
-/*! isdk 2.0.0 https://github.com/TimeOne-Group/isdk#readme @license GPL-3.0 */
+/*! isdk 2.0.1 https://github.com/TimeOne-Group/isdk#readme @license GPL-3.0 */
 (function () {
   'use strict';
 
@@ -5292,7 +5292,7 @@
       });
 
       this.env = "production";
-      this.version = "2.0.0";
+      this.version = "2.0.1";
 
       _classPrivateMethodGet(this, _runRetrocompatibility, _runRetrocompatibility2).call(this);
 
@@ -5584,7 +5584,14 @@
   }();
 
   function _runRetrocompatibility2() {
-    var previousStorageVersion = CONSTANTS.previous_storage_version;
+    var previousStorageVersion = CONSTANTS.previous_storage_version; // TODO: Nécessaire entre la v1 et v2 car la gestion du localstorage différe. A supprimer dans les prochaine version.
+
+    Storage.delete(getPrefixedStorageName(CONSTANTS.consent.name, previousStorageVersion));
+    Storage.delete(getPrefixedStorageName(CONSTANTS.event_consent_id.name, previousStorageVersion));
+    Storage.delete(getPrefixedStorageName(CONSTANTS.subid.name, previousStorageVersion));
+    Storage.delete(getPrefixedStorageName(CONSTANTS.cashback.name, previousStorageVersion));
+    Storage.delete('to_INDEX'); /// ////
+
     var consent = getValue(CONSTANTS.consent.name, previousStorageVersion);
     var eventConsentId = getValue(CONSTANTS.event_consent_id.name, previousStorageVersion);
     var consentSubid = getValue(CONSTANTS.subid.name, previousStorageVersion);
@@ -5610,7 +5617,6 @@
     removeValue(CONSTANTS.event_consent_id.name, previousStorageVersion);
     removeValue(CONSTANTS.subid.name, previousStorageVersion);
     removeValue(CONSTANTS.cashback.name, previousStorageVersion);
-    Storage.delete('to_INDEX');
   }
 
   function _convertSubidFromPreviousToNextFormat2(subid) {

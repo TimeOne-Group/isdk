@@ -1,6 +1,13 @@
 # ISDK Changelog
 
 
+### [2.0.1](https://github.com/TimeOne-Group/isdk/compare/2.0.0...2.0.1) (2022-10-28)
+
+
+### Bug Fixes
+
+* **retrocompatibility:** supprime ancien localstorage avant appliquer retrocompatibilite ([bdd5e49](https://github.com/TimeOne-Group/isdk/commit/bdd5e499ea4dce4842a8428a12b56c765edf3d81))
+
 ## [2.0.0](https://github.com/TimeOne-Group/isdk/compare/1.1.4...2.0.0) (2022-10-27)
 
 
