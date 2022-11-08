@@ -20,7 +20,8 @@ function getConsentValueForStorage(value) {
 describe('The utils function', () => {
   beforeAll(() => {
     jest.useFakeTimers('modern');
-    jest.setSystemTime(new Date(2022, 9, 1));
+    // We keep a very big date, 2200, because we do not want our cookie ttl expires for test
+    jest.setSystemTime(new Date(2200, 9, 1));
 
     currentTimestamp = utils.getCurrentTimestamp();
   });
@@ -58,7 +59,7 @@ describe('The utils function', () => {
 
   [CONSTANTS.subid.name, CONSTANTS.cashback.name].forEach((configName) => {
     test(`setValue - Should compress value when store ${configName}`, () => {
-      const value = JSON.stringify({ foo: 'bar' });
+      const value = { foo: 'bar' };
       const compressedValue = formatAndCompress(value);
 
       expect(Cookie.get(configName)).toBeFalsy();
@@ -88,6 +89,7 @@ describe('The utils function', () => {
     expect(utils.getValue(name)).toBeFalsy();
 
     Cookie.set(utils.getPrefixedStorageName(name), cookieStorageValue);
+
     utils.Storage.save(utils.getPrefixedStorageName(name), localstorageStorageValue);
 
     expect(utils.getValue(name)).toEqual(cookieValue);
@@ -116,7 +118,6 @@ describe('The utils function', () => {
     const storageValue = JSON.stringify({ createAt: currentTimestamp, value });
 
     utils.setValue(value, name);
-
     expect(Cookie.get(utils.getPrefixedStorageName(name))).toEqual(storageValue);
     expect(utils.Storage.find(utils.getPrefixedStorageName(name))).toEqual(storageValue);
     expect(utils.getValue(name)).toEqual(value);

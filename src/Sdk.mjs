@@ -201,7 +201,7 @@ export default class Sdk {
       body: {
         type,
         progid,
-        // url: utils.getCurrentUrl(), wait until API ready
+        ...(type === CONSTANTS.stats.type.visit ? { url: utils.getCurrentUrl() } : {}),
         status: consent,
         toSubids,
       },
