@@ -35,7 +35,7 @@ const conversionMethods = ['_setSale', '_setLead', '_setDbClick', '_setClick'];
 const subidsConfig = [CONSTANTS.subid, CONSTANTS.cashback];
 
 function formatAndCompress(value) {
-  const formattedValue = JSON.stringify({ createAt: 1664575200000, value });
+  const formattedValue = JSON.stringify({ createAt: 7279106400000, value });
 
   return LZString.compressToBase64(formattedValue);
 }
@@ -360,7 +360,7 @@ describe('The ISDK class test', () => {
           const subid =
             'eyJkIjoxNjY0NzkyNjYzLCJwaSI6IjIiLCJwIjoiNzkzMyIsInByIjoiMjM3MTg3In0.K3QnOea5TUph2WvxcpXEcqbuZ1XjceB1hq8GFar2cp12345';
           const subidEntry = {
-            [subid]: 1664575200000,
+            [subid]: 7279106400000,
           };
           const compressedSubid = formatAndCompress(subidEntry);
           const subidQueryparams =
@@ -396,7 +396,7 @@ describe('The ISDK class test', () => {
           const subid =
             'eyJkIjoxNjY0NzkyNjYzLCJwaSI6IjIiLCJwIjoiNzkzMyIsInByIjoiMjM3MTg3In0.K3QnOea5TUph2WvxcpXEcqbuZ1XjceB1hq8GFar2cp12345';
           const subidEntry = {
-            [subid]: 1664575200000,
+            [subid]: 7279106400000,
           };
           const compressedSubid = formatAndCompress(subidEntry);
 
@@ -495,7 +495,6 @@ describe('The ISDK class test', () => {
       body: JSON.stringify({
         type: CONSTANTS.stats.type.conversion,
         progid,
-        // url: 'localhost/',
         status: CONSTANTS.consent.status.unknown,
         toSubids: [],
       }),
