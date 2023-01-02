@@ -1,6 +1,13 @@
 # ISDK Changelog
 
 
+## [2.1.0](https://github.com/TimeOne-Group/isdk/compare/2.0.1...2.1.0) (2022-12-16)
+
+
+### Bug Fixes
+
+* active envoie url dans stats ([0f675b3](https://github.com/TimeOne-Group/isdk/commit/0f675b3ce9eba4cb1bca3a919dead13d6d098aa6))
+
 ### [2.0.1](https://github.com/TimeOne-Group/isdk/compare/2.0.0...2.0.1) (2022-10-28)
 
 

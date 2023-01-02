@@ -1,5 +1,5 @@
 
-/*! isdk 2.0.1 https://github.com/TimeOne-Group/isdk#readme @license GPL-3.0 */
+/*! isdk 2.1.0 https://github.com/TimeOne-Group/isdk#readme @license GPL-3.0 */
 (function () {
   'use strict';
 
@@ -4932,7 +4932,7 @@
   }
   });
 
-  var _httpsBackService, _httpsTrackingSer, _httpsTrackingSer2;
+  var _httpsBTime1MeV, _httpsCTime1MeV, _httpsCTime1MeV2;
 
   var CONSTANTS = {
     sdk_name: '__ISDK',
@@ -4982,9 +4982,9 @@
     default_storage_prefix: 'to',
     default_ttl: 390,
     urls: {
-      conversion: ((_httpsBackService = "https://back.service.sandbox.localhost/v1/b") === null || _httpsBackService === void 0 ? void 0 : _httpsBackService.split(',')) || [],
-      stats: ((_httpsTrackingSer = "https://tracking.service.sandbox.localhost/v1/log/consent,") === null || _httpsTrackingSer === void 0 ? void 0 : _httpsTrackingSer.split(',')) || [],
-      proofConsent: ((_httpsTrackingSer2 = "https://tracking.service.sandbox.localhost/v1/log/consent/proof") === null || _httpsTrackingSer2 === void 0 ? void 0 : _httpsTrackingSer2.split(',')) || []
+      conversion: ((_httpsBTime1MeV = "https://b.time1.me/v1/b") === null || _httpsBTime1MeV === void 0 ? void 0 : _httpsBTime1MeV.split(',')) || [],
+      stats: ((_httpsCTime1MeV = "https://c.time1.me/v2/log/consent") === null || _httpsCTime1MeV === void 0 ? void 0 : _httpsCTime1MeV.split(',')) || [],
+      proofConsent: ((_httpsCTime1MeV2 = "https://c.time1.me/v1/log/consent/proof") === null || _httpsCTime1MeV2 === void 0 ? void 0 : _httpsCTime1MeV2.split(',')) || []
     },
     errors: {
       subidCookieType: 'subid_cookie_type'
@@ -5291,8 +5291,8 @@
         value: []
       });
 
-      this.env = "sandbox";
-      this.version = "2.0.1-dev";
+      this.env = "production";
+      this.version = "2.1.0";
 
       _classPrivateMethodGet(this, _runRetrocompatibility, _runRetrocompatibility2).call(this);
 
@@ -5810,13 +5810,15 @@
 
     _classPrivateMethodGet(this, _callApi, _callApi2).call(this, {
       urlIterator: _classPrivateFieldGet(this, _statsUrlIterator),
-      body: {
+      body: _objectSpread2(_objectSpread2({
         type: type,
-        progid: progid,
-        url: getCurrentUrl(),
+        progid: progid
+      }, type === CONSTANTS.stats.type.visit ? {
+        url: getCurrentUrl()
+      } : {}), {}, {
         status: consent,
         toSubids: toSubids
-      },
+      }),
       caller: '#logStats'
     });
   }
