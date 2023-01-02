@@ -3,7 +3,7 @@ name: Build test sites in gitlab
 
 on:
   push:
-    branches: [develop]
+    branches: [main]
 
 jobs:
   gitlab-ci-trigger:

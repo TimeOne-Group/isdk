@@ -28,7 +28,7 @@ const apiOptions = {
 
 const defaultPayload = {
   progid: progids[0],
-  // url: 'localhost/'
+  url: 'localhost/',
 };
 
 const consentStorageName = utils.getPrefixedStorageName(CONSTANTS.consent.name);
@@ -52,7 +52,8 @@ function getConsentValueForStorage(value) {
 describe('The ISDK class test', () => {
   beforeAll(() => {
     jest.useFakeTimers('modern');
-    jest.setSystemTime(new Date(2022, 9, 1));
+    // We keep a very big date, 2200, because we do not want our cookie ttl expires for test
+    jest.setSystemTime(new Date(2200, 9, 1));
 
     currentTimestamp = utils.getCurrentTimestamp();
   });
