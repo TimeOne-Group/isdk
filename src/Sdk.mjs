@@ -201,7 +201,7 @@ export default class Sdk {
       body: {
         type,
         progid,
-        ...(type === CONSTANTS.stats.type.visit ? { url: utils.getCurrentUrl() } : {}),
+        url: utils.getCurrentUrl(),
         status: consent,
         toSubids,
       },
