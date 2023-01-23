@@ -1,6 +1,13 @@
 # ISDK Changelog
 
 
+### [2.1.2](https://github.com/TimeOne-Group/isdk/compare/2.1.1...2.1.2) (2023-01-23)
+
+
+### Bug Fixes
+
+* **ci:** purge tous les assets ([85b70e2](https://github.com/TimeOne-Group/isdk/commit/85b70e24b60bd22cbb4e48d410abd05967eec44d))
+
 ### [2.1.1](https://github.com/TimeOne-Group/isdk/compare/2.1.0...2.1.1) (2023-01-23)
 
 
