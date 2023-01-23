@@ -495,6 +495,7 @@ describe('The ISDK class test', () => {
       body: JSON.stringify({
         type: CONSTANTS.stats.type.conversion,
         progid,
+        url: 'localhost/',
         status: CONSTANTS.consent.status.unknown,
         toSubids: [],
       }),
