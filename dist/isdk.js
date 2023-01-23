@@ -1,5 +1,5 @@
 
-/*! isdk 2.1.0 https://github.com/TimeOne-Group/isdk#readme @license GPL-3.0 */
+/*! isdk 2.1.1 https://github.com/TimeOne-Group/isdk#readme @license GPL-3.0 */
 (function () {
   'use strict';
 
@@ -5292,7 +5292,7 @@
       });
 
       this.env = "production";
-      this.version = "2.1.0";
+      this.version = "2.1.1";
 
       _classPrivateMethodGet(this, _runRetrocompatibility, _runRetrocompatibility2).call(this);
 
@@ -5810,15 +5810,13 @@
 
     _classPrivateMethodGet(this, _callApi, _callApi2).call(this, {
       urlIterator: _classPrivateFieldGet(this, _statsUrlIterator),
-      body: _objectSpread2(_objectSpread2({
+      body: {
         type: type,
-        progid: progid
-      }, type === CONSTANTS.stats.type.visit ? {
-        url: getCurrentUrl()
-      } : {}), {}, {
+        progid: progid,
+        url: getCurrentUrl(),
         status: consent,
         toSubids: toSubids
-      }),
+      },
       caller: '#logStats'
     });
   }

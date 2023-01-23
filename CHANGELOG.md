@@ -1,6 +1,13 @@
 # ISDK Changelog
 
 
+### [2.1.1](https://github.com/TimeOne-Group/isdk/compare/2.1.0...2.1.1) (2023-01-23)
+
+
+### Bug Fixes
+
+* **log:** ajoute url dans log addConversion ([9901bdb](https://github.com/TimeOne-Group/isdk/commit/9901bdbceb6162b8e33579c0417f38a5a4a62faa))
+
 ## [2.1.0](https://github.com/TimeOne-Group/isdk/compare/2.0.1...2.1.0) (2022-12-16)
 
 
