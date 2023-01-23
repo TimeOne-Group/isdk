@@ -1,6 +1,13 @@
 # ISDK Changelog
 
 
+### [2.1.3](https://github.com/TimeOne-Group/isdk/compare/2.1.2...2.1.3) (2023-01-23)
+
+
+### Bug Fixes
+
+* **ci:** corrige var env cdn cache ([146924e](https://github.com/TimeOne-Group/isdk/commit/146924e51527f571bf8eb2ea1d8ea9abb2c90add))
+
 ### [2.1.2](https://github.com/TimeOne-Group/isdk/compare/2.1.1...2.1.2) (2023-01-23)
 
 
