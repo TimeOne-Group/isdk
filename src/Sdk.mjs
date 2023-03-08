@@ -20,9 +20,8 @@ export default class Sdk {
     this.env = process.env.NODE_ENV;
     this.version = process.env.SDK_VERSION;
 
-    this.#runRetrocompatibility();
-
     this.#setProgids();
+    this.#setCookieDomain();
     this.#configureProgramData(CONSTANTS.cashback);
 
     if (!this.consent) {
@@ -54,14 +53,6 @@ export default class Sdk {
 
   #runRetrocompatibility() {
     const previousStorageVersion = CONSTANTS.previous_storage_version;
-
-    // TODO: Nécessaire entre la v1 et v2 car la gestion du localstorage différe. A supprimer dans les prochaine version.
-    utils.Storage.delete(utils.getPrefixedStorageName(CONSTANTS.consent.name, previousStorageVersion));
-    utils.Storage.delete(utils.getPrefixedStorageName(CONSTANTS.event_consent_id.name, previousStorageVersion));
-    utils.Storage.delete(utils.getPrefixedStorageName(CONSTANTS.subid.name, previousStorageVersion));
-    utils.Storage.delete(utils.getPrefixedStorageName(CONSTANTS.cashback.name, previousStorageVersion));
-    utils.Storage.delete('to_INDEX');
-    /// ////
 
     const consent = utils.getValue(CONSTANTS.consent.name, previousStorageVersion);
     const eventConsentId = utils.getValue(CONSTANTS.event_consent_id.name, previousStorageVersion);
@@ -148,6 +139,26 @@ export default class Sdk {
       }
     } catch (error) {
       this.#setError({ error, caller: 'setProgids' });
+    }
+  }
+
+  #setCookieDomain() {
+    try {
+      const shouldUseWildCardDomain = document
+        .getElementById(CONSTANTS.sdk_script_id)
+        ?.getAttribute('data-wildcard-domain');
+
+      if (shouldUseWildCardDomain === 'true' || window.__ISDK_wildcard_domain === 'true') {
+        // First we clean all data in storage
+        CONSTANTS.cookieKeys.forEach((name) => {
+          utils.removeValue(name);
+        });
+
+        // Then we define the wildcard domain for cookie
+        utils.setCookieWildCardDomain();
+      }
+    } catch (error) {
+      this.#setError({ error, caller: 'setCookieDomain' });
     }
   }
 
