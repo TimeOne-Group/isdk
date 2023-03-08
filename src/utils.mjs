@@ -3,6 +3,8 @@ import LZString from 'lz-string';
 
 import CONSTANTS from './constants.mjs';
 
+let ISDKCookies = Cookies.withAttributes({ path: '/' });
+
 export const Storage = {
   save: ({ id, value }) => {
     localStorage.setItem(id, value);
@@ -14,12 +16,28 @@ export const Storage = {
   },
 };
 
+export function setCookieWildCardDomain() {
+  const hostname = window.location.hostname.split('.');
+
+  hostname.reverse();
+
+  const wildCarDomain = `.${hostname[1]}.${hostname[0]}`;
+
+  ISDKCookies = Cookies.withAttributes({ path: '/', domain: wildCarDomain });
+}
+
 export function getPrefixedStorageName(name, version = CONSTANTS.current_storage_version) {
   if (version) {
     return `${CONSTANTS.default_storage_prefix}_${name}_${version}`;
   }
 
   return `${CONSTANTS.default_storage_prefix}_${name}`;
+}
+
+export function removeCookie(id, version = CONSTANTS.current_storage_version) {
+  const name = CONSTANTS[id]?.name || id;
+
+  Cookies.remove(getPrefixedStorageName(name, version));
 }
 
 export function isObject(obj) {
@@ -87,7 +105,7 @@ export function setValue(value, name) {
   const valueToStore = setStorageValue ? setStorageValue(value, options) : value;
   const storageName = getPrefixedStorageName(options.name);
 
-  Cookies.set(storageName, valueToStore, {
+  ISDKCookies.set(storageName, valueToStore, {
     expires: options.ttl,
     sameSite: 'strict',
   });
@@ -99,7 +117,7 @@ export function getValue(id, version = CONSTANTS.current_storage_version) {
   const options = CONSTANTS[id] || { name: id };
   const storageName = getPrefixedStorageName(options.name, version);
 
-  const cookieValue = Cookies.get(storageName);
+  const cookieValue = ISDKCookies.get(storageName);
   const storage = Storage.find(storageName);
   const rawValue = cookieValue || storage || null;
   const getStorageValue = storedValue?.[version]?.getValue;
@@ -107,10 +125,10 @@ export function getValue(id, version = CONSTANTS.current_storage_version) {
   return getStorageValue ? getStorageValue(rawValue, options) : rawValue;
 }
 
-export function removeValue(id, version = CONSTANTS.current_storage_version) {
+export function removeValue(id, version = CONSTANTS.current_storage_version, attributes = {}) {
   const name = CONSTANTS[id]?.name || id;
 
-  Cookies.remove(getPrefixedStorageName(name, version));
+  ISDKCookies.remove(getPrefixedStorageName(name, version), attributes);
   Storage.delete(getPrefixedStorageName(name, version));
 }
 

@@ -1,9 +1,12 @@
+const cookieKeys = ['consent', 'event_consent_id', 'subid', 'cashback'];
+
 export default {
   sdk_name: '__ISDK',
   sdk_script_id: '__ISDK_ASSETS',
   cookie_max_size: 3900,
   current_storage_version: 'v2',
   previous_storage_version: null, // no version sufix defined for storage on V1
+  cookieKeys,
   consent: {
     name: 'consent',
     ttl: 390, // 13 mois
