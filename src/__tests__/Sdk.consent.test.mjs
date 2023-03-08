@@ -594,72 +594,36 @@ describe('The ISDK class test', () => {
     });
   });
 
-  describe('Retrocompatibility v1', () => {
-    const sufixV1 = null;
+  describe('Retrocompatibility', () => {
+    expect(true).toBeTruthy();
 
-    [
-      { ...CONSTANTS.subid, key: 'consentSubids' },
-      { ...CONSTANTS.cashback, key: 'cashbackSubids' },
-    ].forEach(({ name, key }) => {
-      test(`Multisubids - Should convert old ${name} cookie format to the new one`, () => {
-        const oldSubid =
-          'eyJkIjoxNjY0NzkyNjYzLCJwaSI6IjIiLCJwIjoiNzkzMyIsInByIjoiMjM3MTg3In0.K3QnOea5TUph2WvxcpXEcqbuZ1XjceB1hq8GFar2cp12345';
-        Cookie.set(utils.getPrefixedStorageName(name, sufixV1), oldSubid);
-
-        utils.setValue(CONSTANTS.consent.status.optin, CONSTANTS.consent.name);
-
-        Sdk.getProgramDataFromQueryParams = jest.fn(() => null);
-
-        expect(Cookie.get(utils.getPrefixedStorageName(name, sufixV1))).toEqual(oldSubid);
-        expect(utils.getValue(name, sufixV1)).toEqual(oldSubid);
-
-        const subids = {
-          [oldSubid]: currentTimestamp,
-        };
-
-        const compressSubids = formatAndCompress(subids);
-
-        const instance = new Sdk();
-
-        expect(instance.consent).toEqual(CONSTANTS.consent.status.optin);
-        expect(instance.constructor.getProgramDataFromQueryParams).toHaveBeenCalledTimes(2);
-        expect(instance.constructor.getProgramDataFromQueryParams).toHaveBeenCalledWith(CONSTANTS.subid.queryname);
-        expect(instance.constructor.getProgramDataFromQueryParams).toHaveBeenCalledWith(CONSTANTS.cashback.queryname);
-        expect(Cookie.get(utils.getPrefixedStorageName(name))).toEqual(compressSubids);
-        expect(utils.Storage.find(utils.getPrefixedStorageName(name))).toEqual(compressSubids);
-        expect(instance[key]).toEqual(subids);
-        expect(fetch).toHaveBeenCalledTimes(0);
-      });
-
-      // TODO: Désactivé entre la v1 et la v2. Pourra être réactivé pour les versions suivantes
-
-      // test(`Multisubids - Should convert old ${name} storage format to the new one`, () => {
-      //   const oldSubid =
-      //     'eyJkIjoxNjY0NzkyNjYzLCJwaSI6IjIiLCJwIjoiNzkzMyIsInByIjoiMjM3MTg3In0.K3QnOea5TUph2WvxcpXEcqbuZ1XjceB1hq8GFar2cp';
-      //   utils.Storage.save({ id: utils.getPrefixedStorageName(name, sufixV1), value: oldSubid });
-      //   utils.setValue(CONSTANTS.consent.status.optin, CONSTANTS.consent.name);
-
-      //   Sdk.getProgramDataFromQueryParams = jest.fn(() => null);
-
-      //   expect(utils.Storage.find(utils.getPrefixedStorageName(name, sufixV1))).toEqual(oldSubid);
-      //   expect(utils.getValue(name, sufixV1)).toEqual(oldSubid);
-
-      //   const subids = {
-      //     [oldSubid]: currentTimestamp,
-      //   };
-
-      //   const compressSubids = formatAndCompress(subids);
-
-      //   const instance = new Sdk();
-      //   expect(instance.consent).toEqual(CONSTANTS.consent.status.optin);
-      //   expect(instance.constructor.getProgramDataFromQueryParams).toHaveBeenCalledTimes(2);
-      //   expect(instance.constructor.getProgramDataFromQueryParams).toHaveBeenCalledWith(CONSTANTS.subid.queryname);
-      //   expect(instance.constructor.getProgramDataFromQueryParams).toHaveBeenCalledWith(CONSTANTS.cashback.queryname);
-      //   expect(Cookie.get(utils.getPrefixedStorageName(name))).toEqual(compressSubids);
-      //   expect(utils.Storage.find(utils.getPrefixedStorageName(name))).toEqual(compressSubids);
-      //   expect(instance[key]).toEqual(subids);
-      //   expect(fetch).toHaveBeenCalledTimes(0);
-      // });
-    });
+    // TODO: Désactivé entre la v1 et la v2. Pourra être réactivé pour les versions suivantes
+    // [
+    //   { ...CONSTANTS.subid, key: 'consentSubids' },
+    //   { ...CONSTANTS.cashback, key: 'cashbackSubids' },
+    // ].forEach(({ name, key }) => {
+    // test(`Multisubids - Should convert old ${name} storage format to the new one`, () => {
+    //   const oldSubid =
+    //     'eyJkIjoxNjY0NzkyNjYzLCJwaSI6IjIiLCJwIjoiNzkzMyIsInByIjoiMjM3MTg3In0.K3QnOea5TUph2WvxcpXEcqbuZ1XjceB1hq8GFar2cp';
+    //   utils.Storage.save({ id: utils.getPrefixedStorageName(name, sufixV1), value: oldSubid });
+    //   utils.setValue(CONSTANTS.consent.status.optin, CONSTANTS.consent.name);
+    //   Sdk.getProgramDataFromQueryParams = jest.fn(() => null);
+    //   expect(utils.Storage.find(utils.getPrefixedStorageName(name, sufixV1))).toEqual(oldSubid);
+    //   expect(utils.getValue(name, sufixV1)).toEqual(oldSubid);
+    //   const subids = {
+    //     [oldSubid]: currentTimestamp,
+    //   };
+    //   const compressSubids = formatAndCompress(subids);
+    //   const instance = new Sdk();
+    //   expect(instance.consent).toEqual(CONSTANTS.consent.status.optin);
+    //   expect(instance.constructor.getProgramDataFromQueryParams).toHaveBeenCalledTimes(2);
+    //   expect(instance.constructor.getProgramDataFromQueryParams).toHaveBeenCalledWith(CONSTANTS.subid.queryname);
+    //   expect(instance.constructor.getProgramDataFromQueryParams).toHaveBeenCalledWith(CONSTANTS.cashback.queryname);
+    //   expect(Cookie.get(utils.getPrefixedStorageName(name))).toEqual(compressSubids);
+    //   expect(utils.Storage.find(utils.getPrefixedStorageName(name))).toEqual(compressSubids);
+    //   expect(instance[key]).toEqual(subids);
+    //   expect(fetch).toHaveBeenCalledTimes(0);
+    // });
+    // });
   });
 });

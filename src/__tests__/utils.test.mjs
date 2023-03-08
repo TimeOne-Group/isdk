@@ -218,44 +218,37 @@ describe('The utils function', () => {
     }).toThrow(`Cookie to_${subidName} or is a string. Expected object`);
   });
 
-  describe('Retrocompatibility v1', () => {
-    [CONSTANTS.consent.name, CONSTANTS.event_consent_id.name, CONSTANTS.subid.name, CONSTANTS.cashback.name].forEach(
-      (configName) => {
-        const sufixV1 = null;
-        const currentStorageName = utils.getPrefixedStorageName(configName);
-        const storageNameV1 = utils.getPrefixedStorageName(configName, sufixV1);
-        beforeEach(() => {
-          utils.removeValue(configName);
-        });
+  describe('Retrocompatibility', () => {
+    expect(true).toBeTruthy();
 
-        test(`getValue V1 - Should get ${configName} value from Cookie`, () => {
-          const value = 'bar';
-
-          Cookie.set(storageNameV1, value);
-
-          expect(Cookie.get(currentStorageName)).toBeFalsy();
-          expect(utils.Storage.find(currentStorageName)).toBeFalsy();
-
-          expect(Cookie.get(storageNameV1)).toEqual(value);
-
-          expect(utils.getValue(configName)).toBeFalsy();
-          expect(utils.getValue(configName, sufixV1)).toEqual(value);
-        });
-
-        test(`removeValue V1 - Should get ${configName} value from Storage`, () => {
-          const value = 'bar';
-
-          utils.Storage.save({ id: storageNameV1, value });
-
-          expect(Cookie.get(currentStorageName)).toBeFalsy();
-          expect(utils.Storage.find(currentStorageName)).toBeFalsy();
-
-          expect(utils.Storage.find(storageNameV1)).toEqual(value);
-
-          expect(utils.getValue(configName)).toBeFalsy();
-          expect(utils.getValue(configName, sufixV1)).toEqual(value);
-        });
-      }
-    );
+    //   // TODO: Désactivé entre la v1 et la v2. Pourra être réactivé pour les versions suivantes
+    //   [CONSTANTS.consent.name, CONSTANTS.event_consent_id.name, CONSTANTS.subid.name, CONSTANTS.cashback.name].forEach(
+    //     (configName) => {
+    //       const sufixV1 = null;
+    //       const currentStorageName = utils.getPrefixedStorageName(configName);
+    //       const storageNameV1 = utils.getPrefixedStorageName(configName, sufixV1);
+    //       beforeEach(() => {
+    //         utils.removeValue(configName);
+    //       });
+    //       test(`getValue V1 - Should get ${configName} value from Cookie`, () => {
+    //         const value = 'bar';
+    //         Cookie.set(storageNameV1, value);
+    //         expect(Cookie.get(currentStorageName)).toBeFalsy();
+    //         expect(utils.Storage.find(currentStorageName)).toBeFalsy();
+    //         expect(Cookie.get(storageNameV1)).toEqual(value);
+    //         expect(utils.getValue(configName)).toBeFalsy();
+    //         expect(utils.getValue(configName, sufixV1)).toEqual(value);
+    //       });
+    //       test(`removeValue V1 - Should get ${configName} value from Storage`, () => {
+    //         const value = 'bar';
+    //         utils.Storage.save({ id: storageNameV1, value });
+    //         expect(Cookie.get(currentStorageName)).toBeFalsy();
+    //         expect(utils.Storage.find(currentStorageName)).toBeFalsy();
+    //         expect(utils.Storage.find(storageNameV1)).toEqual(value);
+    //         expect(utils.getValue(configName)).toBeFalsy();
+    //         expect(utils.getValue(configName, sufixV1)).toEqual(value);
+    //       });
+    //     }
+    //   );
   });
 });

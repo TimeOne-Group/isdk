@@ -34,12 +34,6 @@ export function getPrefixedStorageName(name, version = CONSTANTS.current_storage
   return `${CONSTANTS.default_storage_prefix}_${name}`;
 }
 
-export function removeCookie(id, version = CONSTANTS.current_storage_version) {
-  const name = CONSTANTS[id]?.name || id;
-
-  Cookies.remove(getPrefixedStorageName(name, version));
-}
-
 export function isObject(obj) {
   return obj === Object(obj);
 }
