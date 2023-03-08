@@ -1,5 +1,5 @@
 
-/*! isdk 2.1.3 https://github.com/TimeOne-Group/isdk#readme @license GPL-3.0 */
+/*! isdk 2.2.0 https://github.com/TimeOne-Group/isdk#readme @license GPL-3.0 */
 (function () {
   'use strict';
 
@@ -4974,6 +4974,7 @@
 
   var _httpsBTime1MeV, _httpsCTime1MeV, _httpsCTime1MeV2;
 
+  var cookieKeys = ['consent', 'event_consent_id', 'subid', 'cashback'];
   var CONSTANTS = {
     sdk_name: '__ISDK',
     sdk_script_id: '__ISDK_ASSETS',
@@ -4981,6 +4982,7 @@
     current_storage_version: 'v2',
     previous_storage_version: null,
     // no version sufix defined for storage on V1
+    cookieKeys: cookieKeys,
     consent: {
       name: 'consent',
       ttl: 390,
@@ -5032,6 +5034,9 @@
   };
 
   var _marked = /*#__PURE__*/regeneratorRuntime.mark(urlsIterator);
+  var ISDKCookies = api.withAttributes({
+    path: '/'
+  });
   var Storage = {
     save: function save(_ref) {
       var id = _ref.id,
@@ -5045,6 +5050,15 @@
       localStorage.removeItem(id);
     }
   };
+  function setCookieWildCardDomain() {
+    var hostname = window.location.hostname.split('.');
+    hostname.reverse();
+    var wildCarDomain = ".".concat(hostname[1], ".").concat(hostname[0]);
+    ISDKCookies = api.withAttributes({
+      path: '/',
+      domain: wildCarDomain
+    });
+  }
   function getPrefixedStorageName(name) {
     var version = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : CONSTANTS.current_storage_version;
 
@@ -5112,7 +5126,7 @@
     var setStorageValue = storedValue === null || storedValue === void 0 ? void 0 : (_storedValue$CONSTANT = storedValue[CONSTANTS.current_storage_version]) === null || _storedValue$CONSTANT === void 0 ? void 0 : _storedValue$CONSTANT.setValue;
     var valueToStore = setStorageValue ? setStorageValue(value, options) : value;
     var storageName = getPrefixedStorageName(options.name);
-    api.set(storageName, valueToStore, {
+    ISDKCookies.set(storageName, valueToStore, {
       expires: options.ttl,
       sameSite: 'strict'
     });
@@ -5129,7 +5143,7 @@
       name: id
     };
     var storageName = getPrefixedStorageName(options.name, version);
-    var cookieValue = api.get(storageName);
+    var cookieValue = ISDKCookies.get(storageName);
     var storage = Storage.find(storageName);
     var rawValue = cookieValue || storage || null;
     var getStorageValue = storedValue === null || storedValue === void 0 ? void 0 : (_storedValue$version = storedValue[version]) === null || _storedValue$version === void 0 ? void 0 : _storedValue$version.getValue;
@@ -5139,8 +5153,9 @@
     var _CONSTANTS$id;
 
     var version = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : CONSTANTS.current_storage_version;
+    var attributes = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
     var name = ((_CONSTANTS$id = CONSTANTS[id]) === null || _CONSTANTS$id === void 0 ? void 0 : _CONSTANTS$id.name) || id;
-    api.remove(getPrefixedStorageName(name, version));
+    ISDKCookies.remove(getPrefixedStorageName(name, version), attributes);
     Storage.delete(getPrefixedStorageName(name, version));
   }
   function urlsIterator() {
@@ -5416,6 +5431,8 @@
 
   var _setProgids = /*#__PURE__*/new WeakSet();
 
+  var _setCookieDomain = /*#__PURE__*/new WeakSet();
+
   var _configureProgramData = /*#__PURE__*/new WeakSet();
 
   var _callApi = /*#__PURE__*/new WeakSet();
@@ -5464,6 +5481,8 @@
 
       _classPrivateMethodInitSpec(this, _configureProgramData);
 
+      _classPrivateMethodInitSpec(this, _setCookieDomain);
+
       _classPrivateMethodInitSpec(this, _setProgids);
 
       _classPrivateMethodInitSpec(this, _getActiveSubidsValues);
@@ -5502,11 +5521,11 @@
       });
 
       this.env = "production";
-      this.version = "2.1.3";
-
-      _classPrivateMethodGet(this, _runRetrocompatibility, _runRetrocompatibility2).call(this);
+      this.version = "2.2.0";
 
       _classPrivateMethodGet(this, _setProgids, _setProgids2).call(this);
+
+      _classPrivateMethodGet(this, _setCookieDomain, _setCookieDomain2).call(this);
 
       _classPrivateMethodGet(this, _configureProgramData, _configureProgramData2).call(this, CONSTANTS.cashback);
 
@@ -5793,46 +5812,6 @@
     return Sdk;
   }();
 
-  function _runRetrocompatibility2() {
-    var previousStorageVersion = CONSTANTS.previous_storage_version; // TODO: Nécessaire entre la v1 et v2 car la gestion du localstorage différe. A supprimer dans les prochaine version.
-
-    Storage.delete(getPrefixedStorageName(CONSTANTS.consent.name, previousStorageVersion));
-    Storage.delete(getPrefixedStorageName(CONSTANTS.event_consent_id.name, previousStorageVersion));
-    Storage.delete(getPrefixedStorageName(CONSTANTS.subid.name, previousStorageVersion));
-    Storage.delete(getPrefixedStorageName(CONSTANTS.cashback.name, previousStorageVersion));
-    Storage.delete('to_INDEX'); /// ////
-
-    var consent = getValue(CONSTANTS.consent.name, previousStorageVersion);
-    var eventConsentId = getValue(CONSTANTS.event_consent_id.name, previousStorageVersion);
-    var consentSubid = getValue(CONSTANTS.subid.name, previousStorageVersion);
-    var cashbackSubid = getValue(CONSTANTS.cashback.name, previousStorageVersion);
-
-    if (consent) {
-      setValue(consent, CONSTANTS.consent.name);
-    }
-
-    if (eventConsentId) {
-      setValue(eventConsentId, CONSTANTS.event_consent_id.name);
-    }
-
-    if (consentSubid) {
-      setValue(_classPrivateMethodGet(this, _convertSubidFromPreviousToNextFormat, _convertSubidFromPreviousToNextFormat2).call(this, consentSubid), CONSTANTS.subid.name);
-    }
-
-    if (cashbackSubid) {
-      setValue(_classPrivateMethodGet(this, _convertSubidFromPreviousToNextFormat, _convertSubidFromPreviousToNextFormat2).call(this, cashbackSubid), CONSTANTS.cashback.name);
-    }
-
-    removeValue(CONSTANTS.consent.name, previousStorageVersion);
-    removeValue(CONSTANTS.event_consent_id.name, previousStorageVersion);
-    removeValue(CONSTANTS.subid.name, previousStorageVersion);
-    removeValue(CONSTANTS.cashback.name, previousStorageVersion);
-  }
-
-  function _convertSubidFromPreviousToNextFormat2(subid) {
-    return _classPrivateMethodGet(this, _formatSubidEntry, _formatSubidEntry2).call(this, subid);
-  }
-
   function _formatSubidEntry2(subid) {
     if (!subid) {
       return {};
@@ -5905,6 +5884,28 @@
       _classPrivateMethodGet(this, _setError, _setError2).call(this, {
         error: error,
         caller: 'setProgids'
+      });
+    }
+  }
+
+  function _setCookieDomain2() {
+    try {
+      var _document$getElementB2;
+
+      var shouldUseWildCardDomain = (_document$getElementB2 = document.getElementById(CONSTANTS.sdk_script_id)) === null || _document$getElementB2 === void 0 ? void 0 : _document$getElementB2.getAttribute('data-wildcard-domain');
+
+      if (shouldUseWildCardDomain === 'true' || window.__ISDK_wildcard_domain === 'true') {
+        // First we clean all data in storage
+        CONSTANTS.cookieKeys.forEach(function (name) {
+          removeValue(name);
+        }); // Then we define the wildcard domain for cookie
+
+        setCookieWildCardDomain();
+      }
+    } catch (error) {
+      _classPrivateMethodGet(this, _setError, _setError2).call(this, {
+        error: error,
+        caller: 'setCookieDomain'
       });
     }
   }
