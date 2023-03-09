@@ -2,6 +2,7 @@
 /* eslint-disable import/no-extraneous-dependencies */
 import webdriver from 'selenium-webdriver';
 import browserstack from 'browserstack-local';
+
 import getCapabilities from './capabilities.mjs';
 
 import { getErrorCount, resetTestSuiteError, ciLogError } from './utils.mjs';

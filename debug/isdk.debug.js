@@ -5431,6 +5431,8 @@
 
   var _setProgids = /*#__PURE__*/new WeakSet();
 
+  var _shouldUseWildcardDomain = /*#__PURE__*/new WeakSet();
+
   var _setCookieDomain = /*#__PURE__*/new WeakSet();
 
   var _configureProgramData = /*#__PURE__*/new WeakSet();
@@ -5482,6 +5484,8 @@
       _classPrivateMethodInitSpec(this, _configureProgramData);
 
       _classPrivateMethodInitSpec(this, _setCookieDomain);
+
+      _classPrivateMethodInitSpec(this, _shouldUseWildcardDomain);
 
       _classPrivateMethodInitSpec(this, _setProgids);
 
@@ -5798,7 +5802,8 @@
           event_consent_id: this.eventConsentId,
           cashbackSubids: this.cashbackSubids,
           errors: _classPrivateMethodGet(this, _getErrors, _getErrors2).call(this),
-          conversionUrls: CONSTANTS.urls.conversion
+          conversionUrls: CONSTANTS.urls.conversion,
+          useWildcardCookieDomain: _classPrivateMethodGet(this, _shouldUseWildcardDomain, _shouldUseWildcardDomain2).call(this)
         };
       }
     }], [{
@@ -5888,13 +5893,16 @@
     }
   }
 
+  function _shouldUseWildcardDomain2() {
+    var _document$getElementB2;
+
+    var wildCardDomainFromAttribut = (_document$getElementB2 = document.getElementById(CONSTANTS.sdk_script_id)) === null || _document$getElementB2 === void 0 ? void 0 : _document$getElementB2.getAttribute('data-wildcard-domain');
+    return wildCardDomainFromAttribut === 'true' || window.__ISDK_wildcard_domain === 'true';
+  }
+
   function _setCookieDomain2() {
     try {
-      var _document$getElementB2;
-
-      var shouldUseWildCardDomain = (_document$getElementB2 = document.getElementById(CONSTANTS.sdk_script_id)) === null || _document$getElementB2 === void 0 ? void 0 : _document$getElementB2.getAttribute('data-wildcard-domain');
-
-      if (shouldUseWildCardDomain === 'true' || window.__ISDK_wildcard_domain === 'true') {
+      if (_classPrivateMethodGet(this, _shouldUseWildcardDomain, _shouldUseWildcardDomain2).call(this)) {
         // First we clean all data in storage
         CONSTANTS.cookieKeys.forEach(function (name) {
           removeValue(name);

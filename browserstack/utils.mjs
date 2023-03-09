@@ -43,7 +43,7 @@ export function clickButtonByText(driver, buttonText) {
   return driver.findElement(By.xpath(`//button[normalize-space()="${buttonText}"]`)).click();
 }
 
-export async function clickButtonById(driver, id) {
+export function clickButtonById(driver, id) {
   return driver.findElement(By.id(id)).click();
 }
 
