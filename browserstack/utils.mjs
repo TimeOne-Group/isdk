@@ -11,6 +11,14 @@ export function getErrorCount() {
   return { testSuiteErrors, totalErrors };
 }
 
+export function sleep(delay) {
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      resolve();
+    }, delay);
+  });
+}
+
 export function resetTestSuiteError() {
   testSuiteErrors = 0;
 }
@@ -35,7 +43,7 @@ export function clickButtonByText(driver, buttonText) {
   return driver.findElement(By.xpath(`//button[normalize-space()="${buttonText}"]`)).click();
 }
 
-export function clickButtonById(driver, id) {
+export async function clickButtonById(driver, id) {
   return driver.findElement(By.id(id)).click();
 }
 
