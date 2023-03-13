@@ -11,6 +11,14 @@ export function getErrorCount() {
   return { testSuiteErrors, totalErrors };
 }
 
+export function sleep(delay) {
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      resolve();
+    }, delay);
+  });
+}
+
 export function resetTestSuiteError() {
   testSuiteErrors = 0;
 }

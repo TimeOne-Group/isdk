@@ -1,13 +1,13 @@
 {
   "name": "isdk",
-  "version": "2.2.0",
+  "version": "2.2.1",
   "description": "",
   "main": "index.js",
   "scripts": {
     "start": "rollup -c -w",
     "build": "npm run clean && rollup -c",
     "build:prod": "npm run clean && NODE_ENV=production rollup -c",
-    "clean": "rimraf dist debug",
+    "clean": "rimraf dist debug browserstack/site",
     "lint": "eslint ./src/{**,__tests__/**}",
     "test:browserstack": "node browserstack/index.mjs",
     "test:unit": "npm run test:unit:path src",

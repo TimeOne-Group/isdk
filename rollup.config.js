@@ -14,18 +14,16 @@ import pkg from './package.json';
 import CONSTANTS from './src/constants.mjs';
 
 const NODE_ENV = process.env.NODE_ENV || 'production';
-dotenv.config({ path: `.env.${NODE_ENV}` });
+const globalEnv = dotenv.config({ path: `.env.${NODE_ENV}` }).parsed;
 
-function getSdkVersion() {
-  return `${pkg.version}${process.env.SDK_VERSION_SUFFIX || ''}`;
+function getSdkVersion(env) {
+  return `${pkg.version}${env.SDK_VERSION_SUFFIX || ''}`;
 }
 
 console.log({
+  ...globalEnv,
   NODE_ENV,
-  API_CONVERSION_URLS: process.env.API_CONVERSION_URLS,
-  API_STATS_URLS: process.env.API_STATS_URLS,
-  API_PROOF_CONSENT_URLS: process.env.API_PROOF_CONSENT_URLS,
-  SDK_VERSION: getSdkVersion(),
+  SDK_VERSION: getSdkVersion(globalEnv),
 });
 
 const banner = {
@@ -34,36 +32,46 @@ const banner = {
   },
 };
 
-const defaultPlugins = [
-  nodeResolve(),
-  commonjs(),
-  replace({
-    preventAssignment: true,
-    values: {
-      'process.env.NODE_ENV': `"${NODE_ENV}"`,
-      'process.env.API_CONVERSION_URLS': `"${process.env.API_CONVERSION_URLS}"`,
-      'process.env.API_STATS_URLS': `"${process.env.API_STATS_URLS}"`,
-      'process.env.API_PROOF_CONSENT_URLS': `"${process.env.API_PROOF_CONSENT_URLS}"`,
-      'process.env.SDK_VERSION': `"${getSdkVersion()}"`,
-    },
-  }),
-  postcss({
-    plugins: [],
-  }),
-  babel({
-    babelHelpers: 'bundled',
-    exclude: babelLoaderExcludeNodeModulesExcept([
-      '@timeone-group/storage-js',
-      'jssha',
-      'js-cookie',
-      'klaro',
-      'core-js',
-      'uuid',
-    ]),
-  }),
-  banner,
-  bundleSize(),
-];
+const getDefaultPlugins = ({ env = NODE_ENV } = {}) => {
+  let buildEnv = globalEnv;
+
+  if (env) {
+    buildEnv = dotenv.config({ path: `.env.${env}` })?.parsed || globalEnv;
+  }
+
+  console.log({ env: `.env.${env}`, buildEnv });
+
+  return [
+    nodeResolve(),
+    commonjs(),
+    replace({
+      preventAssignment: true,
+      values: {
+        'process.env.NODE_ENV': `"${buildEnv.NODE_ENV}"`,
+        'process.env.API_CONVERSION_URLS': `"${buildEnv.API_CONVERSION_URLS}"`,
+        'process.env.API_STATS_URLS': `"${buildEnv.API_STATS_URLS}"`,
+        'process.env.API_PROOF_CONSENT_URLS': `"${buildEnv.API_PROOF_CONSENT_URLS}"`,
+        'process.env.SDK_VERSION': `"${getSdkVersion(buildEnv)}"`,
+      },
+    }),
+    postcss({
+      plugins: [],
+    }),
+    babel({
+      babelHelpers: 'bundled',
+      exclude: babelLoaderExcludeNodeModulesExcept([
+        '@timeone-group/storage-js',
+        'jssha',
+        'js-cookie',
+        'klaro',
+        'core-js',
+        'uuid',
+      ]),
+    }),
+    banner,
+    bundleSize(),
+  ];
+};
 
 const dist = [
   {
@@ -79,7 +87,7 @@ const dist = [
         plugins: [terser()],
       },
     ],
-    plugins: defaultPlugins,
+    plugins: getDefaultPlugins(),
   },
   {
     input: 'browserstack_src/js/index.debug.mjs',
@@ -94,27 +102,40 @@ const dist = [
         plugins: [terser()],
       },
     ],
-    plugins: defaultPlugins,
+    plugins: getDefaultPlugins(),
   },
 ];
 
+const browserstackSite = {
+  root: 'browserstack/site',
+  rootFile: 'index.html',
+  sdk: 'browserstack_src/js/index.browserstack.mjs',
+  init: 'browserstack_src/js/init.browserstack.mjs',
+  minify: true,
+  templates: ['browserstack.html'],
+  templateVar: {
+    __NAME__: 'browserstack',
+    __COOKIE_WILDCARD__: 'false',
+  },
+  env: 'test',
+};
 const sites = [
+  browserstackSite,
   {
-    root: 'browserstack/site',
-    sdk: 'browserstack_src/js/index.browserstack.mjs',
-    init: 'browserstack_src/js/init.browserstack.mjs',
-    minify: true,
-    templates: ['browserstack.html'],
+    ...browserstackSite,
+    rootFile: 'index-cookie-wildcard.html',
     templateVar: {
-      __NAME__: 'browserstack',
+      ...browserstackSite.templateVar,
+      __COOKIE_WILDCARD__: 'true',
     },
   },
-].flatMap(({ sdk, init, root, minify, filesToCopy, templates, templateVar }) => {
+].flatMap(({ sdk, init, env, root, rootFile, minify, filesToCopy, templates, templateVar }) => {
+  const defaultPlugins = getDefaultPlugins({ env });
   const plugins = minify ? [...defaultPlugins, terser()] : defaultPlugins;
   const templatePlugin = templates.map((template) =>
     htmlTemplate({
       template: `browserstack_src/html/${template}`,
-      target: `${root}/index.html`,
+      target: `${root}/${rootFile}`,
       attrs: [`id="${CONSTANTS.sdk_script_id}"`, 'data-progids="[109]"', 'async'],
       replaceVars: {
         __SDK_SRC__: './sdk.js',
