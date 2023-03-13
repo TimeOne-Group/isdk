@@ -7,7 +7,13 @@ import getCapabilities from './capabilities.mjs';
 
 import { getErrorCount, resetTestSuiteError, ciLogError } from './utils.mjs';
 import cleanup from './cleanup.mjs';
-import { whenNoConsentDefined, whenOptinDefined, whenOptoutDefined, whenCmpCookieExpire } from './stories/index.mjs';
+import {
+  whenNoConsentDefined,
+  whenOptinDefined,
+  whenOptoutDefined,
+  whenCmpCookieExpire,
+  whenUsingDomainAndSubdomain,
+} from './stories/index.mjs';
 
 const bsLocal = new browserstack.Local();
 const bsLocalOptions = { key: process.env.BROWSERSTACK_ACCESS_KEY };
@@ -67,12 +73,15 @@ async function runTestWithCaps(capabilities) {
     whenOptinDefined.shouldSetSubidFromQueryparamsFirst,
     whenOptinDefined.shouldSetSubidFromStorage,
     whenOptinDefined.shouldSetSdkCashbackSubid,
-    whenOptinDefined.shouldSetSubidifConsentIsOptinFromOldStorageValue,
 
     whenOptoutDefined.shouldSetSubidButNotWriteInStorage,
     whenOptoutDefined.shouldSetSdkCashbackSubid,
 
     whenCmpCookieExpire.shouldSetSdkToUnknownState,
+
+    whenUsingDomainAndSubdomain.shouldNotShareCookieBetweenDomainAndSubdomainWhenNotDefine,
+    whenUsingDomainAndSubdomain.shouldCleanOldCookieWhenDefine,
+    whenUsingDomainAndSubdomain.shouldShareCookieBetweenDomainAndSubdomainWhenDefine,
   ]);
 
   const { testSuiteErrors } = getErrorCount();

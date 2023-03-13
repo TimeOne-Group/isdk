@@ -119,10 +119,10 @@ export function getValue(id, version = CONSTANTS.current_storage_version) {
   return getStorageValue ? getStorageValue(rawValue, options) : rawValue;
 }
 
-export function removeValue(id, version = CONSTANTS.current_storage_version, attributes = {}) {
+export function removeValue(id, version = CONSTANTS.current_storage_version) {
   const name = CONSTANTS[id]?.name || id;
 
-  ISDKCookies.remove(getPrefixedStorageName(name, version), attributes);
+  ISDKCookies.remove(getPrefixedStorageName(name, version));
   Storage.delete(getPrefixedStorageName(name, version));
 }
 

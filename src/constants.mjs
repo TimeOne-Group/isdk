@@ -1,4 +1,9 @@
-const cookieKeys = ['consent', 'event_consent_id', 'subid', 'cashback'];
+const cookieKeys = {
+  consent: 'consent',
+  event_consent_id: 'event_consent_id',
+  subid: 'subid',
+  cashback: 'cashback',
+};
 
 export default {
   sdk_name: '__ISDK',
@@ -8,7 +13,7 @@ export default {
   previous_storage_version: null, // no version sufix defined for storage on V1
   cookieKeys,
   consent: {
-    name: 'consent',
+    name: cookieKeys.consent,
     ttl: 390, // 13 mois
     status: {
       unknown: 'unknown',
@@ -18,12 +23,12 @@ export default {
     compress: false,
   },
   event_consent_id: {
-    name: 'event_consent_id',
+    name: cookieKeys.event_consent_id,
     ttl: 390,
     compress: false,
   },
   subid: {
-    name: 'subid',
+    name: cookieKeys.subid,
     payloadType: 'consent',
     queryname: 'toSubid',
     ttl: 40,
@@ -31,7 +36,7 @@ export default {
     type: 'Object',
   },
   cashback: {
-    name: 'cashback',
+    name: cookieKeys.cashback,
     payloadType: 'cashback',
     queryname: 'toCashback',
     ttl: 30,

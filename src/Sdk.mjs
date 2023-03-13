@@ -142,15 +142,19 @@ export default class Sdk {
     }
   }
 
+  #shouldUseWildcardDomain() {
+    const wildCardDomainFromAttribut = document
+      .getElementById(CONSTANTS.sdk_script_id)
+      ?.getAttribute('data-wildcard-domain');
+
+    return wildCardDomainFromAttribut === 'true' || window.__ISDK_wildcard_domain === 'true';
+  }
+
   #setCookieDomain() {
     try {
-      const shouldUseWildCardDomain = document
-        .getElementById(CONSTANTS.sdk_script_id)
-        ?.getAttribute('data-wildcard-domain');
-
-      if (shouldUseWildCardDomain === 'true' || window.__ISDK_wildcard_domain === 'true') {
+      if (this.#shouldUseWildcardDomain()) {
         // First we clean all data in storage
-        CONSTANTS.cookieKeys.forEach((name) => {
+        Object.values(CONSTANTS.cookieKeys).forEach((name) => {
           utils.removeValue(name);
         });
 
@@ -405,6 +409,7 @@ export default class Sdk {
       cashbackSubids: this.cashbackSubids,
       errors: this.#getErrors(),
       conversionUrls: CONSTANTS.urls.conversion,
+      useWildcardCookieDomain: this.#shouldUseWildcardDomain(),
     };
   }
 

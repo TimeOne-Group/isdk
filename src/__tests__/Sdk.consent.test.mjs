@@ -31,6 +31,11 @@ const defaultPayload = {
   url: 'localhost/',
 };
 
+const defaultTrace = {
+  env: 'test',
+  useWildcardCookieDomain: false,
+};
+
 const consentStorageName = utils.getPrefixedStorageName(CONSTANTS.consent.name);
 const consentSubidStorageName = utils.getPrefixedStorageName(CONSTANTS.subid.name);
 
@@ -59,10 +64,19 @@ describe('The ISDK class test', () => {
   });
 
   beforeEach(() => {
+    // eslint-disable-next-line no-underscore-dangle
+    global.__ISDK_wildcard_domain = undefined;
     Sdk.getProgramDataFromQueryParams = jest.fn();
     fetch.resetMocks();
     document.getElementById = jest.fn(() => ({
-      getAttribute: () => JSON.stringify(progids),
+      getAttribute: (name) => {
+        switch (name) {
+          case 'data-progids':
+            return JSON.stringify(progids);
+          default:
+            return undefined;
+        }
+      },
     }));
     utils.removeValue(CONSTANTS.subid.name);
     utils.removeValue(CONSTANTS.cashback.name);
@@ -551,7 +565,7 @@ describe('The ISDK class test', () => {
 
       expect(instance.consent).toEqual(CONSTANTS.consent.status.unknown);
       expect(instance.getTrace()).toEqual({
-        env: 'test',
+        ...defaultTrace,
         progids,
         consent: CONSTANTS.consent.status.unknown,
         consentSubids,
@@ -569,7 +583,7 @@ describe('The ISDK class test', () => {
       expect(instance.consent).toEqual(CONSTANTS.consent.status.optin);
       expect(instance.consentSubids).toEqual(consentSubids);
       expect(instance.getTrace()).toEqual({
-        env: 'test',
+        ...defaultTrace,
         progids,
         consent: CONSTANTS.consent.status.optin,
         consentSubids,
@@ -583,7 +597,7 @@ describe('The ISDK class test', () => {
 
       expect(instance.consent).toEqual(CONSTANTS.consent.status.optout);
       expect(instance.getTrace()).toEqual({
-        env: 'test',
+        ...defaultTrace,
         progids,
         consent: CONSTANTS.consent.status.optout,
         consentSubids,
