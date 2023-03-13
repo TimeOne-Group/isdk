@@ -1,6 +1,13 @@
 # ISDK Changelog
 
 
+### [2.2.1](https://github.com/TimeOne-Group/isdk/compare/2.2.0...2.2.1) (2023-03-13)
+
+
+### Bug Fixes
+
+* ajoute tests pour le support cookie wildcard ([d69416d](https://github.com/TimeOne-Group/isdk/commit/d69416d934c7efe747fe256ac22221b8c917666c))
+
 ## [2.2.0](https://github.com/TimeOne-Group/isdk/compare/2.1.3...2.2.0) (2023-03-08)
 
 

@@ -1,5 +1,5 @@
 
-/*! isdk 2.2.0 https://github.com/TimeOne-Group/isdk#readme @license GPL-3.0 */
+/*! isdk 2.2.1 https://github.com/TimeOne-Group/isdk#readme @license GPL-3.0 */
 (function () {
   'use strict';
 
@@ -4934,7 +4934,12 @@
 
   var _httpsBTime1MeV, _httpsCTime1MeV, _httpsCTime1MeV2;
 
-  var cookieKeys = ['consent', 'event_consent_id', 'subid', 'cashback'];
+  var cookieKeys = {
+    consent: 'consent',
+    event_consent_id: 'event_consent_id',
+    subid: 'subid',
+    cashback: 'cashback'
+  };
   var CONSTANTS = {
     sdk_name: '__ISDK',
     sdk_script_id: '__ISDK_ASSETS',
@@ -4944,7 +4949,7 @@
     // no version sufix defined for storage on V1
     cookieKeys: cookieKeys,
     consent: {
-      name: 'consent',
+      name: cookieKeys.consent,
       ttl: 390,
       // 13 mois
       status: {
@@ -4955,12 +4960,12 @@
       compress: false
     },
     event_consent_id: {
-      name: 'event_consent_id',
+      name: cookieKeys.event_consent_id,
       ttl: 390,
       compress: false
     },
     subid: {
-      name: 'subid',
+      name: cookieKeys.subid,
       payloadType: 'consent',
       queryname: 'toSubid',
       ttl: 40,
@@ -4968,7 +4973,7 @@
       type: 'Object'
     },
     cashback: {
-      name: 'cashback',
+      name: cookieKeys.cashback,
       payloadType: 'cashback',
       queryname: 'toCashback',
       ttl: 30,
@@ -5113,9 +5118,8 @@
     var _CONSTANTS$id;
 
     var version = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : CONSTANTS.current_storage_version;
-    var attributes = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
     var name = ((_CONSTANTS$id = CONSTANTS[id]) === null || _CONSTANTS$id === void 0 ? void 0 : _CONSTANTS$id.name) || id;
-    ISDKCookies.remove(getPrefixedStorageName(name, version), attributes);
+    ISDKCookies.remove(getPrefixedStorageName(name, version));
     Storage.delete(getPrefixedStorageName(name, version));
   }
   function urlsIterator() {
@@ -5315,7 +5319,7 @@
       });
 
       this.env = "production";
-      this.version = "2.2.0";
+      this.version = "2.2.1";
 
       _classPrivateMethodGet(this, _setProgids, _setProgids2).call(this);
 
@@ -5694,7 +5698,7 @@
     try {
       if (_classPrivateMethodGet(this, _shouldUseWildcardDomain, _shouldUseWildcardDomain2).call(this)) {
         // First we clean all data in storage
-        CONSTANTS.cookieKeys.forEach(function (name) {
+        Object.values(CONSTANTS.cookieKeys).forEach(function (name) {
           removeValue(name);
         }); // Then we define the wildcard domain for cookie
 
