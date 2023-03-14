@@ -16,6 +16,8 @@ export default class Sdk {
 
   #registerIpFingerprintUrlIterator = utils.getApiIterator(CONSTANTS.urls.registerIpFingerprint);
 
+  #deleteDataUrlIterator = utils.getApiIterator(CONSTANTS.urls.deleteData);
+
   #errors = [];
 
   #name = CONSTANTS.sdk_name;
@@ -210,7 +212,7 @@ export default class Sdk {
     }
   }
 
-  async #callApi({ urlIterator, body = {}, caller }) {
+  async #callApi({ method = 'POST', urlIterator, body = {}, caller }) {
     if (!urlIterator?.url) {
       this.#setError({ error: { message: `Failed to contact server on ${urlIterator?.urls}` }, caller });
 
@@ -219,7 +221,7 @@ export default class Sdk {
 
     try {
       const response = await fetch(urlIterator?.url, {
-        method: 'POST',
+        method,
         headers: {
           accept: 'application/json',
           'Content-Type': 'application/json',
@@ -284,16 +286,18 @@ export default class Sdk {
   #registerIpFingerprint() {
     const toSubids = this.#getToSubidsWithType();
 
-    const body = {
-      event_consent_id: this.eventConsentId,
-      url: utils.getCurrentUrl(),
-      toSubids,
-    };
+    this.#progids.forEach((progid) => {
+      const body = {
+        progid,
+        event_consent_id: this.eventConsentId,
+        toSubids,
+      };
 
-    this.#callApi({
-      urlIterator: this.#registerIpFingerprintUrlIterator,
-      body,
-      caller: '#registerIpFingerprint',
+      this.#callApi({
+        urlIterator: this.#registerIpFingerprintUrlIterator,
+        body,
+        caller: '#registerIpFingerprint',
+      });
     });
   }
 
@@ -326,6 +330,17 @@ export default class Sdk {
   #handleNoConsent() {
     utils.removeValue(CONSTANTS.subid.name);
     utils.removeValue(CONSTANTS.event_consent_id.name);
+
+    this.#progids.forEach((progid) => {
+      this.#callApi({
+        urlIterator: this.#deleteDataUrlIterator,
+        method: 'DELETE',
+        body: {
+          progid,
+        },
+        caller: '#handleNoConsent',
+      });
+    });
   }
 
   _setOptin() {
