@@ -347,7 +347,7 @@ export default class Sdk {
     return (
       this.constructor.getProgramDataFromQueryParams(CONSTANTS.subid.queryname) ||
       this.#hasSubids(CONSTANTS.cashback) ||
-      (this.#hasSubids(CONSTANTS.subid) && this.consent === CONSTANTS.consent.status.optin)
+      this.consent === CONSTANTS.consent.status.optin
     );
   }
 
