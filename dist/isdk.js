@@ -4932,7 +4932,7 @@
   }
   });
 
-  var _httpsBTime1MeV, _httpsCTime1MeV, _httpsCTime1MeV2;
+  var _httpsBackService, _httpsTrackingSer, _httpsTrackingSer2;
 
   var cookieKeys = {
     consent: 'consent',
@@ -4989,9 +4989,9 @@
     default_storage_prefix: 'to',
     default_ttl: 390,
     urls: {
-      conversion: ((_httpsBTime1MeV = "https://b.time1.me/v1/b") === null || _httpsBTime1MeV === void 0 ? void 0 : _httpsBTime1MeV.split(',')) || [],
-      stats: ((_httpsCTime1MeV = "https://c.time1.me/v2/log/consent") === null || _httpsCTime1MeV === void 0 ? void 0 : _httpsCTime1MeV.split(',')) || [],
-      proofConsent: ((_httpsCTime1MeV2 = "https://c.time1.me/v1/log/consent/proof") === null || _httpsCTime1MeV2 === void 0 ? void 0 : _httpsCTime1MeV2.split(',')) || []
+      conversion: ((_httpsBackService = "https://back.service.sandbox.localhost/v1/b") === null || _httpsBackService === void 0 ? void 0 : _httpsBackService.split(',')) || [],
+      stats: ((_httpsTrackingSer = "https://tracking.service.sandbox.localhost/v2/log/consent,") === null || _httpsTrackingSer === void 0 ? void 0 : _httpsTrackingSer.split(',')) || [],
+      proofConsent: ((_httpsTrackingSer2 = "https://tracking.service.sandbox.localhost/v1/log/consent/proof") === null || _httpsTrackingSer2 === void 0 ? void 0 : _httpsTrackingSer2.split(',')) || []
     },
     errors: {
       subidCookieType: 'subid_cookie_type'
@@ -5318,8 +5318,8 @@
         value: []
       });
 
-      this.env = "production";
-      this.version = "2.2.1";
+      this.env = "sandbox";
+      this.version = "2.2.1-sandbox";
 
       _classPrivateMethodGet(this, _setProgids, _setProgids2).call(this);
 
@@ -5554,6 +5554,9 @@
     }, {
       key: "addConversion",
       value: function addConversion(progid) {
+        var _ref = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {},
+            comid = _ref.comid;
+
         if (!progid) {
           throw new Error("Missing progid. This data is mandatory to add a conversion");
         }
@@ -5561,16 +5564,17 @@
         _classPrivateMethodGet(this, _logStats, _logStats2).call(this, {
           consent: this.consent,
           progid: progid,
-          type: CONSTANTS.stats.type.conversion
+          type: CONSTANTS.stats.type.conversion,
+          comid: comid
         });
       }
     }, {
       key: "push",
       value: function push(args) {
-        var _ref = args || [],
-            _ref2 = _toArray(_ref),
-            functionName = _ref2[0],
-            functionArgs = _ref2.slice(1);
+        var _ref2 = args || [],
+            _ref3 = _toArray(_ref2),
+            functionName = _ref3[0],
+            functionArgs = _ref3.slice(1);
 
         try {
           if (typeof this[functionName] !== 'function') {
@@ -5620,10 +5624,10 @@
   }
 
   function _getActiveSubids2() {
-    var _ref4 = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {},
-        name = _ref4.name,
-        queryname = _ref4.queryname,
-        ttl = _ref4.ttl;
+    var _ref5 = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {},
+        name = _ref5.name,
+        queryname = _ref5.queryname,
+        ttl = _ref5.ttl;
 
     var subidQueryParam = this.constructor.getProgramDataFromQueryParams(queryname);
     var storedSubids = getValue(name);
@@ -5725,14 +5729,14 @@
   }
 
   function _callApi3() {
-    _callApi3 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee5(_ref5) {
-      var urlIterator, _ref5$body, body, caller, response, error;
+    _callApi3 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee5(_ref6) {
+      var urlIterator, _ref6$body, body, caller, response, error;
 
       return regeneratorRuntime.wrap(function _callee5$(_context5) {
         while (1) {
           switch (_context5.prev = _context5.next) {
             case 0:
-              urlIterator = _ref5.urlIterator, _ref5$body = _ref5.body, body = _ref5$body === void 0 ? {} : _ref5$body, caller = _ref5.caller;
+              urlIterator = _ref6.urlIterator, _ref6$body = _ref6.body, body = _ref6$body === void 0 ? {} : _ref6$body, caller = _ref6.caller;
 
               if (urlIterator !== null && urlIterator !== void 0 && urlIterator.url) {
                 _context5.next = 4;
@@ -5810,10 +5814,11 @@
     return _callApi3.apply(this, arguments);
   }
 
-  function _logStats2(_ref6) {
-    var consent = _ref6.consent,
-        type = _ref6.type,
-        progid = _ref6.progid;
+  function _logStats2(_ref7) {
+    var consent = _ref7.consent,
+        type = _ref7.type,
+        progid = _ref7.progid,
+        comid = _ref7.comid;
 
     var consentSubids = _classPrivateMethodGet(this, _getActiveSubidsValues, _getActiveSubidsValues2).call(this, CONSTANTS.subid);
 
@@ -5823,13 +5828,16 @@
 
     _classPrivateMethodGet(this, _callApi, _callApi2).call(this, {
       urlIterator: _classPrivateFieldGet(this, _statsUrlIterator),
-      body: {
+      body: _objectSpread2(_objectSpread2({
         type: type,
-        progid: progid,
+        progid: progid
+      }, comid ? {
+        comid: comid
+      } : {}), {}, {
         url: getCurrentUrl(),
         status: consent,
         toSubids: toSubids
-      },
+      }),
       caller: '#logStats'
     });
   }
@@ -5893,10 +5901,10 @@
   }
 
   function _getErrors2() {
-    return _classPrivateFieldGet(this, _errors).map(function (_ref7) {
-      var error = _ref7.error,
-          caller = _ref7.caller,
-          extra = _ref7.extra;
+    return _classPrivateFieldGet(this, _errors).map(function (_ref8) {
+      var error = _ref8.error,
+          caller = _ref8.caller,
+          extra = _ref8.extra;
       return {
         message: "While calling the method \"".concat(caller, "\": ").concat(error.message),
         extra: extra
@@ -5909,16 +5917,16 @@
   }
 
   function _setConversion3() {
-    _setConversion3 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee6(_ref8) {
+    _setConversion3 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee6(_ref9) {
       var _classPrivateFieldGet2;
 
-      var _ref8$data, data, _ref8$caller, caller, progid, comid, iu, _classPrivateFieldGet3, consentSubids, cashbackSubids, toSubids, toCashbackSubids, payload, body;
+      var _ref9$data, data, _ref9$caller, caller, progid, comid, iu, _classPrivateFieldGet3, consentSubids, cashbackSubids, toSubids, toCashbackSubids, payload, body;
 
       return regeneratorRuntime.wrap(function _callee6$(_context6) {
         while (1) {
           switch (_context6.prev = _context6.next) {
             case 0:
-              _ref8$data = _ref8.data, data = _ref8$data === void 0 ? {} : _ref8$data, _ref8$caller = _ref8.caller, caller = _ref8$caller === void 0 ? 'setConversion' : _ref8$caller;
+              _ref9$data = _ref9.data, data = _ref9$data === void 0 ? {} : _ref9$data, _ref9$caller = _ref9.caller, caller = _ref9$caller === void 0 ? 'setConversion' : _ref9$caller;
 
               if (_classPrivateMethodGet(this, _canConvert, _canConvert2).call(this)) {
                 _context6.next = 3;
@@ -5962,14 +5970,14 @@
               });
               payload = _objectSpread2(_objectSpread2({}, data), {}, {
                 event_consent_id: this.eventConsentId,
-                toSubids: [].concat(_toConsumableArray(toSubids), _toConsumableArray(toCashbackSubids)).filter(function (_ref9) {
-                  var value = _ref9.value;
+                toSubids: [].concat(_toConsumableArray(toSubids), _toConsumableArray(toCashbackSubids)).filter(function (_ref10) {
+                  var value = _ref10.value;
                   return !!value;
                 })
               });
-              body = Object.fromEntries(Object.entries(payload).filter(function (_ref10) {
-                var _ref11 = _slicedToArray(_ref10, 2),
-                    value = _ref11[1];
+              body = Object.fromEntries(Object.entries(payload).filter(function (_ref11) {
+                var _ref12 = _slicedToArray(_ref11, 2),
+                    value = _ref12[1];
 
                 return !!value;
               }));
