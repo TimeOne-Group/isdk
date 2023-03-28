@@ -206,7 +206,7 @@ export default class Sdk {
     }
   }
 
-  #logStats({ consent, type, progid }) {
+  #logStats({ consent, type, progid, comid }) {
     const consentSubids = this.#getActiveSubidsValues(CONSTANTS.subid);
     const cashbackSubids = this.#getActiveSubidsValues(CONSTANTS.cashback);
     const toSubids = [...consentSubids, ...cashbackSubids].filter(Boolean);
@@ -216,6 +216,7 @@ export default class Sdk {
       body: {
         type,
         progid,
+        ...(comid ? { comid } : {}),
         url: utils.getCurrentUrl(),
         status: consent,
         toSubids,
@@ -377,12 +378,17 @@ export default class Sdk {
     }
   }
 
-  addConversion(progid) {
+  addConversion(progid, { comid } = {}) {
     if (!progid) {
       throw new Error(`Missing progid. This data is mandatory to add a conversion`);
     }
 
-    this.#logStats({ consent: this.consent, progid, type: CONSTANTS.stats.type.conversion });
+    this.#logStats({
+      consent: this.consent,
+      progid,
+      type: CONSTANTS.stats.type.conversion,
+      comid,
+    });
   }
 
   push(args) {

@@ -11,10 +11,11 @@ import CONSTANTS from '../constants.mjs';
 
 const progid = 109;
 const progids = [progid];
+const comid = 123;
 const event_consent_id = '993be906-9074-499a-aeb6-5af4e627aa06';
 const minimumConvertPayload = {
   progid: progids[0],
-  comid: 123,
+  comid,
   iu: 456,
 };
 
@@ -467,6 +468,26 @@ describe('The ISDK class test', () => {
       body: JSON.stringify({
         type: CONSTANTS.stats.type.conversion,
         progid,
+        url: 'localhost/',
+        status: CONSTANTS.consent.status.unknown,
+        toSubids: [],
+      }),
+    });
+  });
+
+  test('method addConversion - Should log a conversion with comid when addConversion is called ', () => {
+    Sdk.getProgramDataFromQueryParams = jest.fn(() => null);
+
+    const instance = new Sdk();
+
+    instance.addConversion(progid, { comid });
+
+    expect(fetch).toHaveBeenCalledWith(CONSTANTS.urls.stats[0], {
+      ...apiOptions,
+      body: JSON.stringify({
+        type: CONSTANTS.stats.type.conversion,
+        progid,
+        comid,
         url: 'localhost/',
         status: CONSTANTS.consent.status.unknown,
         toSubids: [],
