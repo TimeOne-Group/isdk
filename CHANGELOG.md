@@ -1,6 +1,13 @@
 # ISDK Changelog
 
 
+## [2.3.0](https://github.com/TimeOne-Group/isdk/compare/2.2.1...2.3.0) (2023-03-28)
+
+
+### Features
+
+* ajout optionnel du comid du la method addConversion ([e5a5711](https://github.com/TimeOne-Group/isdk/commit/e5a5711fb3b1558ffd3b7a11b0905b3b92286781))
+
 ### [2.2.1](https://github.com/TimeOne-Group/isdk/compare/2.2.0...2.2.1) (2023-03-13)
 
 
