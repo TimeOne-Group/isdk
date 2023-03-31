@@ -175,7 +175,7 @@ export default class Sdk {
   #configureProgramData(options) {
     const subids = this.#getActiveSubids(options);
 
-    if (subids) {
+    if (subids && Object.keys(subids)?.length > 0) {
       utils.setValue(subids, options.name);
     }
   }
