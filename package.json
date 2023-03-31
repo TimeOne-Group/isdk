@@ -12,7 +12,7 @@
     "test:browserstack": "node browserstack/index.mjs",
     "test:unit": "npm run test:unit:path src",
     "test:unit:path": "NODE_ENV=test jest --runInBand --verbose",
-    "test:unit:watch": "npm run test:unit -- --watch",
+    "test:unit:watch": "npm run test:unit:path src -- --watch",
     "test": "npm run test:unit && npm run test:browserstack",
     "release": "docker-compose run test && standard-version -a -m 'chore(release): %s 🚀' --release-as minor",
     "hotfix": "docker-compose run test && standard-version -a -m 'chore(hotfix): %s 🔧' --release-as patch"

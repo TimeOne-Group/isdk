@@ -38,7 +38,6 @@ const defaultTrace = {
 
 const consentStorageName = utils.getPrefixedStorageName(CONSTANTS.consent.name);
 const consentSubidStorageName = utils.getPrefixedStorageName(CONSTANTS.subid.name);
-
 const noConsentMethods = [
   { methodName: '_setUnknown', consentName: CONSTANTS.consent.status.unknown },
   { methodName: '_setOptout', consentName: CONSTANTS.consent.status.optout },
@@ -254,18 +253,15 @@ describe('The ISDK class test', () => {
       utils.setValue(CONSTANTS.consent.status.optin, CONSTANTS.consent.name);
       Sdk.getProgramDataFromQueryParams = jest.fn(() => null);
 
-      const emptySubids = {};
-      const compressEmptySubids = formatAndCompress(emptySubids);
-
       const instance = new Sdk();
 
       expect(instance.consent).toEqual(CONSTANTS.consent.status.optin);
       expect(instance.constructor.getProgramDataFromQueryParams).toHaveBeenCalledTimes(2);
       expect(instance.constructor.getProgramDataFromQueryParams).toHaveBeenCalledWith(CONSTANTS.subid.queryname);
       expect(instance.constructor.getProgramDataFromQueryParams).toHaveBeenCalledWith(CONSTANTS.cashback.queryname);
-      expect(Cookie.get(consentSubidStorageName)).toEqual(compressEmptySubids);
-      expect(utils.Storage.find(consentSubidStorageName)).toEqual(compressEmptySubids);
-      expect(instance.consentSubids).toEqual(emptySubids);
+      expect(Cookie.get(consentSubidStorageName)).toEqual('');
+      expect(utils.Storage.find(consentSubidStorageName)).toEqual(null);
+      expect(instance.consentSubids).toEqual({});
       expect(fetch).toHaveBeenCalledTimes(0);
     });
 
