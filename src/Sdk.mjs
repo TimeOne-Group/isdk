@@ -16,6 +16,8 @@ export default class Sdk {
 
   #errors = [];
 
+  #name = CONSTANTS.sdk_name;
+
   constructor() {
     this.env = process.env.NODE_ENV;
     this.version = process.env.SDK_VERSION;
@@ -49,6 +51,10 @@ export default class Sdk {
 
   get eventConsentId() {
     return utils.getValue(CONSTANTS.event_consent_id.name);
+  }
+
+  getName() {
+    return this.#name;
   }
 
   #runRetrocompatibility() {

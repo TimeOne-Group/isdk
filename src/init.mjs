@@ -11,7 +11,7 @@ export default function init(Sdk = ISDK) {
       const sdkTmp = new Sdk();
       window[sdkName].forEach((args) => sdkTmp.push(args));
       window[sdkName] = sdkTmp;
-    } else if (typeof window[sdkName] === 'object' && window[sdkName] instanceof Sdk) {
+    } else if (typeof window[sdkName] === 'object' && window[sdkName]?.getName?.() === sdkName) {
       // Nothing
     } else {
       throw new Error(`${sdkName} error: Unknown type`);
