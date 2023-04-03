@@ -153,7 +153,11 @@ export default class Sdk {
       .getElementById(CONSTANTS.sdk_script_id)
       ?.getAttribute('data-wildcard-domain');
 
-    return wildCardDomainFromAttribut === 'true' || window.__ISDK_wildcard_domain === 'true';
+    return (
+      wildCardDomainFromAttribut === 'true' ||
+      window.__ISDK_wildcard_domain === 'true' ||
+      window.__ISDK_wildcard_domain === true
+    );
   }
 
   #setCookieDomain() {
