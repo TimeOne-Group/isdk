@@ -11,9 +11,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - run: curl $CLEAR_CDN_CACHE_URL
-        env:
-          CLEAR_CDN_CACHE_URL: ${{ secrets.CLEAR_CDN_CACHE_URL }}
       - run: curl $CLEAR_CDN_CACHE_URL_MIN
         env:
           CLEAR_CDN_CACHE_URL_MIN: ${{ secrets.CLEAR_CDN_CACHE_URL_MIN }}
+      - run: curl $CLEAR_CDN_CACHE_URL
+        env:
+          CLEAR_CDN_CACHE_URL: ${{ secrets.CLEAR_CDN_CACHE_URL }}
