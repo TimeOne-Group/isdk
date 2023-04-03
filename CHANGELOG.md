@@ -1,6 +1,14 @@
 # ISDK Changelog
 
 
+### [2.3.1](https://github.com/TimeOne-Group/isdk/compare/2.3.0...2.3.1) (2023-04-03)
+
+
+### Bug Fixes
+
+* empeche ecriture de cookie vide si pas de subids a initialisation ([4e97ad5](https://github.com/TimeOne-Group/isdk/commit/4e97ad577ecc8155e8c919dbfebfe4b80690abe5))
+* permet eviter multi injection sdk ([8484a69](https://github.com/TimeOne-Group/isdk/commit/8484a692eaf0d3e347ab1b395116d75e8688b2f2))
+
 ## [2.3.0](https://github.com/TimeOne-Group/isdk/compare/2.2.1...2.3.0) (2023-03-28)
 
 

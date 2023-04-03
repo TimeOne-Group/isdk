@@ -1,5 +1,5 @@
 
-/*! isdk 2.3.0 https://github.com/TimeOne-Group/isdk#readme @license GPL-3.0 */
+/*! isdk 2.3.1 https://github.com/TimeOne-Group/isdk#readme @license GPL-3.0 */
 (function () {
   'use strict';
 
@@ -5423,6 +5423,8 @@
 
   var _errors = /*#__PURE__*/new WeakMap();
 
+  var _name = /*#__PURE__*/new WeakMap();
+
   var _runRetrocompatibility = /*#__PURE__*/new WeakSet();
 
   var _convertSubidFromPreviousToNextFormat = /*#__PURE__*/new WeakSet();
@@ -5528,8 +5530,13 @@
         value: []
       });
 
+      _classPrivateFieldInitSpec(this, _name, {
+        writable: true,
+        value: CONSTANTS.sdk_name
+      });
+
       this.env = "production";
-      this.version = "2.3.0";
+      this.version = "2.3.1";
 
       _classPrivateMethodGet(this, _setProgids, _setProgids2).call(this);
 
@@ -5567,6 +5574,11 @@
       key: "eventConsentId",
       get: function get() {
         return getValue(CONSTANTS.event_consent_id.name);
+      }
+    }, {
+      key: "getName",
+      value: function getName() {
+        return _classPrivateFieldGet(this, _name);
       }
     }, {
       key: "_setOptin",
@@ -5927,9 +5939,11 @@
   }
 
   function _configureProgramData2(options) {
+    var _Object$keys;
+
     var subids = _classPrivateMethodGet(this, _getActiveSubids, _getActiveSubids2).call(this, options);
 
-    if (subids) {
+    if (subids && ((_Object$keys = Object.keys(subids)) === null || _Object$keys === void 0 ? void 0 : _Object$keys.length) > 0) {
       setValue(subids, options.name);
     }
   }
@@ -6213,6 +6227,8 @@
     var Sdk$1 = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : Sdk;
 
     try {
+      var _window$sdkName, _window$sdkName$getNa;
+
       if (typeof window[sdkName] === 'undefined') {
         window[sdkName] = new Sdk$1();
       } else if (_typeof(window[sdkName]) === 'object' && Array.isArray(window[sdkName])) {
@@ -6221,7 +6237,7 @@
           return sdkTmp.push(args);
         });
         window[sdkName] = sdkTmp;
-      } else if (_typeof(window[sdkName]) === 'object' && window[sdkName] instanceof Sdk$1) {// Nothing
+      } else if (_typeof(window[sdkName]) === 'object' && ((_window$sdkName = window[sdkName]) === null || _window$sdkName === void 0 ? void 0 : (_window$sdkName$getNa = _window$sdkName.getName) === null || _window$sdkName$getNa === void 0 ? void 0 : _window$sdkName$getNa.call(_window$sdkName)) === sdkName) {// Nothing
       } else {
         throw new Error("".concat(sdkName, " error: Unknown type"));
       }
