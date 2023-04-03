@@ -1,5 +1,5 @@
 
-/*! isdk 2.3.1 https://github.com/TimeOne-Group/isdk#readme @license GPL-3.0 */
+/*! isdk 2.3.2 https://github.com/TimeOne-Group/isdk#readme @license GPL-3.0 */
 (function () {
   'use strict';
 
@@ -5536,7 +5536,7 @@
       });
 
       this.env = "production";
-      this.version = "2.3.1";
+      this.version = "2.3.2";
 
       _classPrivateMethodGet(this, _setProgids, _setProgids2).call(this);
 
@@ -5917,7 +5917,7 @@
     var _document$getElementB2;
 
     var wildCardDomainFromAttribut = (_document$getElementB2 = document.getElementById(CONSTANTS.sdk_script_id)) === null || _document$getElementB2 === void 0 ? void 0 : _document$getElementB2.getAttribute('data-wildcard-domain');
-    return wildCardDomainFromAttribut === 'true' || window.__ISDK_wildcard_domain === 'true';
+    return wildCardDomainFromAttribut === 'true' || window.__ISDK_wildcard_domain === 'true' || window.__ISDK_wildcard_domain === true;
   }
 
   function _setCookieDomain2() {
