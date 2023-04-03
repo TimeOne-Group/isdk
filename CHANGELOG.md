@@ -1,6 +1,13 @@
 # ISDK Changelog
 
 
+### [2.3.2](https://github.com/TimeOne-Group/isdk/compare/2.3.1...2.3.2) (2023-04-03)
+
+
+### Bug Fixes
+
+* **domain wildcard:** active le cookie wildcard avec un bool ([46717ba](https://github.com/TimeOne-Group/isdk/commit/46717ba813f7fb5fe5cf857df1783c7013a00129))
+
 ### [2.3.1](https://github.com/TimeOne-Group/isdk/compare/2.3.0...2.3.1) (2023-04-03)
 
 
