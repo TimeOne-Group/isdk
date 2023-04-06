@@ -51,6 +51,8 @@ const getDefaultPlugins = ({ env = NODE_ENV } = {}) => {
         'process.env.API_CONVERSION_URLS': `"${buildEnv.API_CONVERSION_URLS}"`,
         'process.env.API_STATS_URLS': `"${buildEnv.API_STATS_URLS}"`,
         'process.env.API_PROOF_CONSENT_URLS': `"${buildEnv.API_PROOF_CONSENT_URLS}"`,
+        'process.env.API_REGISTER_IP_FINGERPRINT_URLS': `"${buildEnv.API_REGISTER_IP_FINGERPRINT_URLS}"`,
+        'process.env.API_DELETE_DATA': `"${buildEnv.API_DELETE_DATA}"`,
         'process.env.SDK_VERSION': `"${getSdkVersion(buildEnv)}"`,
       },
     }),
