@@ -1,5 +1,5 @@
 
-/*! isdk 2.3.2 https://github.com/TimeOne-Group/isdk#readme @license GPL-3.0 */
+/*! isdk 2.3.3 https://github.com/TimeOne-Group/isdk#readme @license GPL-3.0 */
 (function () {
   'use strict';
 
@@ -5326,7 +5326,7 @@
       });
 
       this.env = "production";
-      this.version = "2.3.2";
+      this.version = "2.3.3";
 
       _classPrivateMethodGet(this, _setProgids, _setProgids2).call(this);
 
