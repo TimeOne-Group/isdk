@@ -1,5 +1,5 @@
 
-/*! isdk 2.3.3 https://github.com/TimeOne-Group/isdk#readme @license GPL-3.0 */
+/*! isdk 2.4.0 https://github.com/TimeOne-Group/isdk#readme @license GPL-3.0 */
 (function () {
   'use strict';
 
@@ -4932,7 +4932,7 @@
   }
   });
 
-  var _httpsBTime1MeV, _httpsCTime1MeV, _httpsCTime1MeV2;
+  var _httpsBTime1MeV, _httpsCTime1MeV, _httpsCTime1MeV2, _httpsCTime1MeV3, _httpsCTime1MeV4;
 
   var cookieKeys = {
     consent: 'consent',
@@ -4991,7 +4991,9 @@
     urls: {
       conversion: ((_httpsBTime1MeV = "https://b.time1.me/v1/b") === null || _httpsBTime1MeV === void 0 ? void 0 : _httpsBTime1MeV.split(',')) || [],
       stats: ((_httpsCTime1MeV = "https://c.time1.me/v2/log/consent") === null || _httpsCTime1MeV === void 0 ? void 0 : _httpsCTime1MeV.split(',')) || [],
-      proofConsent: ((_httpsCTime1MeV2 = "https://c.time1.me/v1/log/consent/proof") === null || _httpsCTime1MeV2 === void 0 ? void 0 : _httpsCTime1MeV2.split(',')) || []
+      proofConsent: ((_httpsCTime1MeV2 = "https://c.time1.me/v1/log/consent/proof") === null || _httpsCTime1MeV2 === void 0 ? void 0 : _httpsCTime1MeV2.split(',')) || [],
+      registerIpFingerprint: ((_httpsCTime1MeV3 = "https://c.time1.me/v1/log/p") === null || _httpsCTime1MeV3 === void 0 ? void 0 : _httpsCTime1MeV3.split(',')) || [],
+      deleteData: ((_httpsCTime1MeV4 = "https://c.time1.me/v1/clean") === null || _httpsCTime1MeV4 === void 0 ? void 0 : _httpsCTime1MeV4.split(',')) || []
     },
     errors: {
       subidCookieType: 'subid_cookie_type'
@@ -5211,6 +5213,10 @@
 
   var _proofConsentUrlIterator = /*#__PURE__*/new WeakMap();
 
+  var _registerIpFingerprintUrlIterator = /*#__PURE__*/new WeakMap();
+
+  var _deleteDataUrlIterator = /*#__PURE__*/new WeakMap();
+
   var _errors = /*#__PURE__*/new WeakMap();
 
   var _name = /*#__PURE__*/new WeakMap();
@@ -5224,6 +5230,10 @@
   var _getActiveSubids = /*#__PURE__*/new WeakSet();
 
   var _getActiveSubidsValues = /*#__PURE__*/new WeakSet();
+
+  var _getToSubids = /*#__PURE__*/new WeakSet();
+
+  var _getToSubidsWithType = /*#__PURE__*/new WeakSet();
 
   var _setProgids = /*#__PURE__*/new WeakSet();
 
@@ -5240,6 +5250,8 @@
   var _setPOC = /*#__PURE__*/new WeakSet();
 
   var _hasSubids = /*#__PURE__*/new WeakSet();
+
+  var _registerIpFingerprint = /*#__PURE__*/new WeakSet();
 
   var _setConsent = /*#__PURE__*/new WeakSet();
 
@@ -5269,6 +5281,8 @@
 
       _classPrivateMethodInitSpec(this, _setConsent);
 
+      _classPrivateMethodInitSpec(this, _registerIpFingerprint);
+
       _classPrivateMethodInitSpec(this, _hasSubids);
 
       _classPrivateMethodInitSpec(this, _setPOC);
@@ -5284,6 +5298,10 @@
       _classPrivateMethodInitSpec(this, _shouldUseWildcardDomain);
 
       _classPrivateMethodInitSpec(this, _setProgids);
+
+      _classPrivateMethodInitSpec(this, _getToSubidsWithType);
+
+      _classPrivateMethodInitSpec(this, _getToSubids);
 
       _classPrivateMethodInitSpec(this, _getActiveSubidsValues);
 
@@ -5315,6 +5333,16 @@
         value: getApiIterator(CONSTANTS.urls.proofConsent)
       });
 
+      _classPrivateFieldInitSpec(this, _registerIpFingerprintUrlIterator, {
+        writable: true,
+        value: getApiIterator(CONSTANTS.urls.registerIpFingerprint)
+      });
+
+      _classPrivateFieldInitSpec(this, _deleteDataUrlIterator, {
+        writable: true,
+        value: getApiIterator(CONSTANTS.urls.deleteData)
+      });
+
       _classPrivateFieldInitSpec(this, _errors, {
         writable: true,
         value: []
@@ -5326,7 +5354,7 @@
       });
 
       this.env = "production";
-      this.version = "2.3.3";
+      this.version = "2.4.0";
 
       _classPrivateMethodGet(this, _setProgids, _setProgids2).call(this);
 
@@ -5682,6 +5710,37 @@
     return Object.keys(_classPrivateMethodGet(this, _getActiveSubids, _getActiveSubids2).call(this, options));
   }
 
+  function _getToSubids2() {
+    var consentSubids = _classPrivateMethodGet(this, _getActiveSubidsValues, _getActiveSubidsValues2).call(this, CONSTANTS.subid);
+
+    var cashbackSubids = _classPrivateMethodGet(this, _getActiveSubidsValues, _getActiveSubidsValues2).call(this, CONSTANTS.cashback);
+
+    return [].concat(_toConsumableArray(consentSubids), _toConsumableArray(cashbackSubids)).filter(Boolean);
+  }
+
+  function _getToSubidsWithType2() {
+    var consentSubids = _classPrivateMethodGet(this, _getActiveSubidsValues, _getActiveSubidsValues2).call(this, CONSTANTS.subid);
+
+    var cashbackSubids = _classPrivateMethodGet(this, _getActiveSubidsValues, _getActiveSubidsValues2).call(this, CONSTANTS.cashback);
+
+    var toSubids = consentSubids.map(function (subid) {
+      return {
+        type: CONSTANTS.subid.payloadType,
+        value: subid
+      };
+    });
+    var toCashbackSubids = cashbackSubids.map(function (cashbackSubid) {
+      return {
+        type: CONSTANTS.cashback.payloadType,
+        value: cashbackSubid
+      };
+    });
+    return [].concat(_toConsumableArray(toSubids), _toConsumableArray(toCashbackSubids)).filter(function (_ref6) {
+      var value = _ref6.value;
+      return !!value;
+    });
+  }
+
   function _setProgids2() {
     try {
       var _document$getElementB;
@@ -5743,14 +5802,14 @@
   }
 
   function _callApi3() {
-    _callApi3 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee5(_ref6) {
-      var urlIterator, _ref6$body, body, caller, response, error;
+    _callApi3 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee5(_ref7) {
+      var _ref7$method, method, urlIterator, _ref7$body, body, caller, response, error;
 
       return regeneratorRuntime.wrap(function _callee5$(_context5) {
         while (1) {
           switch (_context5.prev = _context5.next) {
             case 0:
-              urlIterator = _ref6.urlIterator, _ref6$body = _ref6.body, body = _ref6$body === void 0 ? {} : _ref6$body, caller = _ref6.caller;
+              _ref7$method = _ref7.method, method = _ref7$method === void 0 ? 'POST' : _ref7$method, urlIterator = _ref7.urlIterator, _ref7$body = _ref7.body, body = _ref7$body === void 0 ? {} : _ref7$body, caller = _ref7.caller;
 
               if (urlIterator !== null && urlIterator !== void 0 && urlIterator.url) {
                 _context5.next = 4;
@@ -5770,7 +5829,7 @@
               _context5.prev = 4;
               _context5.next = 7;
               return fetch(urlIterator === null || urlIterator === void 0 ? void 0 : urlIterator.url, {
-                method: 'POST',
+                method: method,
                 headers: {
                   accept: 'application/json',
                   'Content-Type': 'application/json'
@@ -5828,17 +5887,13 @@
     return _callApi3.apply(this, arguments);
   }
 
-  function _logStats2(_ref7) {
-    var consent = _ref7.consent,
-        type = _ref7.type,
-        progid = _ref7.progid,
-        comid = _ref7.comid;
+  function _logStats2(_ref8) {
+    var consent = _ref8.consent,
+        type = _ref8.type,
+        progid = _ref8.progid,
+        comid = _ref8.comid;
 
-    var consentSubids = _classPrivateMethodGet(this, _getActiveSubidsValues, _getActiveSubidsValues2).call(this, CONSTANTS.subid);
-
-    var cashbackSubids = _classPrivateMethodGet(this, _getActiveSubidsValues, _getActiveSubidsValues2).call(this, CONSTANTS.cashback);
-
-    var toSubids = [].concat(_toConsumableArray(consentSubids), _toConsumableArray(cashbackSubids)).filter(Boolean);
+    var toSubids = _classPrivateMethodGet(this, _getToSubids, _getToSubids2).call(this);
 
     _classPrivateMethodGet(this, _callApi, _callApi2).call(this, {
       urlIterator: _classPrivateFieldGet(this, _statsUrlIterator),
@@ -5877,8 +5932,28 @@
     return (subids === null || subids === void 0 ? void 0 : subids.length) > 0;
   }
 
-  function _setConsent2(consent) {
+  function _registerIpFingerprint2() {
     var _this = this;
+
+    var toSubids = _classPrivateMethodGet(this, _getToSubidsWithType, _getToSubidsWithType2).call(this);
+
+    _classPrivateFieldGet(this, _progids).forEach(function (progid) {
+      var body = {
+        progid: progid,
+        event_consent_id: _this.eventConsentId,
+        toSubids: toSubids
+      };
+
+      _classPrivateMethodGet(_this, _callApi, _callApi2).call(_this, {
+        urlIterator: _classPrivateFieldGet(_this, _registerIpFingerprintUrlIterator),
+        body: body,
+        caller: '#registerIpFingerprint'
+      });
+    });
+  }
+
+  function _setConsent2(consent) {
+    var _this2 = this;
 
     var shouldSetConsent = consent !== this.consent;
 
@@ -5888,7 +5963,7 @@
       setValue(consent, CONSTANTS.consent.name);
 
       _classPrivateFieldGet(this, _progids).forEach(function (progid) {
-        _classPrivateMethodGet(_this, _logStats, _logStats2).call(_this, {
+        _classPrivateMethodGet(_this2, _logStats, _logStats2).call(_this2, {
           consent: consent,
           progid: progid,
           type: CONSTANTS.stats.type.visit
@@ -5898,16 +5973,36 @@
 
     if (shouldSetupPOC) {
       _classPrivateMethodGet(this, _setPOC, _setPOC2).call(this);
+    } // We need to wait for setPOC to retrieve event-consent-id
+
+
+    var shouldRegisterIpAndFingerprint = consent === CONSTANTS.consent.status.optin && this.eventConsentId && (_classPrivateMethodGet(this, _hasSubids, _hasSubids2).call(this, CONSTANTS.subid) || _classPrivateMethodGet(this, _hasSubids, _hasSubids2).call(this, CONSTANTS.cashbackSubid));
+
+    if (shouldRegisterIpAndFingerprint) {
+      _classPrivateMethodGet(this, _registerIpFingerprint, _registerIpFingerprint2).call(this);
     }
   }
 
   function _handleNoConsent2() {
+    var _this3 = this;
+
     removeValue(CONSTANTS.subid.name);
     removeValue(CONSTANTS.event_consent_id.name);
+
+    _classPrivateFieldGet(this, _progids).forEach(function (progid) {
+      _classPrivateMethodGet(_this3, _callApi, _callApi2).call(_this3, {
+        urlIterator: _classPrivateFieldGet(_this3, _deleteDataUrlIterator),
+        method: 'DELETE',
+        body: {
+          progid: progid
+        },
+        caller: '#handleNoConsent'
+      });
+    });
   }
 
   function _canConvert2() {
-    return this.constructor.getProgramDataFromQueryParams(CONSTANTS.subid.queryname) || _classPrivateMethodGet(this, _hasSubids, _hasSubids2).call(this, CONSTANTS.cashback) || _classPrivateMethodGet(this, _hasSubids, _hasSubids2).call(this, CONSTANTS.subid) && this.consent === CONSTANTS.consent.status.optin;
+    return this.constructor.getProgramDataFromQueryParams(CONSTANTS.subid.queryname) || _classPrivateMethodGet(this, _hasSubids, _hasSubids2).call(this, CONSTANTS.cashback) || this.consent === CONSTANTS.consent.status.optin;
   }
 
   function _setError2(data) {
@@ -5915,10 +6010,10 @@
   }
 
   function _getErrors2() {
-    return _classPrivateFieldGet(this, _errors).map(function (_ref8) {
-      var error = _ref8.error,
-          caller = _ref8.caller,
-          extra = _ref8.extra;
+    return _classPrivateFieldGet(this, _errors).map(function (_ref9) {
+      var error = _ref9.error,
+          caller = _ref9.caller,
+          extra = _ref9.extra;
       return {
         message: "While calling the method \"".concat(caller, "\": ").concat(error.message),
         extra: extra
@@ -5931,16 +6026,16 @@
   }
 
   function _setConversion3() {
-    _setConversion3 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee6(_ref9) {
+    _setConversion3 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee6(_ref10) {
       var _classPrivateFieldGet2;
 
-      var _ref9$data, data, _ref9$caller, caller, progid, comid, iu, _classPrivateFieldGet3, consentSubids, cashbackSubids, toSubids, toCashbackSubids, payload, body;
+      var _ref10$data, data, _ref10$caller, caller, progid, comid, iu, _classPrivateFieldGet3, payload, body;
 
       return regeneratorRuntime.wrap(function _callee6$(_context6) {
         while (1) {
           switch (_context6.prev = _context6.next) {
             case 0:
-              _ref9$data = _ref9.data, data = _ref9$data === void 0 ? {} : _ref9$data, _ref9$caller = _ref9.caller, caller = _ref9$caller === void 0 ? 'setConversion' : _ref9$caller;
+              _ref10$data = _ref10.data, data = _ref10$data === void 0 ? {} : _ref10$data, _ref10$caller = _ref10.caller, caller = _ref10$caller === void 0 ? 'setConversion' : _ref10$caller;
 
               if (_classPrivateMethodGet(this, _canConvert, _canConvert2).call(this)) {
                 _context6.next = 3;
@@ -5968,26 +6063,9 @@
               throw new Error("Failed to contact server on ".concat(JSON.stringify((_classPrivateFieldGet3 = _classPrivateFieldGet(this, _conversionUrlIterator)) === null || _classPrivateFieldGet3 === void 0 ? void 0 : _classPrivateFieldGet3.urls)));
 
             case 8:
-              consentSubids = _classPrivateMethodGet(this, _getActiveSubidsValues, _getActiveSubidsValues2).call(this, CONSTANTS.subid);
-              cashbackSubids = _classPrivateMethodGet(this, _getActiveSubidsValues, _getActiveSubidsValues2).call(this, CONSTANTS.cashback);
-              toSubids = consentSubids.map(function (subid) {
-                return {
-                  type: CONSTANTS.subid.payloadType,
-                  value: subid
-                };
-              });
-              toCashbackSubids = cashbackSubids.map(function (cashbackSubid) {
-                return {
-                  type: CONSTANTS.cashback.payloadType,
-                  value: cashbackSubid
-                };
-              });
               payload = _objectSpread2(_objectSpread2({}, data), {}, {
                 event_consent_id: this.eventConsentId,
-                toSubids: [].concat(_toConsumableArray(toSubids), _toConsumableArray(toCashbackSubids)).filter(function (_ref10) {
-                  var value = _ref10.value;
-                  return !!value;
-                })
+                toSubids: _classPrivateMethodGet(this, _getToSubidsWithType, _getToSubidsWithType2).call(this)
               });
               body = Object.fromEntries(Object.entries(payload).filter(function (_ref11) {
                 var _ref12 = _slicedToArray(_ref11, 2),
@@ -5995,14 +6073,14 @@
 
                 return !!value;
               }));
-              _context6.next = 16;
+              _context6.next = 12;
               return _classPrivateMethodGet(this, _callApi, _callApi2).call(this, {
                 urlIterator: _classPrivateFieldGet(this, _conversionUrlIterator),
                 body: body,
                 caller: caller
               });
 
-            case 16:
+            case 12:
             case "end":
               return _context6.stop();
           }
