@@ -14,6 +14,10 @@ export default class Sdk {
 
   #proofConsentUrlIterator = utils.getApiIterator(CONSTANTS.urls.proofConsent);
 
+  #registerIpFingerprintUrlIterator = utils.getApiIterator(CONSTANTS.urls.registerIpFingerprint);
+
+  #deleteDataUrlIterator = utils.getApiIterator(CONSTANTS.urls.deleteData);
+
   #errors = [];
 
   #name = CONSTANTS.sdk_name;
@@ -132,6 +136,30 @@ export default class Sdk {
     return Object.keys(this.#getActiveSubids(options));
   }
 
+  #getToSubids() {
+    const consentSubids = this.#getActiveSubidsValues(CONSTANTS.subid);
+    const cashbackSubids = this.#getActiveSubidsValues(CONSTANTS.cashback);
+
+    return [...consentSubids, ...cashbackSubids].filter(Boolean);
+  }
+
+  #getToSubidsWithType() {
+    const consentSubids = this.#getActiveSubidsValues(CONSTANTS.subid);
+    const cashbackSubids = this.#getActiveSubidsValues(CONSTANTS.cashback);
+
+    const toSubids = consentSubids.map((subid) => ({
+      type: CONSTANTS.subid.payloadType,
+      value: subid,
+    }));
+
+    const toCashbackSubids = cashbackSubids.map((cashbackSubid) => ({
+      type: CONSTANTS.cashback.payloadType,
+      value: cashbackSubid,
+    }));
+
+    return [...toSubids, ...toCashbackSubids].filter(({ value }) => !!value);
+  }
+
   #setProgids() {
     try {
       const progids = document.getElementById(CONSTANTS.sdk_script_id)?.getAttribute('data-progids');
@@ -184,7 +212,7 @@ export default class Sdk {
     }
   }
 
-  async #callApi({ urlIterator, body = {}, caller }) {
+  async #callApi({ method = 'POST', urlIterator, body = {}, caller }) {
     if (!urlIterator?.url) {
       this.#setError({ error: { message: `Failed to contact server on ${urlIterator?.urls}` }, caller });
 
@@ -193,7 +221,7 @@ export default class Sdk {
 
     try {
       const response = await fetch(urlIterator?.url, {
-        method: 'POST',
+        method,
         headers: {
           accept: 'application/json',
           'Content-Type': 'application/json',
@@ -217,9 +245,7 @@ export default class Sdk {
   }
 
   #logStats({ consent, type, progid, comid }) {
-    const consentSubids = this.#getActiveSubidsValues(CONSTANTS.subid);
-    const cashbackSubids = this.#getActiveSubidsValues(CONSTANTS.cashback);
-    const toSubids = [...consentSubids, ...cashbackSubids].filter(Boolean);
+    const toSubids = this.#getToSubids();
 
     this.#callApi({
       urlIterator: this.#statsUrlIterator,
@@ -257,6 +283,24 @@ export default class Sdk {
     return subids?.length > 0;
   }
 
+  #registerIpFingerprint() {
+    const toSubids = this.#getToSubidsWithType();
+
+    this.#progids.forEach((progid) => {
+      const body = {
+        progid,
+        event_consent_id: this.eventConsentId,
+        toSubids,
+      };
+
+      this.#callApi({
+        urlIterator: this.#registerIpFingerprintUrlIterator,
+        body,
+        caller: '#registerIpFingerprint',
+      });
+    });
+  }
+
   #setConsent(consent) {
     const shouldSetConsent = consent !== this.consent;
     const shouldSetupPOC =
@@ -272,11 +316,31 @@ export default class Sdk {
     if (shouldSetupPOC) {
       this.#setPOC();
     }
+    // We need to wait for setPOC to retrieve event-consent-id
+    const shouldRegisterIpAndFingerprint =
+      consent === CONSTANTS.consent.status.optin &&
+      this.eventConsentId &&
+      (this.#hasSubids(CONSTANTS.subid) || this.#hasSubids(CONSTANTS.cashbackSubid));
+
+    if (shouldRegisterIpAndFingerprint) {
+      this.#registerIpFingerprint();
+    }
   }
 
   #handleNoConsent() {
     utils.removeValue(CONSTANTS.subid.name);
     utils.removeValue(CONSTANTS.event_consent_id.name);
+
+    this.#progids.forEach((progid) => {
+      this.#callApi({
+        urlIterator: this.#deleteDataUrlIterator,
+        method: 'DELETE',
+        body: {
+          progid,
+        },
+        caller: '#handleNoConsent',
+      });
+    });
   }
 
   _setOptin() {
@@ -298,7 +362,7 @@ export default class Sdk {
     return (
       this.constructor.getProgramDataFromQueryParams(CONSTANTS.subid.queryname) ||
       this.#hasSubids(CONSTANTS.cashback) ||
-      (this.#hasSubids(CONSTANTS.subid) && this.consent === CONSTANTS.consent.status.optin)
+      this.consent === CONSTANTS.consent.status.optin
     );
   }
 
@@ -328,23 +392,10 @@ export default class Sdk {
       throw new Error(`Failed to contact server on ${JSON.stringify(this.#conversionUrlIterator?.urls)}`);
     }
 
-    const consentSubids = this.#getActiveSubidsValues(CONSTANTS.subid);
-    const cashbackSubids = this.#getActiveSubidsValues(CONSTANTS.cashback);
-
-    const toSubids = consentSubids.map((subid) => ({
-      type: CONSTANTS.subid.payloadType,
-      value: subid,
-    }));
-
-    const toCashbackSubids = cashbackSubids.map((cashbackSubid) => ({
-      type: CONSTANTS.cashback.payloadType,
-      value: cashbackSubid,
-    }));
-
     const payload = {
       ...data,
       event_consent_id: this.eventConsentId,
-      toSubids: [...toSubids, ...toCashbackSubids].filter(({ value }) => !!value),
+      toSubids: this.#getToSubidsWithType(),
     };
 
     const body = Object.fromEntries(Object.entries(payload).filter(([, value]) => !!value));
