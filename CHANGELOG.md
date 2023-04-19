@@ -1,6 +1,15 @@
 # ISDK Changelog
 
 
+## [2.4.0](https://github.com/TimeOne-Group/isdk/compare/2.3.3...2.4.0) (2023-04-19)
+
+
+### Features
+
+* envoie un log lorsque optin pour stocker ip et fingerprint ([59909be](https://github.com/TimeOne-Group/isdk/commit/59909be63b32fe3a596a36eefdc847cd7d779d74))
+* permet une conversion sans subid ([e00d4ff](https://github.com/TimeOne-Group/isdk/commit/e00d4ff98a686ecac3e953273199228030204951))
+* supprime data sur server lorque optout ([a5b31f2](https://github.com/TimeOne-Group/isdk/commit/a5b31f22de65942e38502232c1f75e3834d558ec))
+
 ### [2.3.3](https://github.com/TimeOne-Group/isdk/compare/2.3.2...2.3.3) (2023-04-19)
 
 ### [2.3.2](https://github.com/TimeOne-Group/isdk/compare/2.3.1...2.3.2) (2023-04-03)
