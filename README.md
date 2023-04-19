@@ -6,9 +6,6 @@
 
 ---
 
-[![GitHub Super-Linter](https://github.com/TimeOne-Group/isdk/workflows/Lint%20Code%20Base/badge.svg)](https://github.com/marketplace/actions/super-linter)
-[![GitHub Super-Linter](https://github.com/TimeOne-Group/isdk/workflows/Test%20Code%20Base/badge.svg)](https://github.com/marketplace/actions/super-linter)
-
 Le SDK [TimeOne](https://timeone.io) est une solution _Privacy By Design_ d'analyse du consentement et d'attribution de conversions au trafic généré par le réseau des affiliés TimeOne.
 
 Notre solution implémente les principes du [Privacy By Design](https://fr.wikipedia.org/wiki/Protection_de_la_vie_priv%C3%A9e_d%C3%A8s_la_conception) en respectant le [règlement général sur la protection des données](https://fr.wikipedia.org/wiki/R%C3%A8glement_g%C3%A9n%C3%A9ral_sur_la_protection_des_donn%C3%A9es) depuis sa conception.
