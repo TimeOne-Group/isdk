@@ -346,14 +346,14 @@ describe('The ISDK class test', () => {
         });
       });
 
-      test(`method ${method} - Should not do a conversion when consent is optin but subid and cashback are not defined`, () => {
+      test(`method ${method} - Should do a conversion when consent is optin but subid and cashback are not defined`, () => {
         const instance = new Sdk();
 
         instance.push(['_setOptin']);
         instance.push([method, minimumConvertPayload]);
 
         expect(instance.consent).toEqual(CONSTANTS.consent.status.optin);
-        expect(fetch).not.toHaveBeenCalledWith(CONSTANTS.urls.conversion[0], expect.anything());
+        expect(fetch).toHaveBeenCalledWith(CONSTANTS.urls.conversion[0], expect.anything());
       });
 
       subidsConfig.forEach(({ name, queryname, payloadType }) => {

@@ -55,6 +55,8 @@ export default {
     conversion: process.env.API_CONVERSION_URLS?.split(',') || [],
     stats: process.env.API_STATS_URLS?.split(',') || [],
     proofConsent: process.env.API_PROOF_CONSENT_URLS?.split(',') || [],
+    registerIpFingerprint: process.env.API_REGISTER_IP_FINGERPRINT_URLS?.split(',') || [],
+    deleteData: process.env.API_DELETE_DATA?.split(',') || [],
   },
   errors: { subidCookieType: 'subid_cookie_type' },
 };
