@@ -24,14 +24,19 @@ export default class Sdk {
 
   #name = CONSTANTS.sdk_name;
 
+  #hit = null;
+
   constructor() {
     this.env = process.env.NODE_ENV;
     this.version = process.env.SDK_VERSION;
 
-    this.#logEvent({ type: CONSTANTS.events.visit_promethee });
     this.#setProgids();
     this.#setCookieDomain();
     this.#configureProgramData(CONSTANTS.cashback);
+
+    // Need to wait progids to be set
+    this.#logHit({ consent: this.consent });
+    this.#logEvent({ type: CONSTANTS.events.visit_promethee });
 
     if (!this.consent) {
       this.#setConsent(CONSTANTS.consent.status.unknown);
@@ -236,7 +241,7 @@ export default class Sdk {
         const error = await response.json();
 
         this.#setError({
-          error: { message: ` code ${response?.status} - ${error?.message}` },
+          error: { message: `code ${response?.status} - ${error?.message}` },
           caller,
           extra: { body, url: this.#conversionUrlIterator.url },
         });
@@ -279,15 +284,42 @@ export default class Sdk {
     }
   }
 
-  #logStats({ consent, type, progid, comid }) {
+  #logHit({ consent }) {
+    const shouldNotLog = !consent || this.#hit?.consent === consent;
+
+    if (shouldNotLog) {
+      return;
+    }
+
+    const eventTimestamp = Math.round(Date.now() / 1000);
+
+    this.#progids.forEach((progid) => {
+      if (this.#hit) {
+        this.#logStats({ ...this.#hit, progid, count: '-1' });
+      }
+
+      const hit = {
+        type: CONSTANTS.stats.type.hit,
+        progid,
+        consent,
+        url: utils.getCurrentUrl(),
+        event_timestamp: eventTimestamp,
+        count: '1',
+      };
+
+      this.#hit = hit;
+
+      this.#logStats(hit);
+    });
+  }
+
+  #logStats({ consent, ...data }) {
     const toSubids = this.#getToSubids();
 
     this.#callApi({
       urlIterator: this.#statsUrlIterator,
       body: {
-        type,
-        progid,
-        ...(comid ? { comid } : {}),
+        ...data,
         url: utils.getCurrentUrl(),
         status: consent,
         toSubids,
@@ -337,20 +369,24 @@ export default class Sdk {
   }
 
   #setConsent(consent) {
+    this.#logHit({ consent });
+
     const shouldSetConsent = consent !== this.consent;
-    const shouldSetupPOC =
-      consent === CONSTANTS.consent.status.optin && !this.eventConsentId && this.#hasSubids(CONSTANTS.subid);
 
     if (shouldSetConsent) {
       utils.setValue(consent, CONSTANTS.consent.name);
       this.#progids.forEach((progid) => {
-        this.#logStats({ consent, progid, type: CONSTANTS.stats.type.visit });
+        this.#logStats({ type: CONSTANTS.stats.type.visit, progid, consent });
       });
     }
+
+    const shouldSetupPOC =
+      consent === CONSTANTS.consent.status.optin && !this.eventConsentId && this.#hasSubids(CONSTANTS.subid);
 
     if (shouldSetupPOC) {
       this.#setPOC();
     }
+
     // We need to wait for setPOC to retrieve event-consent-id
     const shouldRegisterIpAndFingerprint =
       consent === CONSTANTS.consent.status.optin &&
@@ -480,10 +516,10 @@ export default class Sdk {
     }
 
     this.#logStats({
-      consent: this.consent,
-      progid,
       type: CONSTANTS.stats.type.conversion,
+      progid,
       comid,
+      consent: this.consent,
     });
   }
 
