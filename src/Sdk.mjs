@@ -16,6 +16,8 @@ export default class Sdk {
 
   #registerIpFingerprintUrlIterator = utils.getApiIterator(CONSTANTS.urls.registerIpFingerprint);
 
+  #logEventUrlIterator = utils.getApiIterator(CONSTANTS.urls.events);
+
   #deleteDataUrlIterator = utils.getApiIterator(CONSTANTS.urls.deleteData);
 
   #errors = [];
@@ -26,6 +28,7 @@ export default class Sdk {
     this.env = process.env.NODE_ENV;
     this.version = process.env.SDK_VERSION;
 
+    this.#logEvent({ type: CONSTANTS.events.visit_promethee });
     this.#setProgids();
     this.#setCookieDomain();
     this.#configureProgramData(CONSTANTS.cashback);
@@ -241,6 +244,38 @@ export default class Sdk {
     } catch (error) {
       urlIterator.next();
       this.#callApi({ urlIterator, body, caller });
+    }
+  }
+
+  #logEvent({ type }) {
+    try {
+      const toSubids = [CONSTANTS.subid, CONSTANTS.cashback]
+        .map(({ queryname, payloadType }) => {
+          const value = this.constructor.getProgramDataFromQueryParams(queryname);
+
+          if (value) {
+            return {
+              type: payloadType,
+              value,
+            };
+          }
+
+          return null;
+        })
+        .filter(Boolean);
+
+      if (toSubids.length > 0) {
+        this.#callApi({
+          urlIterator: this.#logEventUrlIterator,
+          body: {
+            type,
+            toSubids,
+          },
+          caller: '#logEvent',
+        });
+      }
+    } catch (error) {
+      this.#setError({ error, caller: 'logEvent', extra: { type } });
     }
   }
 
