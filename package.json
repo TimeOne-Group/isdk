@@ -1,6 +1,6 @@
 {
   "name": "isdk",
-  "version": "2.4.0",
+  "version": "2.5.0",
   "description": "",
   "main": "index.js",
   "scripts": {
@@ -14,8 +14,8 @@
     "test:unit:path": "NODE_ENV=test jest --runInBand --verbose",
     "test:unit:watch": "npm run test:unit:path src -- --watch",
     "test": "npm run test:unit && npm run test:browserstack",
-    "release": "docker-compose run test && standard-version -a -m 'chore(release): %s 🚀' --release-as minor",
-    "hotfix": "docker-compose run test && standard-version -a -m 'chore(hotfix): %s 🔧' --release-as patch"
+    "release": "docker compose run test && standard-version -a -m 'chore(release): %s 🚀' --release-as minor",
+    "hotfix": "docker compose run test && standard-version -a -m 'chore(hotfix): %s 🔧' --release-as patch"
   },
   "repository": {
     "type": "git",

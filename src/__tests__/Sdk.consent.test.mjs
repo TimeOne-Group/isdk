@@ -181,7 +181,7 @@ describe('The ISDK class test', () => {
       expect(instance.constructor.getProgramDataFromQueryParams).toHaveBeenCalledWith(CONSTANTS.cashback.queryname);
       expect(instance.consentSubids).toEqual({});
       expect(instance.cashbackSubids).toEqual(cashbackSubids);
-      expect(fetch).toHaveBeenCalledTimes(2);
+      expect(fetch).toHaveBeenCalledTimes(3);
       expect(fetch).toHaveBeenCalledWith(CONSTANTS.urls.stats[0], {
         ...apiOptions,
         body: JSON.stringify({
@@ -197,6 +197,18 @@ describe('The ISDK class test', () => {
           progid,
         }),
       });
+      expect(fetch).toHaveBeenCalledWith(CONSTANTS.urls.events[0], {
+        ...apiOptions,
+        body: JSON.stringify({
+          type: CONSTANTS.events.visit_promethee,
+          toSubids: [
+            {
+              type: CONSTANTS.cashback.payloadType,
+              value: cashbackSubid,
+            },
+          ],
+        }),
+      });
     });
 
     noConsentValues.forEach((consent) => {
@@ -206,7 +218,7 @@ describe('The ISDK class test', () => {
         const instance = new Sdk();
 
         expect(instance.consent).toEqual(consent);
-        expect(instance.constructor.getProgramDataFromQueryParams).toHaveBeenCalledTimes(1);
+        expect(instance.constructor.getProgramDataFromQueryParams).toHaveBeenCalledTimes(3);
         expect(instance.constructor.getProgramDataFromQueryParams).toHaveBeenCalledWith(CONSTANTS.cashback.queryname);
         expect(instance.consentSubids).toEqual({});
         expect(fetch).toHaveBeenCalledTimes(1);
@@ -230,13 +242,25 @@ describe('The ISDK class test', () => {
         const instance = new Sdk();
 
         expect(instance.consent).toEqual(consent);
-        expect(instance.constructor.getProgramDataFromQueryParams).toHaveBeenCalledTimes(1);
+        expect(instance.constructor.getProgramDataFromQueryParams).toHaveBeenCalledTimes(3);
         expect(instance.consentSubids).toEqual(subids);
-        expect(fetch).toHaveBeenCalledTimes(1);
+        expect(fetch).toHaveBeenCalledTimes(2);
         expect(fetch).toHaveBeenCalledWith(CONSTANTS.urls.deleteData[0], {
           ...apiDeleteOptions,
           body: JSON.stringify({
             progid,
+          }),
+        });
+        expect(fetch).toHaveBeenCalledWith(CONSTANTS.urls.events[0], {
+          ...apiOptions,
+          body: JSON.stringify({
+            type: CONSTANTS.events.visit_promethee,
+            toSubids: [
+              {
+                type: CONSTANTS.subid.payloadType,
+                value: subid,
+              },
+            ],
           }),
         });
       });
@@ -298,7 +322,7 @@ describe('The ISDK class test', () => {
       const instance = new Sdk();
 
       expect(instance.consent).toEqual(CONSTANTS.consent.status.optin);
-      expect(instance.constructor.getProgramDataFromQueryParams).toHaveBeenCalledTimes(2);
+      expect(instance.constructor.getProgramDataFromQueryParams).toHaveBeenCalledTimes(4);
       expect(instance.constructor.getProgramDataFromQueryParams).toHaveBeenCalledWith(CONSTANTS.subid.queryname);
       expect(instance.constructor.getProgramDataFromQueryParams).toHaveBeenCalledWith(CONSTANTS.cashback.queryname);
       expect(Cookie.get(consentSubidStorageName)).toEqual('');
@@ -322,14 +346,26 @@ describe('The ISDK class test', () => {
       const instance = new Sdk();
 
       expect(instance.consent).toEqual(CONSTANTS.consent.status.optin);
-      expect(instance.constructor.getProgramDataFromQueryParams).toHaveBeenCalledTimes(2);
+      expect(instance.constructor.getProgramDataFromQueryParams).toHaveBeenCalledTimes(4);
       expect(instance.constructor.getProgramDataFromQueryParams).toHaveBeenCalledWith(CONSTANTS.subid.queryname);
       expect(instance.constructor.getProgramDataFromQueryParams).toHaveBeenCalledWith(CONSTANTS.cashback.queryname);
       expect(instance.consentSubids).toEqual(subids);
       expect(Cookie.get(consentSubidStorageName)).toEqual(compressSubids);
       expect(utils.Storage.find(consentSubidStorageName)).toEqual(compressSubids);
       expect(utils.getValue(CONSTANTS.subid.name)).toEqual(subids);
-      expect(fetch).toHaveBeenCalledTimes(0);
+      expect(fetch).toHaveBeenCalledTimes(1);
+      expect(fetch).toHaveBeenCalledWith(CONSTANTS.urls.events[0], {
+        ...apiOptions,
+        body: JSON.stringify({
+          type: CONSTANTS.events.visit_promethee,
+          toSubids: [
+            {
+              type: CONSTANTS.subid.payloadType,
+              value: subid,
+            },
+          ],
+        }),
+      });
     });
 
     test('constructor - Should set subid when consent optin and subid in cookie', () => {
@@ -349,7 +385,7 @@ describe('The ISDK class test', () => {
       const instance = new Sdk();
 
       expect(instance.consent).toEqual(CONSTANTS.consent.status.optin);
-      expect(instance.constructor.getProgramDataFromQueryParams).toHaveBeenCalledTimes(2);
+      expect(instance.constructor.getProgramDataFromQueryParams).toHaveBeenCalledTimes(4);
       expect(instance.constructor.getProgramDataFromQueryParams).toHaveBeenCalledWith(CONSTANTS.subid.queryname);
       expect(instance.constructor.getProgramDataFromQueryParams).toHaveBeenCalledWith(CONSTANTS.cashback.queryname);
       expect(instance.consentSubids).toEqual(subids);
@@ -375,7 +411,7 @@ describe('The ISDK class test', () => {
       const instance = new Sdk();
 
       expect(instance.consent).toEqual(CONSTANTS.consent.status.optin);
-      expect(instance.constructor.getProgramDataFromQueryParams).toHaveBeenCalledTimes(2);
+      expect(instance.constructor.getProgramDataFromQueryParams).toHaveBeenCalledTimes(4);
       expect(instance.constructor.getProgramDataFromQueryParams).toHaveBeenCalledWith(CONSTANTS.subid.queryname);
       expect(instance.constructor.getProgramDataFromQueryParams).toHaveBeenCalledWith(CONSTANTS.cashback.queryname);
       expect(instance.consentSubids).toEqual(subids);
@@ -410,14 +446,26 @@ describe('The ISDK class test', () => {
       const instance = new Sdk();
 
       expect(instance.consent).toEqual(CONSTANTS.consent.status.optin);
-      expect(instance.constructor.getProgramDataFromQueryParams).toHaveBeenCalledTimes(2);
+      expect(instance.constructor.getProgramDataFromQueryParams).toHaveBeenCalledTimes(4);
       expect(instance.constructor.getProgramDataFromQueryParams).toHaveBeenCalledWith(CONSTANTS.subid.queryname);
       expect(instance.constructor.getProgramDataFromQueryParams).toHaveBeenCalledWith(CONSTANTS.cashback.queryname);
       expect(instance.consentSubids).toEqual(subids);
       expect(instance.cashbackSubids).toEqual({});
       expect(Cookie.get(consentSubidStorageName)).toEqual(compressSubids);
       expect(utils.getValue(CONSTANTS.subid.name)).toEqual(subids);
-      expect(fetch).toHaveBeenCalledTimes(0);
+      expect(fetch).toHaveBeenCalledTimes(1);
+      expect(fetch).toHaveBeenCalledWith(CONSTANTS.urls.events[0], {
+        ...apiOptions,
+        body: JSON.stringify({
+          type: CONSTANTS.events.visit_promethee,
+          toSubids: [
+            {
+              type: CONSTANTS.subid.payloadType,
+              value: querySubid,
+            },
+          ],
+        }),
+      });
     });
 
     test('constructor - Should set subid from queryparams when consent optin, subid in localstorage and in queryparams', () => {
@@ -444,14 +492,26 @@ describe('The ISDK class test', () => {
       const instance = new Sdk();
 
       expect(instance.consent).toEqual(CONSTANTS.consent.status.optin);
-      expect(instance.constructor.getProgramDataFromQueryParams).toHaveBeenCalledTimes(2);
+      expect(instance.constructor.getProgramDataFromQueryParams).toHaveBeenCalledTimes(4);
       expect(instance.constructor.getProgramDataFromQueryParams).toHaveBeenCalledWith(CONSTANTS.subid.queryname);
       expect(instance.constructor.getProgramDataFromQueryParams).toHaveBeenCalledWith(CONSTANTS.cashback.queryname);
       expect(instance.cashbackSubids).toEqual({});
       expect(instance.consentSubids).toEqual(subids);
       expect(utils.Storage.find(consentSubidStorageName)).toEqual(compressSubids);
       expect(utils.getValue(CONSTANTS.subid.name)).toEqual(subids);
-      expect(fetch).toHaveBeenCalledTimes(0);
+      expect(fetch).toHaveBeenCalledTimes(1);
+      expect(fetch).toHaveBeenCalledWith(CONSTANTS.urls.events[0], {
+        ...apiOptions,
+        body: JSON.stringify({
+          type: CONSTANTS.events.visit_promethee,
+          toSubids: [
+            {
+              type: CONSTANTS.subid.payloadType,
+              value: querySubid,
+            },
+          ],
+        }),
+      });
     });
 
     test('method push - Should catch and store an error when eventName does not match class method', () => {
@@ -520,7 +580,7 @@ describe('The ISDK class test', () => {
           expect(utils.Storage.find(consentSubidStorageName)).toBeFalsy();
           expect(utils.getValue(CONSTANTS.subid.name)).toBeFalsy();
 
-          expect(fetch).toHaveBeenCalledTimes(2);
+          expect(fetch).toHaveBeenCalledTimes(3);
           expect(fetch).toHaveBeenCalledWith(CONSTANTS.urls.stats[0], {
             ...apiOptions,
             body: JSON.stringify({
@@ -534,6 +594,18 @@ describe('The ISDK class test', () => {
             ...apiDeleteOptions,
             body: JSON.stringify({
               progid,
+            }),
+          });
+          expect(fetch).toHaveBeenCalledWith(CONSTANTS.urls.events[0], {
+            ...apiOptions,
+            body: JSON.stringify({
+              type: CONSTANTS.events.visit_promethee,
+              toSubids: [
+                {
+                  type: CONSTANTS.subid.payloadType,
+                  value: subid,
+                },
+              ],
             }),
           });
         });
@@ -550,7 +622,7 @@ describe('The ISDK class test', () => {
       Sdk.getProgramDataFromQueryParams = jest.fn((name) => (name === CONSTANTS.subid.queryname ? subid : null));
 
       const instance = new Sdk();
-      expect(fetch).toHaveBeenCalledTimes(2);
+      expect(fetch).toHaveBeenCalledTimes(3);
       expect(fetch).toHaveBeenCalledWith(CONSTANTS.urls.stats[0], {
         ...apiOptions,
         body: JSON.stringify({
@@ -564,6 +636,19 @@ describe('The ISDK class test', () => {
         ...apiDeleteOptions,
         body: JSON.stringify({
           progid,
+        }),
+      });
+
+      expect(fetch).toHaveBeenCalledWith(CONSTANTS.urls.events[0], {
+        ...apiOptions,
+        body: JSON.stringify({
+          type: CONSTANTS.events.visit_promethee,
+          toSubids: [
+            {
+              type: CONSTANTS.subid.payloadType,
+              value: subid,
+            },
+          ],
         }),
       });
       expect(instance.consent).toEqual(CONSTANTS.consent.status.unknown);
@@ -582,7 +667,7 @@ describe('The ISDK class test', () => {
       expect(utils.Storage.find(consentSubidStorageName)).toEqual(compressSubids);
       expect(utils.getValue(CONSTANTS.subid.name)).toEqual(subids);
 
-      expect(fetch).toHaveBeenCalledTimes(5);
+      expect(fetch).toHaveBeenCalledTimes(6);
       expect(fetch).toHaveBeenCalledWith(CONSTANTS.urls.stats[0], {
         ...apiOptions,
         body: JSON.stringify({
