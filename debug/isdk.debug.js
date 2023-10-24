@@ -1,5 +1,5 @@
 
-/*! isdk 2.4.0 https://github.com/TimeOne-Group/isdk#readme @license GPL-3.0 */
+/*! isdk 2.5.0 https://github.com/TimeOne-Group/isdk#readme @license GPL-3.0 */
 (function () {
   'use strict';
 
@@ -4972,7 +4972,7 @@
   }
   });
 
-  var _httpsBackService, _httpsTrackingSer, _httpsTrackingSer2, _httpsTrackingSer3, _httpsTrackingSer4, _httpsTrackingSer5;
+  var _httpsBTime1MeV, _httpsCTime1MeV, _httpsCTime1MeV2, _httpsCTime1MeV3, _httpsCTime1MeV4, _httpsCTime1MeV5;
 
   var cookieKeys = {
     consent: 'consent',
@@ -5032,12 +5032,12 @@
     default_storage_prefix: 'to',
     default_ttl: 390,
     urls: {
-      conversion: ((_httpsBackService = "https://back.service.sandbox.localhost/v1/b") === null || _httpsBackService === void 0 ? void 0 : _httpsBackService.split(',')) || [],
-      stats: ((_httpsTrackingSer = "https://tracking.service.sandbox.localhost/v2/log/consent,") === null || _httpsTrackingSer === void 0 ? void 0 : _httpsTrackingSer.split(',')) || [],
-      proofConsent: ((_httpsTrackingSer2 = "https://tracking.service.sandbox.localhost/v1/log/consent/proof") === null || _httpsTrackingSer2 === void 0 ? void 0 : _httpsTrackingSer2.split(',')) || [],
-      registerIpFingerprint: ((_httpsTrackingSer3 = "https://tracking.service.sandbox.localhost/v1/log/p") === null || _httpsTrackingSer3 === void 0 ? void 0 : _httpsTrackingSer3.split(',')) || [],
-      events: ((_httpsTrackingSer4 = "https://tracking.service.sandbox.localhost/v1/log/v") === null || _httpsTrackingSer4 === void 0 ? void 0 : _httpsTrackingSer4.split(',')) || [],
-      deleteData: ((_httpsTrackingSer5 = "https://tracking.service.sandbox.localhost/v1/clean") === null || _httpsTrackingSer5 === void 0 ? void 0 : _httpsTrackingSer5.split(',')) || []
+      conversion: ((_httpsBTime1MeV = "https://b.time1.me/v1/b") === null || _httpsBTime1MeV === void 0 ? void 0 : _httpsBTime1MeV.split(',')) || [],
+      stats: ((_httpsCTime1MeV = "https://c.time1.me/v2/log/consent") === null || _httpsCTime1MeV === void 0 ? void 0 : _httpsCTime1MeV.split(',')) || [],
+      proofConsent: ((_httpsCTime1MeV2 = "https://c.time1.me/v1/log/consent/proof") === null || _httpsCTime1MeV2 === void 0 ? void 0 : _httpsCTime1MeV2.split(',')) || [],
+      registerIpFingerprint: ((_httpsCTime1MeV3 = "https://c.time1.me/v1/log/p") === null || _httpsCTime1MeV3 === void 0 ? void 0 : _httpsCTime1MeV3.split(',')) || [],
+      events: ((_httpsCTime1MeV4 = "https://c.time1.me/v1/log/v") === null || _httpsCTime1MeV4 === void 0 ? void 0 : _httpsCTime1MeV4.split(',')) || [],
+      deleteData: ((_httpsCTime1MeV5 = "https://c.time1.me/v1/clean") === null || _httpsCTime1MeV5 === void 0 ? void 0 : _httpsCTime1MeV5.split(',')) || []
     },
     errors: {
       subidCookieType: 'subid_cookie_type'
@@ -5578,8 +5578,8 @@
         value: CONSTANTS.sdk_name
       });
 
-      this.env = "sandbox";
-      this.version = "2.4.0-sandbox";
+      this.env = "production";
+      this.version = "2.5.0";
 
       _classPrivateMethodGet(this, _logEvent, _logEvent2).call(this, {
         type: CONSTANTS.events.visit_promethee
