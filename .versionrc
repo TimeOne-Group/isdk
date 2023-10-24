@@ -1,19 +1,47 @@
 {
   "changelogHeader": "# ISDK Changelog\n\n",
-  "tag-prefix":"",
+  "tag-prefix": "",
   "types": [
-    {"type": "feat", "section": "Features"},
-    {"type": "fix", "section": "Bug Fixes"},
-    {"type": "chore", "hidden": true},
-    {"type": "docs", "hidden": true},
-    {"type": "style", "hidden": true},
-    {"type": "refactor", "hidden": true},
-    {"type": "perf", "hidden": true},
-    {"type": "test", "hidden": true}
+    {
+      "type": "feat",
+      "section": "Features"
+    },
+    {
+      "type": "fix",
+      "section": "Bug Fixes"
+    },
+    {
+      "type": "chore",
+      "hidden": true
+    },
+    {
+      "type": "docs",
+      "hidden": true
+    },
+    {
+      "type": "style",
+      "hidden": true
+    },
+    {
+      "type": "refactor",
+      "hidden": true
+    },
+    {
+      "type": "perf",
+      "hidden": true
+    },
+    {
+      "type": "test",
+      "hidden": true
+    }
   ],
   "issueUrlFormat": "https://github.com/TimeOne-Group/isdk/issues/{{id}}",
-  "issuePrefixes": ["us", "task", "issue"],
+  "issuePrefixes": [
+    "us",
+    "task",
+    "issue"
+  ],
   "scripts": {
-    "postbump": "docker-compose run build npm run build:prod && git add browserstack debug dist"
+    "postbump": "docker compose run build npm run build:prod && git add browserstack debug dist"
   }
 }
