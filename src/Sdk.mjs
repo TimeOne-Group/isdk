@@ -291,26 +291,25 @@ export default class Sdk {
       return;
     }
 
-    const eventTimestamp = Math.round(Date.now() / 1000);
+    const eventTimestamp = utils.getHitTimestamp();
+
+    const hit = {
+      type: CONSTANTS.stats.type.hit,
+      consent,
+      url: utils.getCurrentUrl(),
+      event_timestamp: eventTimestamp,
+      count: '1',
+    };
 
     this.#progids.forEach((progid) => {
       if (this.#hit) {
-        this.#logStats({ ...this.#hit, progid, count: '-1' });
+        this.#logStats({ progid, ...this.#hit, count: '-1' });
       }
 
-      const hit = {
-        type: CONSTANTS.stats.type.hit,
-        progid,
-        consent,
-        url: utils.getCurrentUrl(),
-        event_timestamp: eventTimestamp,
-        count: '1',
-      };
-
-      this.#hit = hit;
-
-      this.#logStats(hit);
+      this.#logStats({ progid, ...hit });
     });
+
+    this.#hit = hit;
   }
 
   #logStats({ consent, ...data }) {
