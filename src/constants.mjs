@@ -50,6 +50,7 @@ export default {
     type: {
       visit: 'visit',
       conversion: 'conversion',
+      hit: 'hit',
     },
   },
   default_storage_prefix: 'to',

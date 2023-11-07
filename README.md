@@ -52,7 +52,7 @@ Intégration du SDK sur **toutes les pages du site sans conditionnement** de sou
   type="text/javascript"
   id="__ISDK_ASSETS"
   data-progids="[PROGID]"
-  src="https://cdn.jsdelivr.net/gh/TimeOne-Group/isdk@main/dist/isdk.min.js"
+  src="https://cdn.jsdelivr.net/gh/TimeOne-Group/isdk@latest/dist/isdk.min.js"
 ></script>
 ```
 
