@@ -44,6 +44,10 @@ export function getCurrentTimestamp() {
   return currentDate.getTime() + currentDate.getTimezoneOffset() * 60 * 1000;
 }
 
+export function getHitTimestamp() {
+  return Math.round(Date.now() / 1000);
+}
+
 export function getTimestampFromTTL(ttl) {
   return (ttl || 0) * 1000 * 60 * 60 * 24;
 }
