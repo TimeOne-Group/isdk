@@ -1,6 +1,13 @@
 # ISDK Changelog
 
 
+## [2.6.0](https://github.com/TimeOne-Group/isdk/compare/2.5.0...2.6.0) (2023-11-07)
+
+
+### Features
+
+* ajoute un log a chaque hit ([02d3fba](https://github.com/TimeOne-Group/isdk/commit/02d3fbaf168da5994cce3c16c1052a57313588a9))
+
 ## [2.5.0](https://github.com/TimeOne-Group/isdk/compare/2.4.0...2.5.0) (2023-10-24)
 
 
