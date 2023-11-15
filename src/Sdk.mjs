@@ -345,12 +345,28 @@ export default class Sdk {
 
   #hasSubids(options) {
     const subids = this.#getActiveSubidsValues(options);
-
     return subids?.length > 0;
   }
 
   #registerIpFingerprint() {
-    const toSubids = this.#getToSubidsWithType();
+    const shouldRegisterIpAndFingerprintForSubid =
+      this.consent === CONSTANTS.consent.status.optin && this.eventConsentId && this.#hasSubids(CONSTANTS.subid);
+
+    const shouldRegisterIpAndFingerprintForCashback = this.#hasSubids(CONSTANTS.cashback);
+
+    const allowSubidTypes = Object.entries({
+      [CONSTANTS.subid.payloadType]: shouldRegisterIpAndFingerprintForSubid,
+      [CONSTANTS.cashback.payloadType]: shouldRegisterIpAndFingerprintForCashback,
+    })
+      .filter(([, value]) => value)
+      .map(([key]) => key);
+
+    const allToSubids = this.#getToSubidsWithType();
+    const toSubids = allToSubids.filter(({ type }) => allowSubidTypes.includes(type));
+
+    if (toSubids.length === 0) {
+      return;
+    }
 
     this.#progids.forEach((progid) => {
       const body = {
@@ -385,16 +401,6 @@ export default class Sdk {
     if (shouldSetupPOC) {
       this.#setPOC();
     }
-
-    // We need to wait for setPOC to retrieve event-consent-id
-    const shouldRegisterIpAndFingerprint =
-      consent === CONSTANTS.consent.status.optin &&
-      this.eventConsentId &&
-      (this.#hasSubids(CONSTANTS.subid) || this.#hasSubids(CONSTANTS.cashbackSubid));
-
-    if (shouldRegisterIpAndFingerprint) {
-      this.#registerIpFingerprint();
-    }
   }
 
   #handleNoConsent() {
@@ -416,16 +422,19 @@ export default class Sdk {
   _setOptin() {
     this.#setConsent(CONSTANTS.consent.status.optin);
     this.#configureProgramData(CONSTANTS.subid);
+    this.#registerIpFingerprint();
   }
 
   _setOptout() {
     this.#setConsent(CONSTANTS.consent.status.optout);
     this.#handleNoConsent();
+    this.#registerIpFingerprint();
   }
 
   _setUnknown() {
     this.#setConsent(CONSTANTS.consent.status.unknown);
     this.#handleNoConsent();
+    this.#registerIpFingerprint();
   }
 
   #canConvert() {

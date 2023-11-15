@@ -5008,7 +5008,7 @@
   }
   });
 
-  var _httpsBTime1MeV, _httpsCTime1MeV, _httpsCTime1MeV2, _httpsCTime1MeV3, _httpsCTime1MeV4, _httpsCTime1MeV5;
+  var _httpsBackService, _httpsTrackingSer, _httpsTrackingSer2, _httpsTrackingSer3, _httpsTrackingSer4, _httpsTrackingSer5;
 
   var cookieKeys = {
     consent: 'consent',
@@ -5069,12 +5069,12 @@
     default_storage_prefix: 'to',
     default_ttl: 390,
     urls: {
-      conversion: ((_httpsBTime1MeV = "https://b.time1.me/v1/b") === null || _httpsBTime1MeV === void 0 ? void 0 : _httpsBTime1MeV.split(',')) || [],
-      stats: ((_httpsCTime1MeV = "https://c.time1.me/v3/log/consent") === null || _httpsCTime1MeV === void 0 ? void 0 : _httpsCTime1MeV.split(',')) || [],
-      proofConsent: ((_httpsCTime1MeV2 = "https://c.time1.me/v1/log/consent/proof") === null || _httpsCTime1MeV2 === void 0 ? void 0 : _httpsCTime1MeV2.split(',')) || [],
-      registerIpFingerprint: ((_httpsCTime1MeV3 = "https://c.time1.me/v1/log/p") === null || _httpsCTime1MeV3 === void 0 ? void 0 : _httpsCTime1MeV3.split(',')) || [],
-      events: ((_httpsCTime1MeV4 = "https://c.time1.me/v1/log/v") === null || _httpsCTime1MeV4 === void 0 ? void 0 : _httpsCTime1MeV4.split(',')) || [],
-      deleteData: ((_httpsCTime1MeV5 = "https://c.time1.me/v1/clean") === null || _httpsCTime1MeV5 === void 0 ? void 0 : _httpsCTime1MeV5.split(',')) || []
+      conversion: ((_httpsBackService = "https://back.service.sandbox.localhost/v1/b") === null || _httpsBackService === void 0 ? void 0 : _httpsBackService.split(',')) || [],
+      stats: ((_httpsTrackingSer = "https://tracking.service.sandbox.localhost/v3/log/consent,") === null || _httpsTrackingSer === void 0 ? void 0 : _httpsTrackingSer.split(',')) || [],
+      proofConsent: ((_httpsTrackingSer2 = "https://tracking.service.sandbox.localhost/v1/log/consent/proof") === null || _httpsTrackingSer2 === void 0 ? void 0 : _httpsTrackingSer2.split(',')) || [],
+      registerIpFingerprint: ((_httpsTrackingSer3 = "https://tracking.service.sandbox.localhost/v1/log/p") === null || _httpsTrackingSer3 === void 0 ? void 0 : _httpsTrackingSer3.split(',')) || [],
+      events: ((_httpsTrackingSer4 = "https://tracking.service.sandbox.localhost/v1/log/v") === null || _httpsTrackingSer4 === void 0 ? void 0 : _httpsTrackingSer4.split(',')) || [],
+      deleteData: ((_httpsTrackingSer5 = "https://tracking.service.sandbox.localhost/v1/clean") === null || _httpsTrackingSer5 === void 0 ? void 0 : _httpsTrackingSer5.split(',')) || []
     },
     errors: {
       subidCookieType: 'subid_cookie_type'
@@ -5631,8 +5631,8 @@
         value: null
       });
 
-      this.env = "production";
-      this.version = "2.6.0";
+      this.env = "sandbox";
+      this.version = "2.6.0-sandbox";
 
       _classPrivateMethodGet(this, _setProgids, _setProgids2).call(this);
 
@@ -5691,6 +5691,8 @@
         _classPrivateMethodGet(this, _setConsent, _setConsent2).call(this, CONSTANTS.consent.status.optin);
 
         _classPrivateMethodGet(this, _configureProgramData, _configureProgramData2).call(this, CONSTANTS.subid);
+
+        _classPrivateMethodGet(this, _registerIpFingerprint, _registerIpFingerprint2).call(this);
       }
     }, {
       key: "_setOptout",
@@ -5698,6 +5700,8 @@
         _classPrivateMethodGet(this, _setConsent, _setConsent2).call(this, CONSTANTS.consent.status.optout);
 
         _classPrivateMethodGet(this, _handleNoConsent, _handleNoConsent2).call(this);
+
+        _classPrivateMethodGet(this, _registerIpFingerprint, _registerIpFingerprint2).call(this);
       }
     }, {
       key: "_setUnknown",
@@ -5705,6 +5709,8 @@
         _classPrivateMethodGet(this, _setConsent, _setConsent2).call(this, CONSTANTS.consent.status.unknown);
 
         _classPrivateMethodGet(this, _handleNoConsent, _handleNoConsent2).call(this);
+
+        _classPrivateMethodGet(this, _registerIpFingerprint, _registerIpFingerprint2).call(this);
       }
     }, {
       key: "_setSale",
@@ -6289,13 +6295,39 @@
   function _hasSubids2(options) {
     var subids = _classPrivateMethodGet(this, _getActiveSubidsValues, _getActiveSubidsValues2).call(this, options);
 
+    console.log({
+      options: options,
+      subids: subids
+    });
     return (subids === null || subids === void 0 ? void 0 : subids.length) > 0;
   }
 
   function _registerIpFingerprint2() {
-    var _this3 = this;
+    var _Object$entries,
+        _this3 = this;
 
-    var toSubids = _classPrivateMethodGet(this, _getToSubidsWithType, _getToSubidsWithType2).call(this);
+    var shouldRegisterIpAndFingerprintForSubid = this.consent === CONSTANTS.consent.status.optin && this.eventConsentId && _classPrivateMethodGet(this, _hasSubids, _hasSubids2).call(this, CONSTANTS.subid);
+
+    var shouldRegisterIpAndFingerprintForCashback = _classPrivateMethodGet(this, _hasSubids, _hasSubids2).call(this, CONSTANTS.cashback);
+
+    var allowSubidTypes = Object.entries((_Object$entries = {}, _defineProperty(_Object$entries, CONSTANTS.subid.payloadType, shouldRegisterIpAndFingerprintForSubid), _defineProperty(_Object$entries, CONSTANTS.cashback.payloadType, shouldRegisterIpAndFingerprintForCashback), _Object$entries)).filter(function (_ref12) {
+      var _ref13 = _slicedToArray(_ref12, 2),
+          value = _ref13[1];
+
+      return value;
+    }).map(function (_ref14) {
+      var _ref15 = _slicedToArray(_ref14, 1),
+          key = _ref15[0];
+
+      return key;
+    });
+
+    var allToSubids = _classPrivateMethodGet(this, _getToSubidsWithType, _getToSubidsWithType2).call(this);
+
+    var toSubids = allToSubids.filter(function (_ref16) {
+      var type = _ref16.type;
+      return allowSubidTypes.includes(type);
+    });
 
     _classPrivateFieldGet(this, _progids).forEach(function (progid) {
       var body = {
@@ -6337,14 +6369,12 @@
 
     if (shouldSetupPOC) {
       _classPrivateMethodGet(this, _setPOC, _setPOC2).call(this);
-    } // We need to wait for setPOC to retrieve event-consent-id
-
-
-    var shouldRegisterIpAndFingerprint = consent === CONSTANTS.consent.status.optin && this.eventConsentId && (_classPrivateMethodGet(this, _hasSubids, _hasSubids2).call(this, CONSTANTS.subid) || _classPrivateMethodGet(this, _hasSubids, _hasSubids2).call(this, CONSTANTS.cashbackSubid));
-
-    if (shouldRegisterIpAndFingerprint) {
-      _classPrivateMethodGet(this, _registerIpFingerprint, _registerIpFingerprint2).call(this);
     }
+
+    console.log({
+      subidOPtions: CONSTANTS.subid,
+      cashbackOPtions: CONSTANTS.cashback
+    });
   }
 
   function _handleNoConsent2() {
@@ -6374,10 +6404,10 @@
   }
 
   function _getErrors2() {
-    return _classPrivateFieldGet(this, _errors).map(function (_ref12) {
-      var error = _ref12.error,
-          caller = _ref12.caller,
-          extra = _ref12.extra;
+    return _classPrivateFieldGet(this, _errors).map(function (_ref17) {
+      var error = _ref17.error,
+          caller = _ref17.caller,
+          extra = _ref17.extra;
       return {
         message: "While calling the method \"".concat(caller, "\": ").concat(error.message),
         extra: extra
@@ -6390,16 +6420,16 @@
   }
 
   function _setConversion3() {
-    _setConversion3 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee6(_ref13) {
+    _setConversion3 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee6(_ref18) {
       var _classPrivateFieldGet3;
 
-      var _ref13$data, data, _ref13$caller, caller, progid, comid, iu, _classPrivateFieldGet4, payload, body;
+      var _ref18$data, data, _ref18$caller, caller, progid, comid, iu, _classPrivateFieldGet4, payload, body;
 
       return regeneratorRuntime.wrap(function _callee6$(_context6) {
         while (1) {
           switch (_context6.prev = _context6.next) {
             case 0:
-              _ref13$data = _ref13.data, data = _ref13$data === void 0 ? {} : _ref13$data, _ref13$caller = _ref13.caller, caller = _ref13$caller === void 0 ? 'setConversion' : _ref13$caller;
+              _ref18$data = _ref18.data, data = _ref18$data === void 0 ? {} : _ref18$data, _ref18$caller = _ref18.caller, caller = _ref18$caller === void 0 ? 'setConversion' : _ref18$caller;
 
               if (_classPrivateMethodGet(this, _canConvert, _canConvert2).call(this)) {
                 _context6.next = 3;
@@ -6431,9 +6461,9 @@
                 event_consent_id: this.eventConsentId,
                 toSubids: _classPrivateMethodGet(this, _getToSubidsWithType, _getToSubidsWithType2).call(this)
               });
-              body = Object.fromEntries(Object.entries(payload).filter(function (_ref14) {
-                var _ref15 = _slicedToArray(_ref14, 2),
-                    value = _ref15[1];
+              body = Object.fromEntries(Object.entries(payload).filter(function (_ref19) {
+                var _ref20 = _slicedToArray(_ref19, 2),
+                    value = _ref20[1];
 
                 return !!value;
               }));
