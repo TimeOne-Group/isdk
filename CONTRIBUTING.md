@@ -4,7 +4,7 @@ To get started:
 
 ```sh
 $ git clone https://github.com/TimeOne-Group/isdk.git && cd isdk
-$ docker-compose run build npm ci
+$ docker compose run build npm ci
 ```
 
 ## Structure
@@ -20,10 +20,10 @@ The [source](https://github.com/TimeOne-Group/isdk/tree/main) is split up into a
 ### Run Unit Tests
 
 ```sh
-$ docker-compose run test
+$ docker compose run test
 
 # watch for changes
-$  docker-compose run test npm run test:unit:watch
+$  docker compose run test npm run test:unit:watch
 ```
 
 ### Run Browserstack Tests
@@ -38,13 +38,13 @@ Setting up `DEV_BROWSERSTACK_TEST` to `true` allow to run browserstack tests on 
 - Windows 10 - Chrome latest
 
 ```sh
-$ docker-compose --env-file ./.env.browserstack run browserstack_test
+$ docker compose --env-file ./.env.browserstack run browserstack_test
 ```
 
 ### Linting
 
 ```sh
-$ docker-compose run test npm run lint
+$ docker compose run test npm run lint
 ```
 
 Happy coding!

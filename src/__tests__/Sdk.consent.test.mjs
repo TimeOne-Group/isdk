@@ -672,32 +672,7 @@ describe('The ISDK class test', () => {
           expect(Cookie.get(consentSubidStorageName)).toEqual(compressSubids);
           expect(utils.Storage.find(consentSubidStorageName)).toEqual(compressSubids);
 
-          instance[methodName]();
-
-          expect(instance.consent).toEqual(consentName);
-          expect(Cookie.get(consentStorageName)).toEqual(getConsentValueForStorage(consentName));
-          expect(utils.Storage.find(consentStorageName)).toEqual(getConsentValueForStorage(consentName));
-
-          expect(instance.consentSubids).toEqual(subids);
-          expect(Cookie.get(consentSubidStorageName)).toBeFalsy();
-          expect(utils.Storage.find(consentSubidStorageName)).toBeFalsy();
-          expect(utils.getValue(CONSTANTS.subid.name)).toBeFalsy();
-
-          expect(fetch).toHaveBeenCalledTimes(6);
-          expect(fetch).toHaveBeenCalledWith(CONSTANTS.urls.stats[0], {
-            ...apiOptions,
-            body: JSON.stringify({
-              ...visitDefaultPayload,
-              status: consentName,
-              toSubids: [subid],
-            }),
-          });
-          expect(fetch).toHaveBeenCalledWith(CONSTANTS.urls.deleteData[0], {
-            ...apiDeleteOptions,
-            body: JSON.stringify({
-              progid,
-            }),
-          });
+          expect(fetch).toHaveBeenCalledTimes(2);
           expect(fetch).toHaveBeenCalledWith(CONSTANTS.urls.events[0], {
             ...apiOptions,
             body: JSON.stringify({
@@ -716,6 +691,35 @@ describe('The ISDK class test', () => {
               ...hitDefaultPayload,
               status: CONSTANTS.consent.status.optin,
               toSubids: [subid],
+            }),
+          });
+
+          fetch.resetMocks();
+
+          instance[methodName]();
+
+          expect(instance.consent).toEqual(consentName);
+          expect(Cookie.get(consentStorageName)).toEqual(getConsentValueForStorage(consentName));
+          expect(utils.Storage.find(consentStorageName)).toEqual(getConsentValueForStorage(consentName));
+
+          expect(instance.consentSubids).toEqual(subids);
+          expect(Cookie.get(consentSubidStorageName)).toBeFalsy();
+          expect(utils.Storage.find(consentSubidStorageName)).toBeFalsy();
+          expect(utils.getValue(CONSTANTS.subid.name)).toBeFalsy();
+
+          expect(fetch).toHaveBeenCalledTimes(4);
+          expect(fetch).toHaveBeenCalledWith(CONSTANTS.urls.stats[0], {
+            ...apiOptions,
+            body: JSON.stringify({
+              ...visitDefaultPayload,
+              status: consentName,
+              toSubids: [subid],
+            }),
+          });
+          expect(fetch).toHaveBeenCalledWith(CONSTANTS.urls.deleteData[0], {
+            ...apiDeleteOptions,
+            body: JSON.stringify({
+              progid,
             }),
           });
           expect(fetch).toHaveBeenCalledWith(CONSTANTS.urls.stats[0], {
@@ -899,6 +903,89 @@ describe('The ISDK class test', () => {
         cashbackSubids: {},
         errors,
         conversionUrls,
+      });
+    });
+
+    ['_setOptin', '_setUnknown', '_setOptout'].forEach((methodName) => {
+      test(`method registerIpFingerprint - Should not call registerIpFingerprint api if no subid or cashbackSubid is defined when ${methodName}`, () => {
+        const instance = new Sdk();
+        instance[methodName]();
+
+        expect(fetch).not.toHaveBeenCalledWith(CONSTANTS.urls.registerIpFingerprint[0], expect.any(Object));
+      });
+
+      test(`method registerIpFingerprint - Should call registerIpFingerprint api if cashbackSubid is defined when ${methodName}`, () => {
+        const cashbackSubid = 'cashback_12345';
+
+        Sdk.getProgramDataFromQueryParams = jest.fn((name) =>
+          name === CONSTANTS.cashback.queryname ? cashbackSubid : null
+        );
+
+        const instance = new Sdk();
+        instance[methodName]();
+
+        expect(fetch).toHaveBeenCalledWith(CONSTANTS.urls.registerIpFingerprint[0], {
+          ...apiOptions,
+          body: JSON.stringify({
+            progid,
+            toSubids: [{ type: CONSTANTS.cashback.payloadType, value: cashbackSubid }],
+          }),
+        });
+      });
+    });
+
+    test(`method registerIpFingerprint - Should call registerIpFingerprint api if subid is defined and consent optin`, () => {
+      const subid = '12345';
+
+      Sdk.getProgramDataFromQueryParams = jest.fn((name) => (name === CONSTANTS.subid.queryname ? subid : null));
+
+      const instance = new Sdk();
+      instance.push(['_setOptin']);
+
+      expect(fetch).toHaveBeenCalledWith(CONSTANTS.urls.registerIpFingerprint[0], {
+        ...apiOptions,
+        body: JSON.stringify({
+          progid,
+          event_consent_id: instance.eventConsentId,
+          toSubids: [{ type: CONSTANTS.subid.payloadType, value: subid }],
+        }),
+      });
+    });
+
+    test(`method registerIpFingerprint - Should call registerIpFingerprint api if subid and cashbackSubid are defined and consent optin`, () => {
+      const subid = '12345';
+      const cashbackSubid = 'cashback_12345';
+
+      Sdk.getProgramDataFromQueryParams = jest.fn((name) =>
+        name === CONSTANTS.subid.queryname ? subid : cashbackSubid
+      );
+
+      const instance = new Sdk();
+      instance.push(['_setOptin']);
+
+      expect(fetch).toHaveBeenCalledWith(CONSTANTS.urls.registerIpFingerprint[0], {
+        ...apiOptions,
+        body: JSON.stringify({
+          progid,
+          event_consent_id: instance.eventConsentId,
+          toSubids: [
+            { type: CONSTANTS.subid.payloadType, value: subid },
+            { type: CONSTANTS.cashback.payloadType, value: cashbackSubid },
+          ],
+        }),
+      });
+    });
+
+    noConsentMethods.forEach(({ methodName, consentName }) => {
+      test(`method registerIpFingerprint - Should not call registerIpFingerprint api if subid defined and consent ${consentName}`, () => {
+        const subid = '12345';
+
+        Sdk.getProgramDataFromQueryParams = jest.fn((name) => (name === CONSTANTS.subid.queryname ? subid : null));
+
+        const instance = new Sdk();
+        instance[methodName]();
+
+        expect(fetch).not.toHaveBeenCalledWith(CONSTANTS.urls.registerIpFingerprint[0], expect.any(Object));
       });
     });
   });
