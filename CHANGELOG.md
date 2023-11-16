@@ -1,6 +1,13 @@
 # ISDK Changelog
 
 
+### [2.6.1](https://github.com/TimeOne-Group/isdk/compare/2.6.0...2.6.1) (2023-11-16)
+
+
+### Bug Fixes
+
+* permet log fingerprint cashback ([59f12ef](https://github.com/TimeOne-Group/isdk/commit/59f12ef4e10d2062d0444efa9ce1c7567ce7fa15))
+
 ## [2.6.0](https://github.com/TimeOne-Group/isdk/compare/2.5.0...2.6.0) (2023-11-07)
 
 
