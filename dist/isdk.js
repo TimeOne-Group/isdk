@@ -1,5 +1,5 @@
 
-/*! isdk 2.6.0 https://github.com/TimeOne-Group/isdk#readme @license GPL-3.0 */
+/*! isdk 2.6.1 https://github.com/TimeOne-Group/isdk#readme @license GPL-3.0 */
 (function () {
   'use strict';
 
@@ -5422,7 +5422,7 @@
       });
 
       this.env = "production";
-      this.version = "2.6.0";
+      this.version = "2.6.1";
 
       _classPrivateMethodGet(this, _setProgids, _setProgids2).call(this);
 
@@ -5481,6 +5481,8 @@
         _classPrivateMethodGet(this, _setConsent, _setConsent2).call(this, CONSTANTS.consent.status.optin);
 
         _classPrivateMethodGet(this, _configureProgramData, _configureProgramData2).call(this, CONSTANTS.subid);
+
+        _classPrivateMethodGet(this, _registerIpFingerprint, _registerIpFingerprint2).call(this);
       }
     }, {
       key: "_setOptout",
@@ -5488,6 +5490,8 @@
         _classPrivateMethodGet(this, _setConsent, _setConsent2).call(this, CONSTANTS.consent.status.optout);
 
         _classPrivateMethodGet(this, _handleNoConsent, _handleNoConsent2).call(this);
+
+        _classPrivateMethodGet(this, _registerIpFingerprint, _registerIpFingerprint2).call(this);
       }
     }, {
       key: "_setUnknown",
@@ -5495,6 +5499,8 @@
         _classPrivateMethodGet(this, _setConsent, _setConsent2).call(this, CONSTANTS.consent.status.unknown);
 
         _classPrivateMethodGet(this, _handleNoConsent, _handleNoConsent2).call(this);
+
+        _classPrivateMethodGet(this, _registerIpFingerprint, _registerIpFingerprint2).call(this);
       }
     }, {
       key: "_setSale",
@@ -6083,9 +6089,35 @@
   }
 
   function _registerIpFingerprint2() {
-    var _this3 = this;
+    var _Object$entries,
+        _this3 = this;
 
-    var toSubids = _classPrivateMethodGet(this, _getToSubidsWithType, _getToSubidsWithType2).call(this);
+    var shouldRegisterIpAndFingerprintForSubid = this.consent === CONSTANTS.consent.status.optin && this.eventConsentId && _classPrivateMethodGet(this, _hasSubids, _hasSubids2).call(this, CONSTANTS.subid);
+
+    var shouldRegisterIpAndFingerprintForCashback = _classPrivateMethodGet(this, _hasSubids, _hasSubids2).call(this, CONSTANTS.cashback);
+
+    var allowSubidTypes = Object.entries((_Object$entries = {}, _defineProperty(_Object$entries, CONSTANTS.subid.payloadType, shouldRegisterIpAndFingerprintForSubid), _defineProperty(_Object$entries, CONSTANTS.cashback.payloadType, shouldRegisterIpAndFingerprintForCashback), _Object$entries)).filter(function (_ref12) {
+      var _ref13 = _slicedToArray(_ref12, 2),
+          value = _ref13[1];
+
+      return value;
+    }).map(function (_ref14) {
+      var _ref15 = _slicedToArray(_ref14, 1),
+          key = _ref15[0];
+
+      return key;
+    });
+
+    var allToSubids = _classPrivateMethodGet(this, _getToSubidsWithType, _getToSubidsWithType2).call(this);
+
+    var toSubids = allToSubids.filter(function (_ref16) {
+      var type = _ref16.type;
+      return allowSubidTypes.includes(type);
+    });
+
+    if (toSubids.length === 0) {
+      return;
+    }
 
     _classPrivateFieldGet(this, _progids).forEach(function (progid) {
       var body = {
@@ -6127,13 +6159,6 @@
 
     if (shouldSetupPOC) {
       _classPrivateMethodGet(this, _setPOC, _setPOC2).call(this);
-    } // We need to wait for setPOC to retrieve event-consent-id
-
-
-    var shouldRegisterIpAndFingerprint = consent === CONSTANTS.consent.status.optin && this.eventConsentId && (_classPrivateMethodGet(this, _hasSubids, _hasSubids2).call(this, CONSTANTS.subid) || _classPrivateMethodGet(this, _hasSubids, _hasSubids2).call(this, CONSTANTS.cashbackSubid));
-
-    if (shouldRegisterIpAndFingerprint) {
-      _classPrivateMethodGet(this, _registerIpFingerprint, _registerIpFingerprint2).call(this);
     }
   }
 
@@ -6164,10 +6189,10 @@
   }
 
   function _getErrors2() {
-    return _classPrivateFieldGet(this, _errors).map(function (_ref12) {
-      var error = _ref12.error,
-          caller = _ref12.caller,
-          extra = _ref12.extra;
+    return _classPrivateFieldGet(this, _errors).map(function (_ref17) {
+      var error = _ref17.error,
+          caller = _ref17.caller,
+          extra = _ref17.extra;
       return {
         message: "While calling the method \"".concat(caller, "\": ").concat(error.message),
         extra: extra
@@ -6180,16 +6205,16 @@
   }
 
   function _setConversion3() {
-    _setConversion3 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee6(_ref13) {
+    _setConversion3 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee6(_ref18) {
       var _classPrivateFieldGet3;
 
-      var _ref13$data, data, _ref13$caller, caller, progid, comid, iu, _classPrivateFieldGet4, payload, body;
+      var _ref18$data, data, _ref18$caller, caller, progid, comid, iu, _classPrivateFieldGet4, payload, body;
 
       return regeneratorRuntime.wrap(function _callee6$(_context6) {
         while (1) {
           switch (_context6.prev = _context6.next) {
             case 0:
-              _ref13$data = _ref13.data, data = _ref13$data === void 0 ? {} : _ref13$data, _ref13$caller = _ref13.caller, caller = _ref13$caller === void 0 ? 'setConversion' : _ref13$caller;
+              _ref18$data = _ref18.data, data = _ref18$data === void 0 ? {} : _ref18$data, _ref18$caller = _ref18.caller, caller = _ref18$caller === void 0 ? 'setConversion' : _ref18$caller;
 
               if (_classPrivateMethodGet(this, _canConvert, _canConvert2).call(this)) {
                 _context6.next = 3;
@@ -6221,9 +6246,9 @@
                 event_consent_id: this.eventConsentId,
                 toSubids: _classPrivateMethodGet(this, _getToSubidsWithType, _getToSubidsWithType2).call(this)
               });
-              body = Object.fromEntries(Object.entries(payload).filter(function (_ref14) {
-                var _ref15 = _slicedToArray(_ref14, 2),
-                    value = _ref15[1];
+              body = Object.fromEntries(Object.entries(payload).filter(function (_ref19) {
+                var _ref20 = _slicedToArray(_ref19, 2),
+                    value = _ref20[1];
 
                 return !!value;
               }));
