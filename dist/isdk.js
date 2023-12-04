@@ -1,5 +1,5 @@
 
-/*! isdk 2.6.1 https://github.com/TimeOne-Group/isdk#readme @license GPL-3.0 */
+/*! isdk 2.6.2 https://github.com/TimeOne-Group/isdk#readme @license GPL-3.0 */
 (function () {
   'use strict';
 
@@ -5249,7 +5249,7 @@
     return subids;
   }
 
-  var _excluded = ["consent"];
+  var _excluded = ["consent", "toSubids"];
 
   var _progids = /*#__PURE__*/new WeakMap();
 
@@ -5422,7 +5422,7 @@
       });
 
       this.env = "production";
-      this.version = "2.6.1";
+      this.version = "2.6.2";
 
       _classPrivateMethodGet(this, _setProgids, _setProgids2).call(this);
 
@@ -6025,12 +6025,17 @@
     }
 
     var eventTimestamp = getHitTimestamp();
+    var toSubids = [CONSTANTS.subid, CONSTANTS.cashback].map(function (_ref11) {
+      var queryname = _ref11.queryname;
+      return _this2.constructor.getProgramDataFromQueryParams(queryname);
+    }).filter(Boolean);
     var hit = {
       type: CONSTANTS.stats.type.hit,
       consent: consent,
       url: getCurrentUrl(),
       event_timestamp: eventTimestamp,
-      count: '1'
+      count: '1',
+      toSubids: toSubids
     };
 
     _classPrivateFieldGet(this, _progids).forEach(function (progid) {
@@ -6050,18 +6055,19 @@
     _classPrivateFieldSet(this, _hit, hit);
   }
 
-  function _logStats2(_ref11) {
-    var consent = _ref11.consent,
-        data = _objectWithoutProperties(_ref11, _excluded);
+  function _logStats2(_ref12) {
+    var consent = _ref12.consent,
+        toSubids = _ref12.toSubids,
+        data = _objectWithoutProperties(_ref12, _excluded);
 
-    var toSubids = _classPrivateMethodGet(this, _getToSubids, _getToSubids2).call(this);
+    var allToSubids = _classPrivateMethodGet(this, _getToSubids, _getToSubids2).call(this);
 
     _classPrivateMethodGet(this, _callApi, _callApi2).call(this, {
       urlIterator: _classPrivateFieldGet(this, _statsUrlIterator),
       body: _objectSpread2(_objectSpread2({}, data), {}, {
         url: getCurrentUrl(),
         status: consent,
-        toSubids: toSubids
+        toSubids: toSubids || allToSubids
       }),
       caller: '#logStats'
     });
@@ -6096,22 +6102,22 @@
 
     var shouldRegisterIpAndFingerprintForCashback = _classPrivateMethodGet(this, _hasSubids, _hasSubids2).call(this, CONSTANTS.cashback);
 
-    var allowSubidTypes = Object.entries((_Object$entries = {}, _defineProperty(_Object$entries, CONSTANTS.subid.payloadType, shouldRegisterIpAndFingerprintForSubid), _defineProperty(_Object$entries, CONSTANTS.cashback.payloadType, shouldRegisterIpAndFingerprintForCashback), _Object$entries)).filter(function (_ref12) {
-      var _ref13 = _slicedToArray(_ref12, 2),
-          value = _ref13[1];
+    var allowSubidTypes = Object.entries((_Object$entries = {}, _defineProperty(_Object$entries, CONSTANTS.subid.payloadType, shouldRegisterIpAndFingerprintForSubid), _defineProperty(_Object$entries, CONSTANTS.cashback.payloadType, shouldRegisterIpAndFingerprintForCashback), _Object$entries)).filter(function (_ref13) {
+      var _ref14 = _slicedToArray(_ref13, 2),
+          value = _ref14[1];
 
       return value;
-    }).map(function (_ref14) {
-      var _ref15 = _slicedToArray(_ref14, 1),
-          key = _ref15[0];
+    }).map(function (_ref15) {
+      var _ref16 = _slicedToArray(_ref15, 1),
+          key = _ref16[0];
 
       return key;
     });
 
     var allToSubids = _classPrivateMethodGet(this, _getToSubidsWithType, _getToSubidsWithType2).call(this);
 
-    var toSubids = allToSubids.filter(function (_ref16) {
-      var type = _ref16.type;
+    var toSubids = allToSubids.filter(function (_ref17) {
+      var type = _ref17.type;
       return allowSubidTypes.includes(type);
     });
 
@@ -6189,10 +6195,10 @@
   }
 
   function _getErrors2() {
-    return _classPrivateFieldGet(this, _errors).map(function (_ref17) {
-      var error = _ref17.error,
-          caller = _ref17.caller,
-          extra = _ref17.extra;
+    return _classPrivateFieldGet(this, _errors).map(function (_ref18) {
+      var error = _ref18.error,
+          caller = _ref18.caller,
+          extra = _ref18.extra;
       return {
         message: "While calling the method \"".concat(caller, "\": ").concat(error.message),
         extra: extra
@@ -6205,16 +6211,16 @@
   }
 
   function _setConversion3() {
-    _setConversion3 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee6(_ref18) {
+    _setConversion3 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee6(_ref19) {
       var _classPrivateFieldGet3;
 
-      var _ref18$data, data, _ref18$caller, caller, progid, comid, iu, _classPrivateFieldGet4, payload, body;
+      var _ref19$data, data, _ref19$caller, caller, progid, comid, iu, _classPrivateFieldGet4, payload, body;
 
       return regeneratorRuntime.wrap(function _callee6$(_context6) {
         while (1) {
           switch (_context6.prev = _context6.next) {
             case 0:
-              _ref18$data = _ref18.data, data = _ref18$data === void 0 ? {} : _ref18$data, _ref18$caller = _ref18.caller, caller = _ref18$caller === void 0 ? 'setConversion' : _ref18$caller;
+              _ref19$data = _ref19.data, data = _ref19$data === void 0 ? {} : _ref19$data, _ref19$caller = _ref19.caller, caller = _ref19$caller === void 0 ? 'setConversion' : _ref19$caller;
 
               if (_classPrivateMethodGet(this, _canConvert, _canConvert2).call(this)) {
                 _context6.next = 3;
@@ -6246,9 +6252,9 @@
                 event_consent_id: this.eventConsentId,
                 toSubids: _classPrivateMethodGet(this, _getToSubidsWithType, _getToSubidsWithType2).call(this)
               });
-              body = Object.fromEntries(Object.entries(payload).filter(function (_ref19) {
-                var _ref20 = _slicedToArray(_ref19, 2),
-                    value = _ref20[1];
+              body = Object.fromEntries(Object.entries(payload).filter(function (_ref20) {
+                var _ref21 = _slicedToArray(_ref20, 2),
+                    value = _ref21[1];
 
                 return !!value;
               }));

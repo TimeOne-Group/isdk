@@ -1,6 +1,13 @@
 # ISDK Changelog
 
 
+### [2.6.2](https://github.com/TimeOne-Group/isdk/compare/2.6.1...2.6.2) (2023-12-04)
+
+
+### Bug Fixes
+
+* passe uniquement queryparams subids au log hit ([aa9a24c](https://github.com/TimeOne-Group/isdk/commit/aa9a24c51804cd138c6675a874dfccfd493aa726))
+
 ### [2.6.1](https://github.com/TimeOne-Group/isdk/compare/2.6.0...2.6.1) (2023-11-16)
 
 

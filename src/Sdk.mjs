@@ -292,13 +292,16 @@ export default class Sdk {
     }
 
     const eventTimestamp = utils.getHitTimestamp();
-
+    const toSubids = [CONSTANTS.subid, CONSTANTS.cashback]
+      .map(({ queryname }) => this.constructor.getProgramDataFromQueryParams(queryname))
+      .filter(Boolean);
     const hit = {
       type: CONSTANTS.stats.type.hit,
       consent,
       url: utils.getCurrentUrl(),
       event_timestamp: eventTimestamp,
       count: '1',
+      toSubids,
     };
 
     this.#progids.forEach((progid) => {
@@ -312,8 +315,8 @@ export default class Sdk {
     this.#hit = hit;
   }
 
-  #logStats({ consent, ...data }) {
-    const toSubids = this.#getToSubids();
+  #logStats({ consent, toSubids, ...data }) {
+    const allToSubids = this.#getToSubids();
 
     this.#callApi({
       urlIterator: this.#statsUrlIterator,
@@ -321,7 +324,7 @@ export default class Sdk {
         ...data,
         url: utils.getCurrentUrl(),
         status: consent,
-        toSubids,
+        toSubids: toSubids || allToSubids,
       },
       caller: '#logStats',
     });
