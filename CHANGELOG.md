@@ -1,6 +1,14 @@
 # ISDK Changelog
 
 
+### [2.6.3](https://github.com/TimeOne-Group/isdk/compare/2.6.2...2.6.3) (2024-02-19)
+
+
+### Bug Fixes
+
+* update browser list ([3bbb94b](https://github.com/TimeOne-Group/isdk/commit/3bbb94b2554effa03889fd4be1d7c3949628613a))
+* upgrade vers node 20 ([4813e75](https://github.com/TimeOne-Group/isdk/commit/4813e758b2ad730579d2a57ada55e1df89787dec))
+
 ### [2.6.2](https://github.com/TimeOne-Group/isdk/compare/2.6.1...2.6.2) (2023-12-04)
 
 
