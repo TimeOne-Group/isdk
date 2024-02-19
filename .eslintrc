@@ -1,36 +1,37 @@
 {
-    "env": {
-        "browser": true,
-        "es6": true,
-        "jest": true
-    },
-    "parserOptions": {
-        "ecmaVersion": 13
-    },
-    "extends": ["airbnb-base", "prettier"],
-    "plugins": ["prettier"],
-    "rules": {
-        "prettier/prettier": [
+  "env": {
+    "browser": true,
+    "es6": true,
+    "jest": true,
+  },
+  "parserOptions": {
+    "ecmaVersion": 2022,
+  },
+  "extends": ["airbnb-base", "prettier"],
+  "plugins": ["prettier"],
+  "rules": {
+    "prettier/prettier": [
       "error",
-            {
-                "trailingComma": "es5",
-                "singleQuote": true,
-                "printWidth": 120
-            }
-        ], "import/extensions": [
-            "error",
-            "never",
-            {
-                "mjs": "always",
-                "json": "always"
-            }
-        ]
+      {
+        "trailingComma": "es5",
+        "singleQuote": true,
+        "printWidth": 120,
+      },
+    ],
+    "import/extensions": [
+      "error",
+      "never",
+      {
+        "mjs": "always",
+        "json": "always",
+      },
+    ],
+  },
+  "settings": {
+    "import/resolver": {
+      "node": {
+        "paths": ["src"],
+      },
     },
-    "settings": {
-        "import/resolver": {
-            "node": {
-                "paths": ["src"]
-            }
-        }
-    }
+  },
 }
