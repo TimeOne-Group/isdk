@@ -1,18 +1,19 @@
+import { readFileSync } from 'node:fs';
 import nodeResolve from '@rollup/plugin-node-resolve';
 import commonjs from '@rollup/plugin-commonjs';
-import { terser } from 'rollup-plugin-terser';
+import terser from '@rollup/plugin-terser';
 import { babel } from '@rollup/plugin-babel';
 import replace from '@rollup/plugin-replace';
 import babelLoaderExcludeNodeModulesExcept from 'babel-loader-exclude-node-modules-except';
 import bundleSize from 'rollup-plugin-bundle-size';
 import htmlTemplate from 'rollup-plugin-generate-html-template';
-import copy from 'rollup-plugin-cpy';
+import copy from 'rollup-plugin-copy';
 import postcss from 'rollup-plugin-postcss';
 import dotenv from 'dotenv';
 
-import pkg from './package.json';
 import CONSTANTS from './src/constants.mjs';
 
+const pkg = JSON.parse(readFileSync('./package.json'));
 const NODE_ENV = process.env.NODE_ENV || 'production';
 const globalEnv = dotenv.config({ path: `.env.${NODE_ENV}` }).parsed;
 
@@ -149,11 +150,13 @@ const sites = [
   const defaultFiles = ['browserstack_src/js/tag.js', 'browserstack_src/html/favicon.svg'];
   const files = filesToCopy ? [...filesToCopy, ...defaultFiles] : defaultFiles;
   const copyPlugin = copy({
-    files,
-    dest: root,
-    options: {
-      verbose: true,
-    },
+    targets: [
+      {
+        src: files,
+        dest: root,
+      },
+    ],
+    verbose: true,
   });
 
   return [
