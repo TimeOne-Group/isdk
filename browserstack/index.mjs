@@ -8,6 +8,7 @@ import getCapabilities from './capabilities.mjs';
 import { getErrorCount, resetTestSuiteError, ciLogError } from './utils.mjs';
 import cleanup from './cleanup.mjs';
 import {
+  diagnostic,
   whenNoConsentDefined,
   whenOptinDefined,
   whenOptoutDefined,
@@ -63,6 +64,10 @@ async function runTestWithCaps(capabilities) {
     .build();
 
   await cleanupBeforeNextTestSuite(driver, [
+    // Story de diagnostic : dump l'état de la page vue par le device (url, title, resources, sdk...).
+    // Décommenter pour diagnostiquer un problème de chargement sur une plateforme.
+    // diagnostic.dumpPageState,
+
     whenNoConsentDefined.shouldSetDefaultConsentToUnknown,
     whenNoConsentDefined.shouldSetConsentToOptin,
     whenNoConsentDefined.shouldSetConsentToOptout,
