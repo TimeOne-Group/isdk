@@ -13,6 +13,7 @@
 local.log
 browserstack.err
 BrowserStackLocal
+browserstack/capabilities.json
 
 # misc
 .DS_Store
