@@ -13,6 +13,7 @@ import {
   whenOptoutDefined,
   whenCmpCookieExpire,
   whenUsingDomainAndSubdomain,
+  whenSubidLimitDefined,
 } from './stories/index.mjs';
 
 const bsLocal = new browserstack.Local();
@@ -82,6 +83,11 @@ async function runTestWithCaps(capabilities) {
     whenUsingDomainAndSubdomain.shouldNotShareCookieBetweenDomainAndSubdomainWhenNotDefine,
     whenUsingDomainAndSubdomain.shouldCleanOldCookieWhenDefine,
     whenUsingDomainAndSubdomain.shouldShareCookieBetweenDomainAndSubdomainWhenDefine,
+
+    whenSubidLimitDefined.shouldKeepOnlyMostRecentSubidWhenProgidPatched,
+    whenSubidLimitDefined.shouldKeepOnlyMostRecentCashbackWhenProgidPatched,
+    whenSubidLimitDefined.shouldKeepOnlyMostRecentSubidWhenGlobalLimitDefined,
+    whenSubidLimitDefined.shouldKeepMultipleSubidsWhenNoLimitDefined,
   ]);
 
   const { testSuiteErrors } = getErrorCount();

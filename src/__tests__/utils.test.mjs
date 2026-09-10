@@ -210,6 +210,43 @@ describe('The utils function', () => {
     expect(Object.entries(limitedSubids).some((subid) => subid.indexOf(olderSubidKey))).toBeTruthy();
   });
 
+  test('limitSubids - Should return subids unchanged when no limit is provided', () => {
+    const subids = { first: currentTimestamp - 20000, second: currentTimestamp - 10000 };
+
+    expect(utils.limitSubids(subids)).toEqual(subids);
+  });
+
+  test('limitSubids - Should keep the most recent subids when limit is provided', () => {
+    const oldest = currentTimestamp - 30000;
+    const middle = currentTimestamp - 20000;
+    const newest = currentTimestamp - 10000;
+    const subids = { oldest, middle, newest };
+
+    expect(utils.limitSubids(subids, 1)).toEqual({ newest });
+    expect(utils.limitSubids(subids, 2)).toEqual({ middle, newest });
+  });
+
+  test('limitSubids - Should keep all subids when limit exceeds subids count', () => {
+    const subids = { first: currentTimestamp - 20000, second: currentTimestamp - 10000 };
+
+    expect(utils.limitSubids(subids, 10)).toEqual(subids);
+  });
+
+  [
+    { value: 1, expected: 1 },
+    { value: '2', expected: 2 },
+    { value: 2.5, expected: 2 },
+    { value: 'abc', expected: undefined },
+    { value: 0, expected: undefined },
+    { value: -1, expected: undefined },
+    { value: null, expected: undefined },
+    { value: undefined, expected: undefined },
+  ].forEach(({ value, expected }) => {
+    test(`parseSubidLimit - Should return ${expected} when value is ${JSON.stringify(value)}`, () => {
+      expect(utils.parseSubidLimit(value)).toEqual(expected);
+    });
+  });
+
   test('SubidCookieTypeError - Should throw custom error message', () => {
     const subidName = 'foo';
 

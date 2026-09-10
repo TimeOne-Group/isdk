@@ -133,6 +133,29 @@ const sites = [
       __COOKIE_WILDCARD__: 'true',
     },
   },
+  // Page de test du patch progid : les progids suivent src/constants.mjs (subid_limits_by_progid)
+  {
+    ...browserstackSite,
+    rootFile: 'index-subid-limit.html',
+    templates: ['browserstack-subid-limit.html'],
+    templateVar: {
+      ...browserstackSite.templateVar,
+      __PROGIDS__: JSON.stringify(Object.keys(CONSTANTS.subid_limits_by_progid).map(Number)),
+      __SUBID_LIMIT_SCRIPT__: '',
+    },
+  },
+  // Page de test de la limite via variables globales (progid non patché)
+  {
+    ...browserstackSite,
+    rootFile: 'index-subid-limit-global.html',
+    templates: ['browserstack-subid-limit.html'],
+    templateVar: {
+      ...browserstackSite.templateVar,
+      __PROGIDS__: '[109]',
+      __SUBID_LIMIT_SCRIPT__:
+        '<script>window.__ISDK_subid_limit = 1; window.__ISDK_cashback_limit = 1;</script>',
+    },
+  },
 ].flatMap(({ sdk, init, env, root, rootFile, minify, filesToCopy, templates, templateVar }) => {
   const defaultPlugins = getDefaultPlugins({ env });
   const plugins = minify ? [...defaultPlugins, terser()] : defaultPlugins;

@@ -50,6 +50,7 @@ const hitDefaultPayload = {
 const defaultTrace = {
   env: 'test',
   useWildcardCookieDomain: false,
+  subidLimits: null,
 };
 
 const consentStorageName = utils.getPrefixedStorageName(CONSTANTS.consent.name);

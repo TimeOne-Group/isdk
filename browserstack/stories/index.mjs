@@ -3,3 +3,4 @@ export * as whenOptinDefined from './02_when_optin_defined/index.mjs';
 export * as whenOptoutDefined from './03_when_optout_defined/index.mjs';
 export * as whenCmpCookieExpire from './04_when_cmp_cookie_expire/index.mjs';
 export * as whenUsingDomainAndSubdomain from './05_when_using_domain_and_subdomain/index.mjs';
+export * as whenSubidLimitDefined from './06_when_subid_limit_defined/index.mjs';
