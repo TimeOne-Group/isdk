@@ -5639,7 +5639,7 @@
   };
 
   var ISDKCookies = api.withAttributes({
-    path: "/"
+    path: '/'
   });
   var Storage = {
     save: function save(_ref) {
@@ -5655,11 +5655,11 @@
     }
   };
   function setCookieWildCardDomain() {
-    var hostname = window.location.hostname.split(".");
+    var hostname = window.location.hostname.split('.');
     hostname.reverse();
     var wildCarDomain = ".".concat(hostname[1], ".").concat(hostname[0]);
     ISDKCookies = api.withAttributes({
-      path: "/",
+      path: '/',
       domain: wildCarDomain
     });
   }
@@ -5725,7 +5725,7 @@
     var storageName = getPrefixedStorageName(options.name);
     ISDKCookies.set(storageName, valueToStore, {
       expires: options.ttl,
-      sameSite: "strict"
+      sameSite: 'strict'
     });
     Storage.save({
       id: storageName,
@@ -6169,7 +6169,7 @@
                 _context.next = 3;
                 return _classPrivateMethodGet(this, _setConversion, _setConversion2).call(this, {
                   data: data,
-                  caller: "_setSale"
+                  caller: '_setSale'
                 });
               case 3:
                 _context.next = 8;
@@ -6179,7 +6179,7 @@
                 _context.t0 = _context["catch"](0);
                 _classPrivateMethodGet(this, _setError, _setError2).call(this, {
                   error: _context.t0,
-                  caller: "_setSale",
+                  caller: '_setSale',
                   extra: data
                 });
               case 8:
@@ -6204,7 +6204,7 @@
                 _context2.next = 3;
                 return _classPrivateMethodGet(this, _setConversion, _setConversion2).call(this, {
                   data: data,
-                  caller: "_setLead"
+                  caller: '_setLead'
                 });
               case 3:
                 _context2.next = 8;
@@ -6214,7 +6214,7 @@
                 _context2.t0 = _context2["catch"](0);
                 _classPrivateMethodGet(this, _setError, _setError2).call(this, {
                   error: _context2.t0,
-                  caller: "_setLead",
+                  caller: '_setLead',
                   extra: data
                 });
               case 8:
@@ -6239,7 +6239,7 @@
                 _context3.next = 3;
                 return _classPrivateMethodGet(this, _setConversion, _setConversion2).call(this, {
                   data: data,
-                  caller: "_setDbClick"
+                  caller: '_setDbClick'
                 });
               case 3:
                 _context3.next = 8;
@@ -6249,7 +6249,7 @@
                 _context3.t0 = _context3["catch"](0);
                 _classPrivateMethodGet(this, _setError, _setError2).call(this, {
                   error: _context3.t0,
-                  caller: "_setDbClick",
+                  caller: '_setDbClick',
                   extra: data
                 });
               case 8:
@@ -6274,7 +6274,7 @@
                 _context4.next = 3;
                 return _classPrivateMethodGet(this, _setConversion, _setConversion2).call(this, {
                   data: data,
-                  caller: "_setClick"
+                  caller: '_setClick'
                 });
               case 3:
                 _context4.next = 8;
@@ -6284,7 +6284,7 @@
                 _context4.t0 = _context4["catch"](0);
                 _classPrivateMethodGet(this, _setError, _setError2).call(this, {
                   error: _context4.t0,
-                  caller: "_setClick",
+                  caller: '_setClick',
                   extra: data
                 });
               case 8:
@@ -6321,7 +6321,7 @@
           functionName = _ref3[0],
           functionArgs = _ref3.slice(1);
         try {
-          if (typeof this[functionName] !== "function") {
+          if (typeof this[functionName] !== 'function') {
             throw new Error("Undefined function ".concat(functionName));
           }
           this[functionName].apply(this, _toConsumableArray(functionArgs));
@@ -6388,7 +6388,7 @@
     } catch (error) {
       _classPrivateMethodGet(this, _setError, _setError2).call(this, {
         error: error,
-        caller: "#getActiveSubids",
+        caller: '#getActiveSubids',
         extra: {
           name: name,
           storedSubids: storedSubids
@@ -6429,7 +6429,7 @@
   function _setProgids2() {
     try {
       var _document$getElementB;
-      var progids = (_document$getElementB = document.getElementById(CONSTANTS.sdk_script_id)) === null || _document$getElementB === void 0 ? void 0 : _document$getElementB.getAttribute("data-progids");
+      var progids = (_document$getElementB = document.getElementById(CONSTANTS.sdk_script_id)) === null || _document$getElementB === void 0 ? void 0 : _document$getElementB.getAttribute('data-progids');
       if (progids) {
         _classPrivateFieldSet(this, _progids, JSON.parse(progids));
       }
@@ -6439,14 +6439,14 @@
     } catch (error) {
       _classPrivateMethodGet(this, _setError, _setError2).call(this, {
         error: error,
-        caller: "setProgids"
+        caller: 'setProgids'
       });
     }
   }
   function _shouldUseWildcardDomain2() {
     var _document$getElementB2;
-    var wildCardDomainFromAttribut = (_document$getElementB2 = document.getElementById(CONSTANTS.sdk_script_id)) === null || _document$getElementB2 === void 0 ? void 0 : _document$getElementB2.getAttribute("data-wildcard-domain");
-    return wildCardDomainFromAttribut === "true" || window.__ISDK_wildcard_domain === "true" || window.__ISDK_wildcard_domain === true;
+    var wildCardDomainFromAttribut = (_document$getElementB2 = document.getElementById(CONSTANTS.sdk_script_id)) === null || _document$getElementB2 === void 0 ? void 0 : _document$getElementB2.getAttribute('data-wildcard-domain');
+    return wildCardDomainFromAttribut === 'true' || window.__ISDK_wildcard_domain === 'true' || window.__ISDK_wildcard_domain === true;
   }
   function _resolveSubidLimits2() {
     try {
@@ -6464,7 +6464,7 @@
     } catch (error) {
       _classPrivateMethodGet(this, _setError, _setError2).call(this, {
         error: error,
-        caller: "#resolveSubidLimits"
+        caller: '#resolveSubidLimits'
       });
       return null;
     }
@@ -6483,7 +6483,7 @@
     } catch (error) {
       _classPrivateMethodGet(this, _setError, _setError2).call(this, {
         error: error,
-        caller: "setCookieDomain"
+        caller: 'setCookieDomain'
       });
     }
   }
@@ -6503,7 +6503,7 @@
       return _regeneratorRuntime().wrap(function _callee5$(_context5) {
         while (1) switch (_context5.prev = _context5.next) {
           case 0:
-            _ref9$method = _ref9.method, method = _ref9$method === void 0 ? "POST" : _ref9$method, urlIterator = _ref9.urlIterator, _ref9$body = _ref9.body, body = _ref9$body === void 0 ? {} : _ref9$body, caller = _ref9.caller;
+            _ref9$method = _ref9.method, method = _ref9$method === void 0 ? 'POST' : _ref9$method, urlIterator = _ref9.urlIterator, _ref9$body = _ref9.body, body = _ref9$body === void 0 ? {} : _ref9$body, caller = _ref9.caller;
             if (urlIterator !== null && urlIterator !== void 0 && urlIterator.url) {
               _context5.next = 4;
               break;
@@ -6521,8 +6521,8 @@
             return fetch(urlIterator === null || urlIterator === void 0 ? void 0 : urlIterator.url, {
               method: method,
               headers: {
-                accept: "application/json",
-                "Content-Type": "application/json"
+                accept: 'application/json',
+                'Content-Type': 'application/json'
               },
               body: JSON.stringify(body)
             });
@@ -6589,13 +6589,13 @@
             type: type,
             toSubids: toSubids
           },
-          caller: "#logEvent"
+          caller: '#logEvent'
         });
       }
     } catch (error) {
       _classPrivateMethodGet(this, _setError, _setError2).call(this, {
         error: error,
-        caller: "logEvent",
+        caller: 'logEvent',
         extra: {
           type: type
         }
@@ -6620,7 +6620,7 @@
       consent: consent,
       url: getCurrentUrl(),
       event_timestamp: eventTimestamp,
-      count: "1",
+      count: '1',
       toSubids: toSubids
     };
     _classPrivateFieldGet(this, _progids).forEach(function (progid) {
@@ -6628,7 +6628,7 @@
         _classPrivateMethodGet(_this2, _logStats, _logStats2).call(_this2, _objectSpread2(_objectSpread2({
           progid: progid
         }, _classPrivateFieldGet(_this2, _hit)), {}, {
-          count: "-1"
+          count: '-1'
         }));
       }
       _classPrivateMethodGet(_this2, _logStats, _logStats2).call(_this2, _objectSpread2({
@@ -6649,7 +6649,7 @@
         status: consent,
         toSubids: toSubids || allToSubids
       }),
-      caller: "#logStats"
+      caller: '#logStats'
     });
   }
   function _setPOC2() {
@@ -6662,7 +6662,7 @@
     _classPrivateMethodGet(this, _callApi, _callApi2).call(this, {
       urlIterator: _classPrivateFieldGet(this, _proofConsentUrlIterator),
       body: body,
-      caller: "#setPOC"
+      caller: '#setPOC'
     });
   }
   function _hasSubids2(options) {
@@ -6699,7 +6699,7 @@
       _classPrivateMethodGet(_this3, _callApi, _callApi2).call(_this3, {
         urlIterator: _classPrivateFieldGet(_this3, _registerIpFingerprintUrlIterator),
         body: body,
-        caller: "#registerIpFingerprint"
+        caller: '#registerIpFingerprint'
       });
     });
   }
@@ -6731,11 +6731,11 @@
     _classPrivateFieldGet(this, _progids).forEach(function (progid) {
       _classPrivateMethodGet(_this5, _callApi, _callApi2).call(_this5, {
         urlIterator: _classPrivateFieldGet(_this5, _deleteDataUrlIterator),
-        method: "DELETE",
+        method: 'DELETE',
         body: {
           progid: progid
         },
-        caller: "#handleNoConsent"
+        caller: '#handleNoConsent'
       });
     });
   }
@@ -6766,7 +6766,7 @@
       return _regeneratorRuntime().wrap(function _callee6$(_context6) {
         while (1) switch (_context6.prev = _context6.next) {
           case 0:
-            _ref21$data = _ref21.data, data = _ref21$data === void 0 ? {} : _ref21$data, _ref21$caller = _ref21.caller, caller = _ref21$caller === void 0 ? "setConversion" : _ref21$caller;
+            _ref21$data = _ref21.data, data = _ref21$data === void 0 ? {} : _ref21$data, _ref21$caller = _ref21.caller, caller = _ref21$caller === void 0 ? 'setConversion' : _ref21$caller;
             if (_classPrivateMethodGet(this, _canConvert, _canConvert2).call(this)) {
               _context6.next = 3;
               break;
