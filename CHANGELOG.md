@@ -1,6 +1,13 @@
 # ISDK Changelog
 
 
+## [2.7.0](https://github.com/TimeOne-Group/isdk/compare/2.6.3...2.7.0) (2026-09-14)
+
+
+### Features
+
+* limite le nombre de subids stockés par cookie ([fc47491](https://github.com/TimeOne-Group/isdk/commit/fc474919b09bbdaa4e717d485047c38153c3adb4))
+
 ### [2.6.3](https://github.com/TimeOne-Group/isdk/compare/2.6.2...2.6.3) (2024-02-19)
 
 
