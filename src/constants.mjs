@@ -55,6 +55,11 @@ export default {
   },
   default_storage_prefix: 'to',
   default_ttl: 390,
+  // Certains clients limitent la taille des headers HTTP (erreurs 400) : permet de
+  // limiter le nombre de subids conservés par cookie pour ces progids (ticket helpdesk 13820).
+  subid_limits_by_progid: {
+    5334: { subid: 1, cashback: 1 },
+  },
   urls: {
     conversion: process.env.API_CONVERSION_URLS?.split(',') || [],
     stats: process.env.API_STATS_URLS?.split(',') || [],

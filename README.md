@@ -60,6 +60,22 @@ Intégration du SDK sur **toutes les pages du site sans conditionnement** de sou
 
 Ce code peut être intégré, aussi bien dans l'en-tête (`<header>`) que dans le corps de la page (`<body>`).
 
+### Limiter le nombre de sources conservées
+
+Par défaut, le SDK conserve l'ensemble des sources de trafic TimeOne (_subids_) dans les cookies `to_subid` et `to_cashback` jusqu'à l'expiration de leur durée de vie, dans la limite de `3900` caractères par cookie (au-delà, les subids les plus anciens sont évincés). Si votre serveur limite la taille des en-têtes HTTP (erreurs `400`), vous pouvez plafonner davantage le nombre de subids conservés : les plus récents sont conservés en priorité.
+
+Variables à définir **avant le chargement du SDK** :
+
+```html
+<script>
+  window.__ISDK_subid_limit = 1; // nombre maximum de subids conservés dans le cookie to_subid
+  window.__ISDK_cashback_limit = 1; // nombre maximum de subids conservés dans le cookie to_cashback
+</script>
+```
+
+- Valeur attendue : un entier supérieur ou égal à `1`. Toute autre valeur est ignorée.
+- Sans ces variables, aucune limite en nombre n'est appliquée.
+
 ### Interconnection du module de consentement avec la CMP
 
 Le SDK TimeOne doit pouvoir récupérer le consentement par le biais de code à intégrer lors du choix de l'internaute.

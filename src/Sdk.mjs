@@ -127,14 +127,19 @@ export default class Sdk {
       if (utils.isObject(subids) && Object.keys(subids).length > 0) {
         const activeStoredSubids = utils.filterUnActiveSubids(subids, ttl);
         const activeSubids = { ...activeStoredSubids, ...subidQueryParamEntry };
-        const maxSubids = utils.getMaxSubids(activeSubids);
+        const limitedSubids = utils.limitSubids(activeSubids, this.#resolveSubidLimits()?.[name]);
+        const maxSubids = utils.getMaxSubids(limitedSubids);
 
         return maxSubids;
       }
 
       return subidQueryParamEntry;
     } catch (error) {
-      this.#setError({ error, caller: '#getActiveSubids', extra: { name, storedSubids } });
+      this.#setError({
+        error,
+        caller: '#getActiveSubids',
+        extra: { name, storedSubids },
+      });
 
       return subidQueryParamEntry;
     }
@@ -196,6 +201,27 @@ export default class Sdk {
     );
   }
 
+  #resolveSubidLimits() {
+    try {
+      const patchedLimits = this.#progids.map((progid) => CONSTANTS.subid_limits_by_progid[progid]).find(Boolean);
+
+      const limits = {
+        [CONSTANTS.subid.name]:
+          utils.parseSubidLimit(window.__ISDK_subid_limit) ?? utils.parseSubidLimit(patchedLimits?.subid),
+        [CONSTANTS.cashback.name]:
+          utils.parseSubidLimit(window.__ISDK_cashback_limit) ?? utils.parseSubidLimit(patchedLimits?.cashback),
+      };
+
+      const resolvedLimits = Object.fromEntries(Object.entries(limits).filter(([, limit]) => Number.isInteger(limit)));
+
+      return Object.keys(resolvedLimits).length > 0 ? resolvedLimits : null;
+    } catch (error) {
+      this.#setError({ error, caller: '#resolveSubidLimits' });
+
+      return null;
+    }
+  }
+
   #setCookieDomain() {
     try {
       if (this.#shouldUseWildcardDomain()) {
@@ -222,7 +248,10 @@ export default class Sdk {
 
   async #callApi({ method = 'POST', urlIterator, body = {}, caller }) {
     if (!urlIterator?.url) {
-      this.#setError({ error: { message: `Failed to contact server on ${urlIterator?.urls}` }, caller });
+      this.#setError({
+        error: { message: `Failed to contact server on ${urlIterator?.urls}` },
+        caller,
+      });
 
       return;
     }
@@ -559,6 +588,7 @@ export default class Sdk {
       errors: this.#getErrors(),
       conversionUrls: CONSTANTS.urls.conversion,
       useWildcardCookieDomain: this.#shouldUseWildcardDomain(),
+      subidLimits: this.#resolveSubidLimits(),
     };
   }
 

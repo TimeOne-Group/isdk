@@ -179,6 +179,24 @@ export function getMaxSubids(subids) {
   return subids;
 }
 
+export function limitSubids(subids, limit) {
+  if (!limit) {
+    return subids;
+  }
+
+  return Object.fromEntries(
+    Object.entries(subids)
+      .sort(([, prevcreateAt], [, nextcreateAt]) => nextcreateAt - prevcreateAt)
+      .slice(0, limit)
+  );
+}
+
+export function parseSubidLimit(value) {
+  const limit = parseInt(value, 10);
+
+  return Number.isInteger(limit) && limit > 0 ? limit : undefined;
+}
+
 export class SubidCookieTypeError extends Error {
   constructor(subidName) {
     super(`Cookie to_${subidName} or is a string. Expected object`);
